@@ -41,4 +41,46 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+    /** 
+     * @return HasMany
+     */
+    public function carts () {
+        return $this->hasOne(Cart::class);
+    }
+
+    /** 
+     * @return HasMany
+     */
+    public function orders () {
+        return $this->hasMany(Order::class);
+    }
+
+    /** 
+     * @return HasMany
+     */
+    public function reviews () {
+        return $this->hasMany(Review::class);
+    }
+
+    /** 
+     * @return HasMany
+     */
+    public function wishlists () {
+        return $this->hasOne(Wishlist::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function userInfo () {
+        return $this->hasOne(UserInfo::class);
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function discounts () {
+        return $this->belongsToMany(Discount::class, 'users_discounts');
+    }
 }
