@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,7 +12,7 @@ class Book extends Model
      * @return BelongsToMany
      */
     public function authors () {
-        return $this->belongsToMany(Author::class, 'books_authors');
+        return $this->belongsToMany(Author::class, 'books_authors')->using(BookAuthor::class);
     }
 
     /**
