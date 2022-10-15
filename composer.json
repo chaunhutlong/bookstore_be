@@ -30,8 +30,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "classmap": [
-            "database/seeds",
-            "database/factories"
+            "database"
         ],
         "files": [
             "app/Helpers/coreConstants.php"

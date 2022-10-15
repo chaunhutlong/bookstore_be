@@ -14,14 +14,14 @@ class Discount extends Model
      * @return BelongsToMany
      */
     public function books () {
-        return $this->belongsToMany(Book::class, 'books_discounts');
+        return $this->belongsToMany(Book::class, 'books_discounts', 'discount_id', 'book_id');
     }
 
     /** 
      * @return BelongsToMany
      */
     public function users () {
-        return $this->belongsToMany(User::class, 'users_discounts');
+        return $this->belongsToMany(User::class, 'users_discounts', 'discount_id', 'user_id');
     }
     
     /**

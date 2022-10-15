@@ -80,13 +80,46 @@ class User extends Authenticatable
      * @return BelongsToMany
      */
     public function discounts () {
-        return $this->belongsToMany(Discount::class, 'users_discounts');
+        return $this->belongsToMany(Discount::class, 'users_discounts', 'user_id', 'discount_id');
     }
 
     /**
      * @return BelongsToMany
      */
     public function roles() {
-        return $this->belongsToMany(Role::class, 'roles_users');
+        return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id')->withTimestamps()->withPivot('active');
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRole($role) {
+        if ($this->roles()->where('name', $role)->first()) {
+            
+            echo($this->roles());
+            return true;
+        }
+        return false;
+    }
+
+    public function hasAnyRole($roles) {
+        if (is_array($roles)) {
+            foreach ($roles as $role) {
+                if ($this->hasRole($role)) {
+                    return true;
+                }
+            }
+        } else {
+            if ($this->hasRole($roles)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public function activeRoles() 
+    {
+        return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id')->withTimeStamps()->wherePivot('active', true);
     }
 }
