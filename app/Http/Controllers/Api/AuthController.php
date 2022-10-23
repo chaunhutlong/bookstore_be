@@ -27,7 +27,7 @@ class AuthController extends Controller
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
-        $input = $request->all();
+        $input = $validator->validated();
         $input['password'] = Hash::make($input['password']);
 
         $user = User::create($input);
@@ -50,9 +50,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $data = $request->all();
-
-        $validator = Validator::make($data, [
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|min:6'
         ]);
@@ -60,6 +58,8 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
+
+        $data = $validator->validated();
 
         if (!auth()->attempt($data)) {
             return response(['message' => 'Login credentials are invaild']);
