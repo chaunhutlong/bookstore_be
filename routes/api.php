@@ -27,15 +27,9 @@ Route::group([
     Route::post('/refresh', [AuthController::class, 'refresh']);
 });
 
-// Route::group([
-//     'middleware' => 'auth'
-// ], function ($router) {
-
-//     Route::apiResource('/publishers', [PublisherController::class, 'index']);
-// });
 
 Route::group([
-    'middleware' => ['auth:sanctum', 'role:admin']
+    // 'middleware' => ['auth:sanctum', 'role:admin']
 ], function ($router) {
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);
