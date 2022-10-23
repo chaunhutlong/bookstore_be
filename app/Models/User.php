@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -40,70 +41,90 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
     /** 
      * @return HasMany
      */
-    public function carts () {
+    public function carts()
+    {
         return $this->hasOne(Cart::class);
     }
 
     /** 
      * @return HasMany
      */
-    public function orders () {
+    public function orders()
+    {
         return $this->hasMany(Order::class);
     }
 
     /** 
      * @return HasMany
      */
-    public function reviews () {
+    public function reviews()
+    {
         return $this->hasMany(Review::class);
     }
 
     /** 
      * @return HasMany
      */
-    public function wishlists () {
+    public function wishlists()
+    {
         return $this->hasOne(Wishlist::class);
     }
 
     /**
      * @return HasOne
      */
-    public function userInfo () {
+    public function userInfo()
+    {
         return $this->hasOne(UserInfo::class);
     }
 
     /**
      * @return BelongsToMany
      */
-    public function discounts () {
+    public function discounts()
+    {
         return $this->belongsToMany(Discount::class, 'users_discounts', 'user_id', 'discount_id');
     }
 
     /**
      * @return BelongsToMany
      */
-    public function roles() {
+    public function roles()
+    {
         return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id')->withTimestamps()->withPivot('active');
     }
 
     /**
      * @return bool
      */
-    public function hasRole($role) {
-        if ($this->roles()->where('name', $role)->first()) {
-            
-            echo($this->roles());
-            return true;
+    public function hasRole($role)
+    {
+        // remove all the white spaces
+        $role = preg_replace('/\s+/', '', $role);
+
+        // check user role in pivot table
+        foreach ($this->roles as $userRole) {
+            // if user role is active and matches the role passed in
+            if ($userRole->name == $role && $userRole->pivot->active == 1) {
+                return true;
+            }
+            // if user's role is superadmin then return true
+            if ($userRole->name == 'superadmin') {
+                return true;
+            }
         }
+
         return false;
     }
 
-    public function hasAnyRole($roles) {
+    public function hasAnyRole($roles)
+    {
         if (is_array($roles)) {
+
             foreach ($roles as $role) {
                 if ($this->hasRole($role)) {
                     return true;
@@ -115,10 +136,9 @@ class User extends Authenticatable
             }
         }
         return false;
-
     }
 
-    public function activeRoles() 
+    public function activeRoles()
     {
         return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id')->withTimeStamps()->wherePivot('active', true);
     }

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController as BaseController;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Validator;
-use Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
-class AuthController extends BaseController
+class AuthController extends Controller
 {
     public function __construct()
     {
@@ -23,18 +23,23 @@ class AuthController extends BaseController
             'password' => 'required|min:6'
         ]);
 
-        if($validator->fails()){
-            return response(['error' => $validator->errors()]);
+        if ($validator->fails()) {
+            return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
 
         $user = User::create($input);
-        $success['name'] = $user->name;
-        $success['access_token'] = $user->createToken('auth_token')->plainTextToken;
+        // attach roles
+        $user->roles()->attach(ROLE_USER);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->sendResponse($success, 'User register successfully.');
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ]);
     }
 
     /**
@@ -52,19 +57,22 @@ class AuthController extends BaseController
             'password' => 'required|min:6'
         ]);
 
-        if($validator->fails()){
-            return response(['error' => $validator->errors()]);
+        if ($validator->fails()) {
+            return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
         if (!auth()->attempt($data)) {
-            return $this->sendError('Login credentials are invaild.', ['error'=>'Login credentials are invaild']);
+            return response(['message' => 'Login credentials are invaild']);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
-        $success['token'] = $user->createToken('auth_token')->plainTextToken;
-        $success['name'] = $user->name;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->sendResponse($success, 'User login successfully');
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ]);
     }
 
     /**
@@ -74,6 +82,6 @@ class AuthController extends BaseController
      */
     public function refresh()
     {
-        return $this->sendResponse(auth()->user(), 'User refresh successfully');
+        return response(['user' => auth()->user(), 'message' => 'User refreshed successfully']);
     }
 }
