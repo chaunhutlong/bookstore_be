@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Enums\UserRole;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\AuthorController;
@@ -29,7 +30,7 @@ Route::group([
 
 
 Route::group([
-    'middleware' => ['auth:sanctum', 'role:admin']
+    'middleware' => ['auth:sanctum', 'role:' . UserRole::getKey(UserRole::Admin)],
 ], function ($router) {
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);

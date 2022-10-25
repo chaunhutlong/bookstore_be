@@ -5,6 +5,11 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use PDOException;
+use App\Exceptions\InvalidOrderException;
+
 
 class Handler extends ExceptionHandler
 {
@@ -38,6 +43,44 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * Register the exception handling callbacks for the application.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->reportable(function (InvalidOrderException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        });
+
+        $this->reportable(function (PDOException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        });
+
+        $this->reportable(function (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        });
+
+        $this->reportable(function (NotFoundHttpException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        });
+
+        $this->reportable(function (Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        });
+    }
+
+    /**
      * Report or log an exception.
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
@@ -58,14 +101,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return response()->json(
-            [
-                'errors' => [
-                    'status' => 401,
-                    'message' => 'Unauthenticated',
-                ]
-            ],
-            401
-        );
+        if ($exception instanceof ModelNotFoundException) {
+            return response()->json([
+                'message' => 'Resource not found',
+            ], 404);
+        }
+        return parent::render($request, $exception);
     }
 }

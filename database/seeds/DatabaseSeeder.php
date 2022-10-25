@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,8 +22,7 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
 
         // add roles to the database
-        $roles = ['user', 'admin', 'manager', 'superadmin'];
-
+        $roles = UserRole::getKeys();
         // loop through each role and add it to the database
         foreach ($roles as $role) {
             Role::create(['name' => $role]);
@@ -31,7 +31,6 @@ class DatabaseSeeder extends Seeder
         foreach (User::all() as $user) {
             foreach (Role::all() as $role) {
                 $user->roles()->attach($role->id);
-
             }
         }
     }

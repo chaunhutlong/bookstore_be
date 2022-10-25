@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Enums\UserRole;
+
 
 
 class User extends Authenticatable
@@ -103,8 +105,8 @@ class User extends Authenticatable
      */
     public function hasRole($role)
     {
-        // remove all the white spaces
-        $role = preg_replace('/\s+/', '', $role);
+        // remove all the white space
+        $role = (preg_replace('/\s+/', '', $role));
 
         // check user role in pivot table
         foreach ($this->roles as $userRole) {
@@ -112,8 +114,9 @@ class User extends Authenticatable
             if ($userRole->name == $role && $userRole->pivot->active == 1) {
                 return true;
             }
+
             // if user's role is superadmin then return true
-            if ($userRole->name == 'superadmin') {
+            if ($userRole->name == UserRole::getKey(UserRole::Admin)) {
                 return true;
             }
         }

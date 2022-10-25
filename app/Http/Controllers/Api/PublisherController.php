@@ -39,6 +39,7 @@ class PublisherController extends Controller
      */
     public function index()
     {
+
         $publishers = Publisher::all();
         return response(['publishers' => PublisherResource::collection($publishers), 'message' => 'Retrieved successfully'], 200);
     }
@@ -114,7 +115,7 @@ class PublisherController extends Controller
      *          in="path",
      *          @OA\Schema(
      *              type="integer"
-     *          )
+     *          ),
      *      ),
      *      @OA\Response(
      *          response=200,
@@ -137,6 +138,7 @@ class PublisherController extends Controller
      */
     public function show(Publisher $publisher)
     {
+
         return response(['publisher' => new PublisherResource($publisher), 'message' => 'Retrieved successfully'], 200);
     }
 
@@ -192,17 +194,17 @@ class PublisherController extends Controller
      */
     public function update(Request $request, Publisher $publisher)
     {
-        $data = $request->all();
-
-        $validator = Validator::make($data, ['name' => 'required|255']);
+        $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
 
         if ($validator->fails()) {
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
+        $data = $validator->validated();
+
         $publisher->update($data);
 
-        return response(['publisher' => new PublisherResource($publisher), 'message' => 'Publisher updated successfully']);
+        return response(['publisher' => new PublisherResource($publisher), 'message' => 'Publisher updated successfully'], 202);
     }
 
     /**

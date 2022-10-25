@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,42 @@ class AuthController extends Controller
         $this->middleware('auth:sanctum', ['except' => ['login', 'register']]);
     }
 
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    /**
+     * @OA\Post(
+     *      path="/auth/register",
+     *      operationId="register",
+     *      tags={"auth"},
+     *      summary="Register new user",
+     *      description="Returns token for new user",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/RegisterUserRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,7 +69,7 @@ class AuthController extends Controller
 
         $user = User::create($input);
         // attach roles
-        $user->roles()->attach(ROLE_USER);
+        $user->roles()->attach(UserRole::User);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
