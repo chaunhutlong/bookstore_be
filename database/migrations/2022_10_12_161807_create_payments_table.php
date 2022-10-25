@@ -20,6 +20,7 @@ return new class extends Migration
             $table->tinyInteger('status');
             $table->float('value')->nullable();
             $table->date('paid_on')->nullable();
+            $table->string('description')->nullable();
         });
     }
 

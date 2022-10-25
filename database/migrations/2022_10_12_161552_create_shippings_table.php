@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone');
             $table->date('shipping_on');
+            $table->string('description');
             $table->timestamps();
         });
     }

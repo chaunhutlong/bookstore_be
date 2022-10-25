@@ -32,10 +32,13 @@ class BookController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'available_quantity' => 'required|integer',
-            'isbn' => 'required|max:255',
-            'language' => 'required|max:255',
+            'isbn' => 'required|max:20',
+            'language' => 'required|max:20',
             'total_pages' => 'required|integer',
             'price' => 'required|numeric',
+            'book_image' => 'required|string',
+            'published_date' => 'required|date',
+            'publisher_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
