@@ -37,6 +37,7 @@ Route::group([
     Route::apiResource('/books', BookController::class);
 });
 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/publishers', PublisherController::class)->only(['show']);
 });
