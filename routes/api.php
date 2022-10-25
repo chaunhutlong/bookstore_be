@@ -29,7 +29,7 @@ Route::group([
 
 
 Route::group([
-    // 'middleware' => ['auth:sanctum', 'role:admin']
+    'middleware' => ['auth:sanctum', 'role:admin']
 ], function ($router) {
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);
