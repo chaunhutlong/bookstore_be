@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,13 @@ Route::group([
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/publishers', PublisherController::class)->only(['show']);
+
+    Route::group([
+        'prefix' => 'users'
+    ], function() {
+        Route::post('/create', [UserController::class, 'createProfile']);
+        Route::get('/me',[UserController::class, 'getProfile']);
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
