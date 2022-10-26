@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\GenreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ Route::group([
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);
     Route::apiResource('/books', BookController::class);
+    Route::apiResource('/genres', GenreController::class);
 });
 
 
@@ -51,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::get('email/verify/{id}',  [VerificationController::class, 'verify'])->name('verification.verify'); // Make sure to keep this as your route name
 
     Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');

@@ -3,29 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Publisher;
+use App\Models\Genre;
+use App\Http\Resources\GenreResource;
 use Illuminate\Http\Request;
-use App\Http\Resources\PublisherResource;
 use Illuminate\Support\Facades\Validator;
 
-class PublisherController extends Controller
+class Genrecontroller extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
     /**
-     * @OA\Get(
-     *      path="/publishers",
-     *      operationId="getpublishersList",
-     *      tags={"publishers"},
-     *      summary="Get list of publishers",
-     *      description="Returns list of publishers",
+     * @QA\Get(
+     *      path="/genres",
+     *      operationId="getgenresList",
+     *      tags={"genres"},
+     *      summary="Get list of genres",
+     *      description="Returns list of genres",
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/PublisherResource")
+     *          @OA\JsonContent(ref="#/components/schemas/GenreResource")
      *       ),
      *      @OA\Response(
      *          response=401,
@@ -37,14 +38,11 @@ class PublisherController extends Controller
      *      )
      *     )
      */
+
     public function index()
     {
-
-        $publishers = Publisher::all();
-        return response([
-            'publishers' => PublisherResource::collection($publishers),
-            'message' => 'Retrieved successfully'
-        ], 200);
+        $genres = Genre::all();
+        return response(['genres' => GenreResource::collection($genres), 'message' => 'Retrieved successfully'], 200);
     }
 
     /**
@@ -53,21 +51,22 @@ class PublisherController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     /**
      * @OA\Post(
-     *      path="/publishers",
-     *      operationId="storePublisher",
-     *      tags={"publishers"},
-     *      summary="Store new publisher",
-     *      description="Returns publisher data",
+     *      path="/genres",
+     *      operationId="storeGenre",
+     *      tags={"genres"},
+     *      summary="Store new genre",
+     *      description="Returns genre data",
      *      @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/StorePublisherRequest")
+     *          @OA\JsonContent(ref="#/components/schemas/StoreGenreRequest")
      *      ),
      *      @OA\Response(
      *          response=201,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/PublisherResource")
+     *          @OA\JsonContent(ref="#/components/schemas/GenreResource")
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -83,40 +82,38 @@ class PublisherController extends Controller
      *      )
      * )
      */
+
     public function store(Request $request)
     {
         $data = $request->all();
 
-        $validator = Validator::make($data, ['name' => 'required|max:255']);
+        $validator = Validator::make($data, ['name' => 'required|max:50']);
 
         if ($validator->fails()) {
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
-        $publiser = Publisher::create($data);
+        $genre = Genre::create($data);
 
-        return response([
-            'publisher' => new PublisherResource($publiser),
-            'message' => 'Publisher created successfully'
-        ]);
+        return response(['genre' => new GenreResource($genre), 'message' => 'Genre created successfully']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Publisher  $publisher
+     * @param  \App\Models\Genre  $genre
      * @return \Illuminate\Http\Response
      */
     /**
      * @OA\Get(
-     *      path="/publishers/{id}",
-     *      operationId="getPublisherById",
-     *      tags={"publishers"},
-     *      summary="Get publisher information",
-     *      description="Returns publisher data",
+     *      path="/genres/{id}",
+     *      operationId="getGenreById",
+     *      tags={"genres"},
+     *      summary="Get genre information",
+     *      description="Returns genre data",
      *      @OA\Parameter(
      *          name="id",
-     *          description="Publisher id",
+     *          description="Genre id",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -126,7 +123,7 @@ class PublisherController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/PublisherResource")
+     *          @OA\JsonContent(ref="#/components/schemas/GenreResource")
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -142,29 +139,29 @@ class PublisherController extends Controller
      *      )
      * )
      */
-    public function show(Publisher $publisher)
-    {
 
-        return response(['publisher' => new PublisherResource($publisher), 'message' => 'Retrieved successfully'], 200);
+    public function show(Genre $genre)
+    {
+        return response(['genre' => new GenreResource($genre), 'message' => 'Retrieved successfully'], 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Publisher  $publisher
+     * @param  \App\Models\Genre  $genre
      * @return \Illuminate\Http\Response
      */
     /**
      * @OA\Put(
-     *      path="/publishers/{id}",
-     *      operationId="updatePublisher",
-     *      tags={"publishers"},
-     *      summary="Update existing publisher",
-     *      description="Returns updated publisher data",
+     *      path="/genres/{id}",
+     *      operationId="updateGenre",
+     *      tags={"genres"},
+     *      summary="Update existing genre",
+     *      description="Returns updated genre data",
      *      @OA\Parameter(
      *          name="id",
-     *          description="Publisher id",
+     *          description="Genre id",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -173,12 +170,12 @@ class PublisherController extends Controller
      *      ),
      *      @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/UpdatePublisherRequest")
+     *          @OA\JsonContent(ref="#/components/schemas/UpdateGenreRequest")
      *      ),
      *      @OA\Response(
      *          response=202,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/PublisherResource")
+     *          @OA\JsonContent(ref="#/components/schemas/GenreResource")
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -198,9 +195,13 @@ class PublisherController extends Controller
      *      )
      * )
      */
-    public function update(Request $request, Publisher $publisher)
+
+    public function update(Request $request, Genre $genre)
     {
-        $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:50',
+            'description' => 'required|max:255'
+        ]);
 
         if ($validator->fails()) {
             return response(['error' => $validator->errors(), 'Validation Error']);
@@ -208,30 +209,27 @@ class PublisherController extends Controller
 
         $data = $validator->validated();
 
-        $publisher->update($data);
+        $genre->update($data);
 
-        return response([
-            'publisher' => new PublisherResource($publisher),
-            'message' => 'Publisher updated successfully'
-        ], 202);
+        return response(['genre' => new GenreResource($genre), 'message' => 'Publisher updated successfully'], 202);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Publisher  $publisher
+     * @param  \App\Models\Genre  $genre
      * @return \Illuminate\Http\Response
      */
     /**
      * @OA\Delete(
-     *      path="/publishers/{id}",
-     *      operationId="deletePublisher",
-     *      tags={"publishers"},
-     *      summary="Delete existing publisher",
+     *      path="/genres/{id}",
+     *      operationId="deleteGenre",
+     *      tags={"genres"},
+     *      summary="Delete existing genre",
      *      description="Deletes a record and returns no content",
      *      @OA\Parameter(
      *          name="id",
-     *          description="Publisher id",
+     *          description="Genre id",
      *          required=true,
      *          in="path",
      *          @OA\Schema(
@@ -257,10 +255,11 @@ class PublisherController extends Controller
      *      )
      * )
      */
-    public function destroy(Publisher $publisher)
-    {
-        $publisher->delete();
 
-        return response(['message' => 'Publisher deleted successfully']);
+    public function destroy(Genre $genre)
+    {
+        $genre->delete();
+
+        return response(['message' => 'Genre deleted successfully']);
     }
 }

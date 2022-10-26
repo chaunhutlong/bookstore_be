@@ -17,6 +17,10 @@ class VerificationController extends Controller
 
         if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
+            // active user in pivot table role_user
+            foreach ($user->roles as $role) {
+                $user->roles()->updateExistingPivot($role->id, ['active' => 1]);
+            }
         }
 
         return redirect()->to('/');
