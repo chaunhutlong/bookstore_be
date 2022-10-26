@@ -45,7 +45,7 @@ class BookController extends Controller
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
-        $data = $validator->validate();
+        $data = $validator->validated();
 
         $book = Book::create($data);
 
