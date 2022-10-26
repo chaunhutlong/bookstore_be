@@ -43,4 +43,28 @@ class UserController extends Controller
 
         return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info created successfully']);
     }
+
+    public function updateProfile(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'address' => 'max:255',
+            'phone_number' => 'max:12',
+            'bio' => 'max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response(['error' => $validator->errors(), 'Validation Error']);
+        }
+
+        $data = $validator->validated();
+        $user_info = UserInfo::where('user_id', request()->user()->id)->first();
+        if (isset($data['address'])) $user_info->address = $data["address"];
+        if (isset($data['phone_number'])) $user_info->phone_number = $data["phone_number"];
+        if (isset($data['bio'])) $user_info->bio = $data["bio"];
+
+        $user_info->save();
+
+        return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info updated successfully']);
+    }
+
+    
 }
