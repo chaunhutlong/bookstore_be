@@ -41,7 +41,10 @@ class PublisherController extends Controller
     {
 
         $publishers = Publisher::all();
-        return response(['publishers' => PublisherResource::collection($publishers), 'message' => 'Retrieved successfully'], 200);
+        return response([
+            'publishers' => PublisherResource::collection($publishers),
+            'message' => 'Retrieved successfully'
+        ], 200);
     }
 
     /**
@@ -92,7 +95,10 @@ class PublisherController extends Controller
 
         $publiser = Publisher::create($data);
 
-        return response(['publisher' => new PublisherResource($publiser), 'message' => 'Publisher created successfully']);
+        return response([
+            'publisher' => new PublisherResource($publiser),
+            'message' => 'Publisher created successfully'
+        ]);
     }
 
     /**
@@ -204,7 +210,10 @@ class PublisherController extends Controller
 
         $publisher->update($data);
 
-        return response(['publisher' => new PublisherResource($publisher), 'message' => 'Publisher updated successfully'], 202);
+        return response([
+            'publisher' => new PublisherResource($publisher),
+            'message' => 'Publisher updated successfully'
+        ], 202);
     }
 
     /**
