@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\Api\GenreController;
 use App\Models\Genre;
@@ -39,6 +40,7 @@ Route::group([
     Route::apiResource('/authors', AuthorController::class);
     Route::apiResource('/books', BookController::class);
     Route::apiResource('/genres', GenreController::class);
+    Route::apiResource('/discounts', DiscountController::class);
 });
 
 
