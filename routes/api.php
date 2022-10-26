@@ -7,9 +7,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
-use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\Api\NewPasswordController;
+use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
-use App\Models\Genre;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,10 +44,12 @@ Route::group([
 
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::apiResource('/publishers', PublisherController::class)->only(['show', 'index']);
+    Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
 });
 
-Route::middleware(['auth:sanctum', 'active'])->group(function () {
-    Route::get('email/verify/{id}',  [VerificationController::class, 'verify'])->name('verification.verify'); // Make sure to keep this as your route name
+Route::middleware(['auth:sanctum',])->group(function () {
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
 
-    Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail'])->name('verification.send');
 });
