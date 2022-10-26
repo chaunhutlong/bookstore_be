@@ -16,8 +16,7 @@ class UserController extends Controller
     //
     public function getProfile()
     {
-        $user_info = DB::table('user_info')->where('user_id', '=', request()->user()->id);
-        var_dump($user_info);
+        $user_info = UserInfo::where('user_id', request()->user()->id)->get();
         return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info retrieved successfully']);
     }
 
