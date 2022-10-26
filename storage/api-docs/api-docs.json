@@ -60,6 +60,75 @@
                 }
             }
         },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login user",
+                "description": "Returns token for user",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginUserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh token",
+                "description": "Returns new token",
+                "operationId": "refresh",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/publishers": {
             "get": {
                 "tags": [
@@ -263,6 +332,27 @@
     },
     "components": {
         "schemas": {
+            "LoginUserRequest": {
+                "title": "Login User request",
+                "description": "Login User request body data",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Email of the new user",
+                        "type": "string",
+                        "example": "example@example.com"
+                    },
+                    "password": {
+                        "description": "Password of the new user",
+                        "type": "string",
+                        "example": "123456"
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "title": "User",
                 "description": "User model",
@@ -285,13 +375,6 @@
                         "type": "string",
                         "format": "email"
                     },
-                    "email_verified_at": {
-                        "title": "Email verified at",
-                        "description": "Email verified at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
-                    },
                     "created_at": {
                         "title": "Created at",
                         "description": "Created at",
@@ -305,34 +388,9 @@
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
                     }
                 },
                 "type": "object"
-            },
-            "PublisherResource": {
-                "title": "PublisherResource",
-                "description": "Publisher resource",
-                "properties": {
-                    "publisher": {
-                        "title": "Data",
-                        "description": "Data wrapper",
-                        "type": "array",
-                        "items": {
-                            "ref": null
-                        }
-                    }
-                },
-                "type": "object",
-                "xml": {
-                    "name": "PublisherResource"
-                }
             },
             "RegisterUserRequest": {
                 "title": "Register User request",
@@ -351,6 +409,7 @@
                     "email": {
                         "description": "Email of the new user",
                         "type": "string",
+                        "format": "email",
                         "example": "example@example.com"
                     },
                     "password": {
@@ -360,6 +419,46 @@
                     }
                 },
                 "type": "object"
+            },
+            "UserResource": {
+                "title": "User Authentication",
+                "description": "User resource",
+                "properties": {
+                    "access_token": {
+                        "description": "Access token",
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "description": "Token type",
+                        "type": "string",
+                        "example": "bearer"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "UserResource"
+                }
+            },
+            "PublisherResource": {
+                "title": "PublisherResource",
+                "description": "Publisher resource",
+                "properties": {
+                    "publisher": {
+                        "title": "Data",
+                        "description": "Data wrapper",
+                        "type": "array",
+                        "items": {
+                            "ref": null
+                        }
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "PublisherResource"
+                }
             },
             "StorePublisherRequest": {
                 "title": "Store Publisher request",
@@ -392,38 +491,6 @@
                     }
                 },
                 "type": "object"
-            },
-            "UserResource": {
-                "title": "User Authentication",
-                "description": "User resource",
-                "properties": {
-                    "id": {
-                        "description": "User id",
-                        "type": "integer"
-                    },
-                    "name": {
-                        "description": "User name",
-                        "type": "string"
-                    },
-                    "email": {
-                        "description": "User email",
-                        "type": "string"
-                    },
-                    "created_at": {
-                        "description": "User creation date",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "User updated date",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
-                "xml": {
-                    "name": "UserResource"
-                }
             }
         },
         "securitySchemes": {

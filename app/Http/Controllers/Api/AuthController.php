@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -64,12 +65,15 @@ class AuthController extends Controller
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
 
-        $input = $validator->validated();
-        $input['password'] = Hash::make($input['password']);
+        $data = $validator->validated();
+        $data['password'] = Hash::make($data['password']);
 
-        $user = User::create($input);
+        $user = User::create($data);
         // attach roles
         $user->roles()->attach(UserRole::User);
+
+        event(new Registered($user));
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -84,7 +88,36 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+    /**
+     * @OA\Post(
+     *      path="/auth/login",
+     *      operationId="login",
+     *      tags={"auth"},
+     *      summary="Login user",
+     *      description="Returns token for user",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/LoginUserRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -115,10 +148,39 @@ class AuthController extends Controller
     /**
      * Refresh api
      *
-     * @return \Illuminate\Http\Response
+     *  @return \Illuminate\Http\Response
+     */
+
+    /**
+     * @OA\Post(
+     *      path="/auth/refresh",
+     *      tags={"auth"},
+     *      summary="Refresh token",
+     *      description="Returns new token",
+     *      operationId="refresh",
+     *   @OA\Response(
+     *      response=200,
+     *      description="Successful operation",
+     *    @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *  ),
+     *    @OA\Response(
+     *     response=401,
+     *      description="Unauthenticated",
+     * ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="Forbidden"
+     *     )
+     * )
      */
     public function refresh()
     {
-        return response(['user' => auth()->user(), 'message' => 'User refreshed successfully']);
+        /** @var \App\Models\User */
+        $user = request()->user();
+        return response()->json([
+            'access_token' => $user->createToken('auth_token')->plainTextToken,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ]);
     }
 }

@@ -2,33 +2,20 @@
 
 /**
  * @OA\Schema(
- *      title="Register User request",
- *      description="Register User request body data",
+ *      title="Login User request",
+ *      description="Login User request body data",
  *      type="object",
- *      required={"name", "email", "password"}
+ *      required={"email", "password"}
  * )
  */
 
 
-class RegisterUserRequest
+class LoginUserRequest
 {
-  /**
-   * @OA\Property(
-   *      property="name",
-   *      type="string",
-   *      description="Name of the new user",
-   *      example="John Doe"
-   * )
-   *
-   * @var string
-   */
-  public $name;
-
   /**
    * @OA\Property(
    *     property="email",
    *     type="string",
-   *     format="email",
    *     description="Email of the new user",
    *     example="example@example.com"
    * )
