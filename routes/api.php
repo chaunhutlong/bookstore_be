@@ -42,11 +42,11 @@ Route::group([
 });
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('/publishers', PublisherController::class)->only(['show']);
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
+    Route::apiResource('/publishers', PublisherController::class)->only(['show', 'index']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::get('email/verify/{id}',  [VerificationController::class, 'verify'])->name('verification.verify'); // Make sure to keep this as your route name
 
     Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
