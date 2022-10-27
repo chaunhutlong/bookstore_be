@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\NewPasswordController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,17 @@ Route::group([
     Route::apiResource('/genres', GenreController::class);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('/publishers', PublisherController::class)->only(['show']);
+
+    Route::group([
+        'prefix' => 'users'
+    ], function() {
+        Route::post('/create', [UserController::class, 'createProfile']);
+        Route::get('/me',[UserController::class, 'getProfile']);
+        Route::put('/edit', [UserController::class, 'updateProfile']);
+    });
+});
 
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::apiResource('/publishers', PublisherController::class)->only(['show', 'index']);
