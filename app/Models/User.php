@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\ResetPasswordNotification;
 use App\Enums\UserRole;
 
 
@@ -145,5 +146,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activeRoles()
     {
         return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id')->withTimeStamps()->wherePivot('active', true);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+
+        $spaUrl = env('SPA_URL') ? env('SPA_URL') : 'http://localhost:8080';
+
+        $url = $spaUrl . '/reset-password?token=' . $token;
+
+        $this->notify(new ResetPasswordNotification($url));
     }
 }
