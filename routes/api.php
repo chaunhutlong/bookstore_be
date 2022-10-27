@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     ], function() {
         Route::post('/create', [UserController::class, 'createProfile']);
         Route::get('/me',[UserController::class, 'getProfile']);
-        Route::post('/edit', [UserController::class, 'updateProfile']);
+        Route::put('/edit', [UserController::class, 'updateProfile']);
     });
 });
 

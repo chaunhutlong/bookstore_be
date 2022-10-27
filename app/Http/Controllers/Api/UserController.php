@@ -66,5 +66,5 @@ class UserController extends Controller
         return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info updated successfully']);
     }
 
-    
+
 }
