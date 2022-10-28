@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use Illuminate\Http\Request;
 use App\Http\Resources\DiscountResource;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 
 class DiscountController extends Controller
 {
@@ -30,14 +32,24 @@ class DiscountController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     *
      */
     public function store(Request $request)
     {
         $data = $request->all();
-        $validator = Validator::make($data, ['name' => 'required|max:50']);
+        // $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data->start_date)->format('Y-m-d');
+        // $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data->end_date)->format('Y-m-d');
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:50',
+            'value' => 'required|numeric',
+            // 'start_date' => 'required|date_format:d/m/Y|before_or_equal:end_date',
+            // 'end_date' => 'required|date_format:d/m/Y|after:start_date',
+        ]);
+
         if ($validator->fails()) {
             return response(['error' => $validator->errors(), 'Validation Error']);
         }
+        $data = $validator->Validated();
         $discount = Discount::create($data);
         return response([
             'discount' => new DiscountResource($discount),
@@ -71,8 +83,8 @@ class DiscountController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:50',
             'value' => 'required',
-            'start_date' => 'required|after($request->end_date)',
-            'end_date' => 'required|before($request->start_date)',
+            'start_date' => 'required|before:end_date',
+            'end_date' => 'required|after:start_date',
             'quantity' => 'required'
         ]);
         if ($validator->fails()) {

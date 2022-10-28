@@ -42,7 +42,10 @@ class Genrecontroller extends Controller
     public function index()
     {
         $genres = Genre::all();
-        return response(['genres' => GenreResource::collection($genres), 'message' => 'Retrieved successfully'], 200);
+        return response([
+            'genres' => GenreResource::collection($genres),
+            'message' => 'Retrieved successfully'
+        ], 200);
     }
 
     /**
