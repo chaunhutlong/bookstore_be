@@ -47,9 +47,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::group([
         'prefix' => 'users'
-    ], function() {
+    ], function () {
         Route::post('/create', [UserController::class, 'createProfile']);
-        Route::get('/me',[UserController::class, 'getProfile']);
+        Route::get('/me', [UserController::class, 'getProfile']);
         Route::put('/edit', [UserController::class, 'updateProfile']);
     });
 });
@@ -57,6 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::apiResource('/publishers', PublisherController::class)->only(['show', 'index']);
 });
+
+Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
+Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
 
 Route::middleware(['auth:sanctum',])->group(function () {
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
