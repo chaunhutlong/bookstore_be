@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\NewPasswordController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\DiscountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ Route::group([
     Route::apiResource('/authors', AuthorController::class);
     Route::apiResource('/books', BookController::class);
     Route::apiResource('/genres', GenreController::class);
+    Route::apiResource('/discounts', DiscountController::class);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -62,7 +64,13 @@ Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
 
 Route::middleware(['auth:sanctum',])->group(function () {
-    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+    Route::get(
+        '/email/verify/{id}/{hash}',
+        [EmailVerificationController::class, 'verify']
+    )->name('verification.verify');
 
-    Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail'])->name('verification.send');
+    Route::post(
+        '/email/verification-notification',
+        [EmailVerificationController::class, 'sendVerificationEmail']
+    )->name('verification.send');
 });
