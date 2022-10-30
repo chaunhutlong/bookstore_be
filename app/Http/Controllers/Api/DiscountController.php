@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Discount;
 use App\Http\Resources\DiscountResource;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class DiscountController extends Controller
 {
@@ -85,28 +86,33 @@ class DiscountController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
 
-        $validator = Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'value' => 'required|numeric',
-            'start_date' => 'required|date|before_or_equal:end_date',
-            'end_date' => 'required|date|after:start_date',
-            'quantity' => 'required|integer',
-        ]);
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'value' => 'required|numeric',
+                'start_date' => 'required|date|before_or_equal:end_date',
+                'end_date' => 'required|date|after:start_date',
+                'quantity' => 'required|integer',
+            ]);
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $data = $validator->validated();
+
+            $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
+            $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data['end_date'])->format('Y-m-d');
+
+            $discount = Discount::create($data);
+            DB::commit();
+
+            return response([
+                'discount' => new DiscountResource($discount),
+                'message' => 'Discount created successfully'
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
-        $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data['end_date'])->format('Y-m-d');
-
-        $discount = Discount::create($data);
-        return response([
-            'discount' => new DiscountResource($discount),
-            'message' => 'Discount created successfully'
-        ], 201);
     }
 
     /**
@@ -200,9 +206,7 @@ class DiscountController extends Controller
      */
     public function update(Request $request, Discount $discount)
     {
-        $data = $request->all();
-
-        $validator = Validator::make($data, [
+        $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
             'value' => 'numeric',
             'start_date' => 'date|before_or_equal:end_date',
@@ -210,9 +214,8 @@ class DiscountController extends Controller
             'quantity' => 'min:0'
         ]);
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
-        }
+        $data = $validator->validated();
+
 
         $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data['end_date'])->format('Y-m-d');
         $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');

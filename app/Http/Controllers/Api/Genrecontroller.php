@@ -7,6 +7,8 @@ use App\Models\Genre;
 use App\Http\Resources\GenreResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+
 
 class Genrecontroller extends Controller
 {
@@ -85,17 +87,21 @@ class Genrecontroller extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+            ]);
 
-        $validator = Validator::make($data, ['name' => 'required|max:50']);
+            $data = $validator->validated();
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $genre = Genre::create($data);
+
+            return response(['genre' => new GenreResource($genre), 'message' => 'Genre created successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $genre = Genre::create($data);
-
-        return response(['genre' => new GenreResource($genre), 'message' => 'Genre created successfully']);
     }
 
     /**
@@ -198,20 +204,23 @@ class Genrecontroller extends Controller
 
     public function update(Request $request, Genre $genre)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:50',
-            'description' => 'required|max:255'
-        ]);
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|max:50',
+                'description' => 'required|max:255'
+            ]);
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $data = $validator->validatedd();
+
+            $genre->update($data);
+            DB::commit();
+
+            return response(['genre' => new GenreResource($genre), 'message' => 'Publisher updated successfully'], 202);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $data = $validator->validated();
-
-        $genre->update($data);
-
-        return response(['genre' => new GenreResource($genre), 'message' => 'Publisher updated successfully'], 202);
     }
 
     /**

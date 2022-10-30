@@ -28,9 +28,11 @@ class DatabaseSeeder extends Seeder
             Role::create(['name' => $role]);
         }
 
+        // active role
         foreach (User::all() as $user) {
             foreach (Role::all() as $role) {
                 $user->roles()->attach($role->id);
+                $user->roles()->updateExistingPivot($role->id, ['active' => true]);
             }
         }
     }

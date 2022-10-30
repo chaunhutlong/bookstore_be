@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserInfoResource;
-use App\Models\User;
 use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,58 +12,39 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    //
     public function getProfile()
     {
-        $user_info = UserInfo::where('user_id', request()->user()->id)->get();
-        return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info retrieved successfully']);
+        $user = auth()->user();
+        $userInfo = UserInfo::where('user_id', $user->id)->first();
+        return response(['user' => new UserInfoResource($userInfo), 'message' => 'Retrieved successfully'], 200);
     }
 
-    public function createProfile(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'address' => 'max:255',
-            'phone_number' => 'max:12',
-            'bio' => 'max:255'
-        ]);
+    public function createOrUpdateProfile(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $validator = Validator::make($request->all(), [
+                'address' => 'string|max:15',
+                'phone_number' => 'numeric|digits:10',
+                'bio' => 'string|max:255',
+                'avatar' => 'string',
+            ]);
+
+            $data = $validator->validated();
+
+            // create or update user info
+            $userInfo = UserInfo::updateOrCreate(
+                ['user_id' => $user->id],
+                $data
+            );
+
+            DB::commit();
+            return response(['user_info' => new UserInfoResource($userInfo), 'message' => 'User info created successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $data = $validator->validated();
-
-        $user_info = new UserInfo();
-        $user_info['address'] = $data["address"];
-        $user_info['phone_number'] = $data["phone_number"];
-        $user_info['bio'] = $data["bio"];
-        $user_info['user_id']= request()->user()->id;
-
-        $user_info->save();
-
-        return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info created successfully']);
     }
-
-    public function updateProfile(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'address' => 'max:255',
-            'phone_number' => 'max:12',
-            'bio' => 'max:255'
-        ]);
-
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
-        }
-
-        $data = $validator->validated();
-        $user_info = UserInfo::where('user_id', request()->user()->id)->first();
-        if (isset($data['address'])) $user_info->address = $data["address"];
-        if (isset($data['phone_number'])) $user_info->phone_number = $data["phone_number"];
-        if (isset($data['bio'])) $user_info->bio = $data["bio"];
-
-        $user_info->save();
-
-        return response(['user_info' => new UserInfoResource($user_info), 'message' => 'User info updated successfully']);
-    }
-
-
 }

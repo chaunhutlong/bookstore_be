@@ -7,6 +7,7 @@ use App\Models\Author;
 use Illuminate\Http\Request;
 use App\Http\Resources\AuthorResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class AuthorController extends Controller
 {
@@ -29,17 +30,21 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
 
-        $validator = Validator::make($data, ['name' => 'required|max:255']);
+            $validator = Validator::make($request->all(), ['name' => 'string|required|max:255']);
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $data = $validator->validated();
+
+            $publiser = Author::create($data);
+            DB::commit();
+
+            return response(['author' => new AuthorResource($publiser), 'message' => 'Author created successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $publiser = Author::create($data);
-
-        return response(['author' => new AuthorResource($publiser), 'message' => 'Author created successfully']);
     }
 
     /**
@@ -62,17 +67,20 @@ class AuthorController extends Controller
      */
     public function update(Request $request, Author $author)
     {
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), ['name' => 'string|required|max:255']);
 
-        $validator = Validator::make($data, ['name' => 'required|255']);
+            $data = $validator->validated();
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $author->update($data);
+
+            DB::commit();
+            return response(['author' => new AuthorResource($author), 'message' => 'Author updated successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $author->update($data);
-
-        return response(['author' => new AuthorResource($author), 'message' => 'Author updated successfully']);
     }
 
     /**
