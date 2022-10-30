@@ -18,6 +18,7 @@ class CreateUserInfosTable extends Migration
             $table->string('address');
             $table->string('phone_number');
             $table->string('bio')->nullable();
+            $table->string('avatar')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
