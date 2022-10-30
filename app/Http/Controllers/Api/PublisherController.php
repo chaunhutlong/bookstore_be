@@ -7,6 +7,7 @@ use App\Models\Publisher;
 use Illuminate\Http\Request;
 use App\Http\Resources\PublisherResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class PublisherController extends Controller
 {
@@ -85,20 +86,26 @@ class PublisherController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
 
-        $validator = Validator::make($data, ['name' => 'required|max:255']);
+            $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $data = $validator->validated();
+
+            $publiser = Publisher::create($data);
+            DB::commit();
+
+            return response([
+                'publisher' => new PublisherResource($publiser),
+                'message' => 'Publisher created successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response([
+                'message' => 'Publisher creation failed'
+            ], 500);
         }
-
-        $publiser = Publisher::create($data);
-
-        return response([
-            'publisher' => new PublisherResource($publiser),
-            'message' => 'Publisher created successfully'
-        ]);
     }
 
     /**
@@ -200,20 +207,24 @@ class PublisherController extends Controller
      */
     public function update(Request $request, Publisher $publisher)
     {
-        $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
+        DB::beginTransaction();
+        try {
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
+
+            $data = $validator->validated();
+
+            $publisher->update($data);
+            DB::commit();
+
+            return response([
+                'publisher' => new PublisherResource($publisher),
+                'message' => 'Publisher updated successfully'
+            ], 202);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);;
         }
-
-        $data = $validator->validated();
-
-        $publisher->update($data);
-
-        return response([
-            'publisher' => new PublisherResource($publisher),
-            'message' => 'Publisher updated successfully'
-        ], 202);
     }
 
     /**
