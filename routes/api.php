@@ -11,7 +11,8 @@ use App\Http\Controllers\Api\NewPasswordController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
-
+use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\UserManagementController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,43 +24,70 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
+/* Auth Routes */
+
 Route::group([
     'prefix' => 'auth'
-], function ($router) {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
+], function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update')->middleware('auth:sanctum');
 });
+/* End of Auth Routes */
+/* -------------------------------------------------------------------------- */
 
 
+/* Email Verification Routes */
+Route::middleware(['auth:sanctum',])->group(function () {
+    Route::get(
+        '/email/verify/{id}/{hash}',
+        [EmailVerificationController::class, 'verify']
+    )->name('verification.verify');
+
+    Route::post(
+        '/email/verification-notification',
+        [EmailVerificationController::class, 'sendVerificationEmail']
+    )->name('verification.send');
+});
+/* End of Email Verification Routes */
+/* -------------------------------------------------------------------------- */
+
+
+/* Admin Routes */
 Route::group([
     'middleware' => ['auth:sanctum', 'role:' . UserRole::getKey(UserRole::Admin)],
-], function ($router) {
+    'prefix' => 'admin'
+], function () {
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);
     Route::apiResource('/books', BookController::class);
     Route::apiResource('/genres', GenreController::class);
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('/publishers', PublisherController::class)->only(['show']);
-
+    Route::apiResource('/discounts', DiscountController::class);
     Route::group([
         'prefix' => 'users'
-    ], function() {
-        Route::post('/create', [UserController::class, 'createProfile']);
-        Route::get('/me',[UserController::class, 'getProfile']);
-        Route::put('/edit', [UserController::class, 'updateProfile']);
+    ], function () {
+        Route::get('/', [UserManagementController::class, 'getUsers']);
+        Route::get('/{user}', [UserManagementController::class, 'getUser']);
+        Route::put('/active', [UserManagementController::class, 'activeUser']);
+        Route::put('/unactive', [UserManagementController::class, 'unactiveUser']);
     });
 });
+/* End of Admin Routes */
+/* -------------------------------------------------------------------------- */
 
-Route::middleware(['auth:sanctum', 'active'])->group(function () {
-    Route::apiResource('/publishers', PublisherController::class)->only(['show', 'index']);
+
+/* User Routes */
+Route::group([
+    'middleware' => ['auth:sanctum', 'active'],
+], function () {
+    Route::group([
+        'prefix' => 'users'
+    ], function () {
+        Route::get('/profile', [UserController::class, 'getProfile'])->name('users.getProfile');
+        Route::post('/profile', [UserController::class, 'createOrUpdateProfile'])->name('users.createOrUpdateProfile');
+        Route::put('/password', [UserController::class, 'updatePassword'])->name('user.password.update');
+    });
 });
-
-Route::middleware(['auth:sanctum',])->group(function () {
-    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
-
-    Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail'])->name('verification.send');
-});
+/* End of User Routes */
+/* -------------------------------------------------------------------------- */
