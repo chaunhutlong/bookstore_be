@@ -34,7 +34,7 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
-    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update')->middleware('auth:sanctum');
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
 });
 /* End of Auth Routes */
 /* -------------------------------------------------------------------------- */
@@ -125,9 +125,12 @@ Route::group([
         'prefix' => 'cart'
     ], function () {
         Route::get('/get', [ShoppingCartController::class, 'getCart'])->name('cart.get');
-        Route::post('/add', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
+        Route::post('/add-to-cart', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
         Route::post('/update', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
         Route::post('/remove', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
+        Route::post('/clear', [ShoppingCartController::class, 'clearCart'])->name('cart.clear');
+        Route::put('/add-checked-item', [ShoppingCartController::class, 'addCheckedItem'])->name('cart.addCheckedItems');
+        Route::put('/add-all-checked-item', [ShoppingCartController::class, 'addAllCheckedItem'])->name('cart.addAllCheckedItems');
     });
 
     Route::group([
