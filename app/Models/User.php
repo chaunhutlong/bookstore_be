@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\ResetPasswordNotification;
 use App\Enums\UserRole;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 
 
@@ -46,7 +48,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    /** 
+    /**
      * @return HasMany
      */
     public function carts()
@@ -54,7 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Cart::class);
     }
 
-    /** 
+    /**
      * @return HasMany
      */
     public function orders()
@@ -62,7 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Order::class);
     }
 
-    /** 
+    /**
      * @return HasMany
      */
     public function reviews()
@@ -70,7 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Review::class);
     }
 
-    /** 
+    /**
      * @return HasMany
      */
     public function wishlists()

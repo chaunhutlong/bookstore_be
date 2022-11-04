@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
-
+use App\Http\Controllers\Api\UserManagementController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -64,6 +64,16 @@ Route::group([
     Route::apiResource('/books', BookController::class);
     Route::apiResource('/genres', GenreController::class);
     Route::apiResource('/discounts', DiscountController::class);
+    Route::group([
+        'prefix' => 'users'
+    ], function () {
+        Route::get('/', [UserManagementController::class, 'getUsers']);
+        Route::get('/{user}', [UserManagementController::class, 'getUser']);
+        Route::put('/active', [UserManagementController::class, 'activeUser']);
+        Route::put('/unactive', [UserManagementController::class, 'unactiveUser']);
+        Route::post('/assign-role', [UserManagementController::class, 'assignRole']);
+        Route::delete('/remove-role', [UserManagementController::class, 'removeRole']);
+    });
 });
 /* End of Admin Routes */
 /* -------------------------------------------------------------------------- */
