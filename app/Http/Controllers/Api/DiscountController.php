@@ -254,7 +254,7 @@ class DiscountController extends Controller
      *          description="No content"
      *      ),
      *      @OA\Response(
-     *          reponse=401,
+     *          response=401,
      *          description="Unauthenticated",
      *      ),
      *      @OA\Response(
