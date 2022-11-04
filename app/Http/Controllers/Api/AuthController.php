@@ -131,10 +131,16 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            // get user roles
+            $roles = $user->roles()->get();
+            // get only role names
+            $roles = $roles->pluck('name');
+
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user
+                'user' => $user,
+                'roles' => $roles
             ]);
         } catch (\Exception $e) {
             return response()->json([
