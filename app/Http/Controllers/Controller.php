@@ -9,10 +9,10 @@ use Illuminate\Routing\Controller as BaseController; {
     /**
      * @OA\Info(
      *      version="1.0.0",
-     *      title="Laravel OpenApi Demo Documentation",
-     *      description="L5 Swagger OpenApi description",
+     *      title="Docs BookStore API",
+     *      description="BookStore API Server",
      *      @OA\Contact(
-     *          email="admin@admin.com"
+     *          email="longuit2002@gmail.com"
      *      ),
      *      @OA\License(
      *          name="Apache 2.0",
@@ -22,7 +22,7 @@ use Illuminate\Routing\Controller as BaseController; {
      *
      * @OA\Server(
      *      url=L5_SWAGGER_CONST_HOST,
-     *      description="Demo API Server"
+     *      description="BookStore API"
      * )
 
      *
