@@ -88,7 +88,6 @@ class DiscountController extends Controller
     {
         DB::beginTransaction();
         try {
-
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'value' => 'required|numeric',
@@ -267,6 +266,6 @@ class DiscountController extends Controller
     public function destroy(Discount $discount)
     {
         $discount->delete();
-        return response(['message' => 'Deleted']);
+        return response(['message' => 'Discount deleted successfully']);
     }
 }

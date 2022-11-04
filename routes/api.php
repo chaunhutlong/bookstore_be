@@ -71,6 +71,8 @@ Route::group([
         Route::get('/{user}', [UserManagementController::class, 'getUser']);
         Route::put('/active', [UserManagementController::class, 'activeUser']);
         Route::put('/unactive', [UserManagementController::class, 'unactiveUser']);
+        Route::post('/assign-role', [UserManagementController::class, 'assignRole']);
+        Route::delete('/remove-role', [UserManagementController::class, 'removeRole']);
     });
 });
 /* End of Admin Routes */

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserInfoResource;
+use App\Http\Resources\UserResource;
 use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $user = auth()->user();
         $userInfo = UserInfo::where('user_id', $user->id)->first();
-        return response(['user' => new UserInfoResource($userInfo), 'message' => 'Retrieved successfully'], 200);
+        return response(['user' => new UserResource($userInfo), 'message' => 'Retrieved successfully'], 200);
     }
 
     public function createOrUpdateProfile(Request $request)
@@ -40,7 +40,7 @@ class UserController extends Controller
             );
 
             DB::commit();
-            return response(['user_info' => new UserInfoResource($userInfo), 'message' => 'User info created successfully']);
+            return response(['user_info' => new UserResource($userInfo), 'message' => 'User info created successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
