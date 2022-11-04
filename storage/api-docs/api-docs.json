@@ -108,7 +108,7 @@
                 ],
                 "summary": "Get list of discounts",
                 "description": "Returns list of discounts",
-                "operationId": "getdiscountsList",
+                "operationId": "getDiscountsList",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
