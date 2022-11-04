@@ -101,23 +101,95 @@ class ShoppingCartController extends Controller
         }
     }
 
-    public function deleteItems()
+    public function removeFromCart(Request $request)
     {
         DB::beginTransaction();
         try {
             $user = auth()->user();
-            $cart = Cart::where('user_id', $user->id)->delete();
+            $cart = Cart::where('user_id', $user->id)->where('book_id', $request->book_id)->first();
             if ($cart) {
+                $cart->delete();
+                $cartUser = Cart::where('user_id', $user->id)->get();
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Delete cart successfully',
+                    'message' => 'Delete item successfully',
+                    'data' => $cartUser,
                 ], 200);
             } else {
                 return response()->json([
                     'status' => 'error',
-                    'message' => "Cart not found.",
+                    'message' => "Item not found.",
                 ], 400);
             }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function clearCart()
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            Cart::where('user_id', $user->id)->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Clear cart successfully',
+                'data' => [],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function addCheckedItem(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            $cart = Cart::where('user_id', $user->id)::where('book_id', $request->book_id)->first();
+            if ($cart) {
+                $cart->is_checked = $request->is_checked;
+                $cart->save();
+                DB::commit();
+                $cartUser = Cart::where('user_id', $user->id)->get();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Update cart successfully',
+                    'data' => $cartUser,
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Cart item not found.",
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function addAllCheckedItem(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            $cart = Cart::where('user_id', $user->id)->get();
+            foreach ($cart as $item) {
+                $item->is_checked = $request->is_checked;
+                $item->save();
+            }
+            DB::commit();
+            $cartUser = Cart::where('user_id', $user->id)->get();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Update cart successfully',
+                'data' => $cartUser,
+            ], 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['message' => $e->getMessage()], 400);
