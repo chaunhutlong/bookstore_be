@@ -19,7 +19,9 @@ return new class extends Migration
             $table->float('value');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->integer('quantity')->nullable();
             $table->string('description')->nullable();
+            $table->timestamps();
         });
     }
 

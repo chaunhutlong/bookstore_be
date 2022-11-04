@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Book;
+use App\Models\Genre;
 use Illuminate\Http\Request;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
@@ -29,27 +31,41 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-            'available_quantity' => 'required|integer',
-            'isbn' => 'required|max:20',
-            'language' => 'required|max:20',
-            'total_pages' => 'required|integer',
-            'price' => 'required|numeric',
-            'book_image' => 'required|string',
-            'published_date' => 'required|date',
-            'publisher_id' => 'required|integer',
-        ]);
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'string|required|max:255',
+                'available_quantity' => 'required|integer',
+                'isbn' => 'required|string|max:20',
+                'language' => 'required|string|max:25',
+                'total_pages' => 'required|integer',
+                'price' => 'required|numeric',
+                'book_image' => 'required|string',
+                'published_date' => 'required|date',
+                'publisher_id' => 'required|integer',
+            ]);
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $data = $validator->validated();
+
+            $genres = $data['genres'];
+            // check genre in table genres
+            foreach ($genres as $genre_id) {
+                $genre = Genre::where('id', $genre_id)->first();
+                if (!$genre) {
+                    return response(['error' => 'Genre not found'], 404);
+                }
+            }
+
+            $book = Book::create($data);
+            // add genres to book
+            $book->genres()->attach($genres);
+
+            DB::commit();
+            return response(['book' => new BookResource($book), 'message' => 'Book created successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $data = $validator->validated();
-
-        $book = Book::create($data);
-
-        return response(['book' => new BookResource($book), 'message' => 'Book created successfully']);
     }
 
     /**
@@ -72,17 +88,20 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), ['name' => 'string|required|255']);
 
-        $validator = Validator::make($data, ['name' => 'required|255']);
+            $data = $validator->validated();
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $book->update($data);
+
+            DB::commit();
+            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $book->update($data);
-
-        return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
     }
 
     /**

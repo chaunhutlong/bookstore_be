@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreign('payment_id')->references('id')->on('payments');
             $table->foreign('discount_id')->references('id')->on('discounts');
             $table->unique(['user_id', 'discount_id', 'payment_id', 'shipping_id']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -6,21 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Enums\UserRole;
 use App\Http\Requests\LoginRequest;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum', ['except' => ['login', 'register']]);
-    }
-
     /**
      * Register api
      *
@@ -59,32 +53,37 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:55',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6'
-        ]);
+        DB::beginTransaction();
+        try {
 
-        if ($validator->fails()) {
-            return response(['error' => $validator->errors(), 'Validation Error']);
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:55',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|string|min:6'
+            ]);
+
+            $data = $validator->validated();
+
+            $data['password'] = Hash::make($data['password']);
+
+            $user = User::create($data);
+            // attach roles
+            $user->roles()->attach(UserRole::User);
+            DB::commit();
+
+            event(new Registered($user));
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
         }
-
-        $data = $validator->validated();
-        $data['password'] = Hash::make($data['password']);
-
-        $user = User::create($data);
-        // attach roles
-        $user->roles()->attach(UserRole::User);
-
-        event(new Registered($user));
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
-        ]);
     }
 
     /**
@@ -124,55 +123,23 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $request->authenticate();
+        try {
 
-        $user = $request->user();
+            $request->authenticate();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $user = $request->user();
 
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
-        ]);
-    }
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-    /**
-     * Refresh api
-     *
-     *  @return \Illuminate\Http\Response
-     */
-
-    /**
-     * @OA\Post(
-     *      path="/auth/refresh",
-     *      tags={"auth"},
-     *      summary="Refresh token",
-     *      description="Returns new token",
-     *      operationId="refresh",
-     *   @OA\Response(
-     *      response=200,
-     *      description="Successful operation",
-     *    @OA\JsonContent(ref="#/components/schemas/UserResource")
-     *  ),
-     *    @OA\Response(
-     *     response=401,
-     *      description="Unauthenticated",
-     * ),
-     *  @OA\Response(
-     *      response=403,
-     *      description="Forbidden"
-     *     )
-     * )
-     */
-    public function refresh()
-    {
-        /** @var \App\Models\User */
-        $user = request()->user();
-        return response()->json([
-            'access_token' => $user->createToken('auth_token')->plainTextToken,
-            'token_type' => 'Bearer',
-            'user' => $user
-        ]);
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'The provided credentials are incorrect.'
+            ], 401);
+        }
     }
 }

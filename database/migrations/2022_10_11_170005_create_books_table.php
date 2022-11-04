@@ -27,6 +27,7 @@ class CreateBooksTable extends Migration
             $table->unsignedBigInteger('publisher_id');
             $table->foreign('publisher_id')->references('id')->on('publishers');
             $table->unique('isbn');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
