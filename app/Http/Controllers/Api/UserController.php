@@ -8,6 +8,8 @@ use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
@@ -41,6 +43,34 @@ class UserController extends Controller
 
             DB::commit();
             return response(['user_info' => new UserResource($userInfo), 'message' => 'User info created successfully']);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $user = request()->user();
+
+            $validator = Validator::make($request->all(), [
+                'old_password' => 'required|string',
+                'new_password' => 'required|string|min:6|confirmed',
+            ]);
+
+            $data = $validator->validated();
+
+            if (!Hash::check($data['old_password'], $user->password)) {
+                return response(['error' => 'Old password is incorrect'], 400);
+            }
+
+            $user->password = Hash::make($data['new_password']);
+            $user->save();
+
+            DB::commit();
+            return response(['message' => 'Password updated successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);

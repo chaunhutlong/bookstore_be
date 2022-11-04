@@ -36,34 +36,41 @@ class NewPasswordController extends Controller
 
     public function resetPassword(Request $request)
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => ['required', 'confirmed', RulesPassword::defaults()],
-        ]);
+        try {
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+            $request->validate([
+                'token' => 'required',
+                'email' => 'required|email',
+                'password' => ['required', 'confirmed', RulesPassword::defaults()],
+            ]);
 
-                $user->tokens()->delete();
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user) use ($request) {
+                    $user->forceFill([
+                        'password' => Hash::make($request->password),
+                        'remember_token' => Str::random(60),
+                    ])->save();
 
-                event(new PasswordReset($user));
+                    $user->tokens()->delete();
+
+                    event(new PasswordReset($user));
+                }
+            );
+
+            if ($status == Password::PASSWORD_RESET) {
+                return response()->json([
+                    'message' => 'Password reset successfully'
+                ], 200);
             }
-        );
 
-        if ($status == Password::PASSWORD_RESET) {
-            return response()->json([
-                'message' => 'Password reset successfully'
-            ], 200);
+            return response([
+                'message' => __($status)
+            ], 500);
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        return response([
-            'message' => __($status)
-        ], 500);
     }
 }
