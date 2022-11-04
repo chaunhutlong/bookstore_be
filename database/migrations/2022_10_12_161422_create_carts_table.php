@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('book_id')->references('id')->on('books');
             $table->unique(['user_id', 'book_id']);
+            $table->boolean('is_ordered')->default(false);
+            $table->float('price');
             $table->timestamps();
         });
     }

@@ -7,11 +7,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\NewPasswordController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\ShoppingCartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,11 +76,55 @@ Route::group([
     'middleware' => ['auth:sanctum', 'active'],
 ], function () {
     Route::group([
-        'prefix' => 'users'
+        'prefix' => 'user'
     ], function () {
         Route::get('/profile', [UserController::class, 'getProfile'])->name('users.getProfile');
         Route::post('/profile', [UserController::class, 'createOrUpdateProfile'])->name('users.createOrUpdateProfile');
         Route::put('/password', [UserController::class, 'updatePassword'])->name('user.password.update');
+    });
+
+    Route::group([
+        'prefix' => 'books'
+    ], function () {
+        Route::get('/', [BookController::class, 'index'])->name('books.index');
+        Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
+    });
+
+    Route::group([
+        'prefix' => 'authors'
+    ], function () {
+        Route::get('/', [AuthorController::class, 'index'])->name('authors.index');
+        Route::get('/{author}', [AuthorController::class, 'show'])->name('authors.show');
+    });
+
+    Route::group([
+        'prefix' => 'publishers'
+    ], function () {
+        Route::get('/', [PublisherController::class, 'index'])->name('publishers.index');
+        Route::get('/{publisher}', [PublisherController::class, 'show'])->name('publishers.show');
+    });
+
+    Route::group([
+        'prefix' => 'genres'
+    ], function () {
+        Route::get('/', [GenreController::class, 'index'])->name('genres.index');
+        Route::get('/{genre}', [GenreController::class, 'show'])->name('genres.show');
+    });
+
+    Route::group([
+        'prefix' => 'cart'
+    ], function () {
+        Route::get('/get', [ShoppingCartController::class, 'getCart'])->name('cart.get');
+        Route::post('/add', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
+        Route::post('/update', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
+        Route::post('/remove', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
+    });
+
+    Route::group([
+        'prefix' => 'checkout'
+    ], function () {
+        Route::post('/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
+        Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 });
 /* End of User Routes */
