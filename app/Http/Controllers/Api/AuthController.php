@@ -59,7 +59,7 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:55',
                 'email' => 'required|email|unique:users',
-                'password' => 'required|string|min:6'
+                'password' => 'required|string|min:8'
             ]);
 
             $data = $validator->validated();
@@ -73,13 +73,26 @@ class AuthController extends Controller
 
             event(new Registered($user));
 
+
+            // get active user
+            $is_active = false;
+            foreach ($user->roles as $role) {
+                if ($role->is_active) {
+                    $is_active = true;
+                    break;
+                }
+            }
+            unset($user->roles);
+
             $token = $user->createToken('auth_token')->plainTextToken;
 
+
             return response()->json([
+                'user' => $user,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user
-            ]);
+                'is_active' => $is_active
+            ], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -129,23 +142,27 @@ class AuthController extends Controller
 
             $user = $request->user();
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            // get active user
+            $user = User::with('roles')->find($user->id);
+            $is_active = false;
+            foreach ($user->roles as $role) {
+                if ($role->pivot->active) {
+                    $is_active = true;
+                    break;
+                }
+            }
+            unset($user->roles);
 
-            // get user roles
-            $roles = $user->roles()->get();
-            // get only role names
-            $roles = $roles->pluck('name');
+            $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'user' => $user,
-                'roles' => $roles
+                'is_active' => $is_active
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'The provided credentials are incorrect.'
-            ], 401);
+            return response(['error' => $e->getMessage()], 500);
         }
     }
 }
