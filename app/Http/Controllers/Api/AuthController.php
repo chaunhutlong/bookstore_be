@@ -86,12 +86,16 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            // attach roles
+            $roles = $user->roles()->get()->pluck('name');
+
 
             return response()->json([
                 'user' => $user,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'is_active' => $is_active
+                'is_active' => $is_active,
+                'roles' => $roles
             ], 201);
         } catch (\Exception $e) {
             DB::rollback();
@@ -155,11 +159,15 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            // attach roles
+            $roles = $user->roles()->get()->pluck('name');
+
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'user' => $user,
-                'is_active' => $is_active
+                'is_active' => $is_active,
+                'roles' => $roles
             ]);
         } catch (\Exception $e) {
             return response(['error' => $e->getMessage()], 500);
