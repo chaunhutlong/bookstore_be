@@ -47,14 +47,13 @@ class UserController extends Controller
             // add new avatar to storage and delete old avatar
             if (
                 $request->hasFile('avatar') && request()->file('avatar')->isValid()
-                && Storage::disk('public')->exists($userInfo->avatar)
             ) {
                 $avatar = $request->file('avatar');
                 $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
                 $avatarPath = $avatar->storeAs('avatars', $avatarName);
                 $data['avatar'] = $avatarPath;
                 $oldAvatar = $userInfo->avatar;
-                if ($userInfo->avatar) {
+                if ($userInfo->avatar && Storage::disk('public')->exists($oldAvatar)) {
                     Storage::disk('public')->delete($oldAvatar);
                 }
             }
