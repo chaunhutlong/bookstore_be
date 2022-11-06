@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserInfo extends Model
 {
-    protected $fillable = ['user_id', 'address', 'phone_number','bio'];
+    protected $fillable = ['user_id', 'address', 'phone_number', 'bio', 'avatar'];
 
     /**
      * @return BelongsTo
      */
-    public function user () {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }
