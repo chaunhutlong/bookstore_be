@@ -81,7 +81,20 @@ Route::group([
         Route::get('/profile', [UserController::class, 'getProfile'])->name('users.getProfile');
         Route::post('/profile', [UserController::class, 'createOrUpdateProfile'])->name('users.createOrUpdateProfile');
         Route::put('/password', [UserController::class, 'updatePassword'])->name('user.password.update');
-        Route::apiResource('/review/{book_id}', ReviewController::class);
+        Route::post(
+            '/{books}/reviews',
+            [
+                ReviewController::class,
+                'createOrUpdateReview'
+            ]
+        )->name('users.review.createOrUpdateReview');
+        Route::get(
+            '/{book}/reviews',
+            [
+                ReviewController::class,
+                'getReview'
+            ]
+        )->name('users.review.getReview');
     });
 });
 /* End of User Routes */

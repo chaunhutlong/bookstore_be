@@ -7,32 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
+    protected $fillable = ['user_id', 'book_id', 'rating', 'comment',];
+
     /**
-     * @return hasOne
+     * @return BelongsTo
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * @return hasOne
+     * @return BelongsTo
      */
     public function book()
     {
-        return $this->hasOne(Book::class, 'id', 'book_id');
+        return $this->belongsTo(Book::class);
     }
-
-    /**
-     * @return hasOne
-     */
-    public function status()
-    {
-        return $this->hasOne(ReviewStatus::class, 'id', 'status_id');
-    }
-
-    /**
-     * @return hasOne
-     */
-    
 }
