@@ -88,13 +88,8 @@ Route::group([
                 'createOrUpdateReview'
             ]
         )->name('users.review.createOrUpdateReview');
-        Route::get(
-            '/{book}/reviews',
-            [
-                ReviewController::class,
-                'getReview'
-            ]
-        )->name('users.review.getReview');
+        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('users.review.getReview');
+        Route::get('/{book}/reviews', [ReviewController::class, 'index'])->name('users.review.index');
     });
 });
 /* End of User Routes */

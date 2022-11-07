@@ -14,6 +14,32 @@ class ReviewController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * @param Book $book
+     * @return \Illuminate\Http\Response
+     */
+    public function index($book)
+    {
+        DB::beginTransaction();
+        try {
+            $reviews = Review::where('book_id', $book)->get();
+            // $name = DB::table('users')->select('name')->where('id', $reviews->user_id)->get();
+            // $reviews->load(['user' => function ($query) {
+            //     $query->select('name')->where('id', 'user_id');
+            // }]);
+
+            DB::commit();
+            return response([
+                'reviews' => ReviewResource::collection($reviews),
+                // 'name' => $name,
+                'message' => 'Retrieved successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+    /**
+     * Display a listing of the resource.
      * @return \Illuminate\Http\Response
      */
     public function getReview($book)
@@ -23,7 +49,7 @@ class ReviewController extends Controller
             $user = auth()->user();
 
             $review = Review::where('user_id', $user->id)->where('book_id', $book)->first();
-            
+
             return response([
                 'reviews' => new ReviewResource($review),
                 'message' => 'Retrieved successfully'
