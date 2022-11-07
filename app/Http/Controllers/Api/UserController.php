@@ -41,7 +41,10 @@ class UserController extends Controller
             );
 
             DB::commit();
-            return response(['user_info' => new UserInfoResource($userInfo), 'message' => 'User info created successfully']);
+            return response([
+                'user_info' => new UserInfoResource($userInfo),
+                'message' => 'User info created successfully'
+            ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);

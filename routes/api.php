@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,8 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
-    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update')->middleware('auth:sanctum');
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])
+        ->name('password.update')->middleware('auth:sanctum');
 });
 /* End of Auth Routes */
 /* -------------------------------------------------------------------------- */
@@ -79,6 +81,7 @@ Route::group([
         Route::get('/profile', [UserController::class, 'getProfile'])->name('users.getProfile');
         Route::post('/profile', [UserController::class, 'createOrUpdateProfile'])->name('users.createOrUpdateProfile');
         Route::put('/password', [UserController::class, 'updatePassword'])->name('user.password.update');
+        Route::apiResource('/review/{book_id}', ReviewController::class);
     });
 });
 /* End of User Routes */
