@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ReviewController;
-
+use App\Http\Controllers\Api\UserManagementController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,8 +33,7 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
-    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])
-        ->name('password.update')->middleware('auth:sanctum');
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update')->middleware('auth:sanctum');
 });
 /* End of Auth Routes */
 /* -------------------------------------------------------------------------- */
@@ -66,6 +65,16 @@ Route::group([
     Route::apiResource('/books', BookController::class);
     Route::apiResource('/genres', GenreController::class);
     Route::apiResource('/discounts', DiscountController::class);
+    Route::group([
+        'prefix' => 'users'
+    ], function () {
+        Route::get('/', [UserManagementController::class, 'getUsers']);
+        Route::get('/{user}', [UserManagementController::class, 'getUser']);
+        Route::put('/active', [UserManagementController::class, 'activeUser']);
+        Route::put('/unactive', [UserManagementController::class, 'unactiveUser']);
+        Route::post('/assign-role', [UserManagementController::class, 'assignRole']);
+        Route::delete('/remove-role', [UserManagementController::class, 'removeRole']);
+    });
 });
 /* End of Admin Routes */
 /* -------------------------------------------------------------------------- */

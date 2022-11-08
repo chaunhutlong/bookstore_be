@@ -35,8 +35,8 @@ class PublisherController extends Controller
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden"
-     *      )
-     *     )
+     *      ),
+     *    )
      */
     public function index()
     {
@@ -54,6 +54,7 @@ class PublisherController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     /**
      * @OA\Post(
      *      path="/publishers",
@@ -72,7 +73,7 @@ class PublisherController extends Controller
      *       ),
      *      @OA\Response(
      *          response=400,
-     *          description="Bad Request"
+     *          description="Bad Request",
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -80,8 +81,8 @@ class PublisherController extends Controller
      *      ),
      *      @OA\Response(
      *          response=403,
-     *          description="Forbidden"
-     *      )
+     *          description="Forbidden",
+     *      ),
      * )
      */
     public function store(Request $request)

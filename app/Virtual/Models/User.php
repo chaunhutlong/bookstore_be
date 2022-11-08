@@ -20,7 +20,7 @@ class User
    *
    * @var integer
    */
-  private $id;
+  public $id;
 
   /**
    * @OA\Property(
@@ -30,7 +30,7 @@ class User
    *
    * @var string
    */
-  private $name;
+  public $name;
   /**
    * @OA\Property(
    *     title="Email",
@@ -40,7 +40,7 @@ class User
    *
    * @var string
    */
-  private $email;
+  public $email;
 
   /**
    * @OA\Property(
@@ -53,7 +53,7 @@ class User
    *
    * @var \DateTime
    */
-  private $created_at;
+  public $created_at;
 
   /**
    * @OA\Property(
@@ -66,5 +66,5 @@ class User
    *
    * @var \DateTime
    */
-  private $updated_at;
+  public $updated_at;
 }
