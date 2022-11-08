@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\NewPasswordController;
 use App\Http\Controllers\Api\EmailVerificationController;
-use App\Http\Controllers\Api\GenreController;
+use App\Http\Controllers\Api\GenresController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\UserManagementController;
@@ -62,7 +62,7 @@ Route::group([
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);
     Route::apiResource('/books', BookController::class);
-    Route::apiResource('/genres', GenreController::class);
+    Route::apiResource('/genres', GenresController::class);
     Route::apiResource('/discounts', DiscountController::class);
     Route::group([
         'prefix' => 'users'

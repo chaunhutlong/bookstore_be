@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 
-class Genrecontroller extends Controller
+class GenresController extends Controller
 {
     /**
      * Display a listing of the resource.
