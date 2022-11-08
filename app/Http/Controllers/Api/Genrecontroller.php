@@ -96,6 +96,7 @@ class Genrecontroller extends Controller
             $data = $validator->validated();
 
             $genre = Genre::create($data);
+            DB::commit();
 
             return response(['genre' => new GenreResource($genre), 'message' => 'Genre created successfully']);
         } catch (\Exception $e) {
