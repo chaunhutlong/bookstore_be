@@ -90,7 +90,15 @@ class PublisherController extends Controller
         DB::beginTransaction();
         try {
 
-            $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'required|string|max:255',
+                    'address' => 'required|string',
+                    'phone' => 'required|numeric|digits_between:10,12',
+                    'description' => 'required|string',
+                ]
+            );
 
             $data = $validator->validated();
 
@@ -103,9 +111,7 @@ class PublisherController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return response([
-                'message' => 'Publisher creation failed'
-            ], 500);
+            return response(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -211,7 +217,15 @@ class PublisherController extends Controller
         DB::beginTransaction();
         try {
 
-            $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'string|max:255',
+                    'address' => 'string',
+                    'phone' => 'numeric|digits_between:10,12',
+                    'description' => 'string',
+                ]
+            );
 
             $data = $validator->validated();
 

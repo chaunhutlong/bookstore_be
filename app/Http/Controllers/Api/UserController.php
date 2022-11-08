@@ -34,7 +34,7 @@ class UserController extends Controller
             $user = auth()->user();
 
             $validator = Validator::make($request->all(), [
-                'address' => 'string|max:15',
+                'address' => 'string|max:255',
                 'phone_number' => 'numeric|digits:10',
                 'bio' => 'string|max:255',
                 'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',

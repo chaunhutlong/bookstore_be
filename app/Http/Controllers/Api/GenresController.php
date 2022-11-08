@@ -91,6 +91,7 @@ class GenresController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
+                'description' => 'string',
             ]);
 
             $data = $validator->validated();
@@ -208,8 +209,8 @@ class GenresController extends Controller
         DB::beginTransaction();
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|max:50',
-                'description' => 'required|max:255'
+                'name' => 'string|max:255',
+                'description' => 'string'
             ]);
 
             $data = $validator->validatedd();
