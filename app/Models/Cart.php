@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
 {
-    protected $fillable = ['user_id', 'book_id'];
+    protected $fillable = ['user_id', 'book_id', 'quantity', 'price'];
 
     /**
      * @return BelongsTo
@@ -20,10 +20,10 @@ class Cart extends Model
     }
 
     /**
-     * @return HasMany
+     * @return belongsTo
      */
-    public function books()
+    public function book()
     {
-        return $this->hasMany(Book::class);
+        return $this->belongsTo(Book::class);
     }
 }

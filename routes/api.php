@@ -126,9 +126,9 @@ Route::group([
     ], function () {
         Route::get('/get', [ShoppingCartController::class, 'getCart'])->name('cart.get');
         Route::post('/add-to-cart', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
-        Route::post('/update', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
-        Route::post('/remove', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
-        Route::post('/clear', [ShoppingCartController::class, 'clearCart'])->name('cart.clear');
+        Route::put('/update', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
+        Route::put('/remove', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
+        Route::put('/clear', [ShoppingCartController::class, 'clearCart'])->name('cart.clear');
         Route::put('/add-checked-item', [ShoppingCartController::class, 'addCheckedItem'])->name('cart.addCheckedItems');
         Route::put('/add-all-checked-item', [ShoppingCartController::class, 'addAllCheckedItem'])->name('cart.addAllCheckedItems');
     });
