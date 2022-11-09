@@ -7,11 +7,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\NewPasswordController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenresController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
 /*
 |--------------------------------------------------------------------------
@@ -84,11 +86,58 @@ Route::group([
     'middleware' => ['auth:sanctum', 'active'],
 ], function () {
     Route::group([
-        'prefix' => 'users'
+        'prefix' => 'user'
     ], function () {
         Route::get('/profile', [UserController::class, 'getProfile'])->name('users.getProfile');
         Route::post('/profile', [UserController::class, 'createOrUpdateProfile'])->name('users.createOrUpdateProfile');
         Route::put('/password', [UserController::class, 'updatePassword'])->name('user.password.update');
+    });
+
+    Route::group([
+        'prefix' => 'books'
+    ], function () {
+        Route::get('/', [BookController::class, 'index'])->name('books.index');
+        Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
+    });
+
+    Route::group([
+        'prefix' => 'authors'
+    ], function () {
+        Route::get('/', [AuthorController::class, 'index'])->name('authors.index');
+        Route::get('/{author}', [AuthorController::class, 'show'])->name('authors.show');
+    });
+
+    Route::group([
+        'prefix' => 'publishers'
+    ], function () {
+        Route::get('/', [PublisherController::class, 'index'])->name('publishers.index');
+        Route::get('/{publisher}', [PublisherController::class, 'show'])->name('publishers.show');
+    });
+
+    Route::group([
+        'prefix' => 'genres'
+    ], function () {
+        Route::get('/', [GenreController::class, 'index'])->name('genres.index');
+        Route::get('/{genre}', [GenreController::class, 'show'])->name('genres.show');
+    });
+
+    Route::group([
+        'prefix' => 'cart'
+    ], function () {
+        Route::get('/get', [ShoppingCartController::class, 'getCart'])->name('cart.get');
+        Route::post('/add-to-cart', [ShoppingCartController::class, 'addToCart'])->name('cart.add');
+        Route::put('/update', [ShoppingCartController::class, 'updateCart'])->name('cart.update');
+        Route::put('/remove', [ShoppingCartController::class, 'removeFromCart'])->name('cart.remove');
+        Route::put('/clear', [ShoppingCartController::class, 'clearCart'])->name('cart.clear');
+        Route::put('/add-checked-item', [ShoppingCartController::class, 'addCheckedItem'])->name('cart.addCheckedItems');
+        Route::put('/add-all-checked-item', [ShoppingCartController::class, 'addAllCheckedItem'])->name('cart.addAllCheckedItems');
+    });
+
+    Route::group([
+        'prefix' => 'checkout'
+    ], function () {
+        Route::post('/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
+        Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 });
 /* End of User Routes */

@@ -145,7 +145,6 @@ class AuthController extends Controller
             $request->authenticate();
 
             $user = $request->user();
-
             // get active user
             $user = User::with('roles')->find($user->id);
             $is_active = false;
