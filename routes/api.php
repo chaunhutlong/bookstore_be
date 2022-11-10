@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
+use App\Http\Controllers\Api\SearchController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -117,8 +118,8 @@ Route::group([
     Route::group([
         'prefix' => 'genres'
     ], function () {
-        Route::get('/', [GenreController::class, 'index'])->name('genres.index');
-        Route::get('/{genre}', [GenreController::class, 'show'])->name('genres.show');
+        Route::get('/', [GenresController::class, 'index'])->name('genres.index');
+        Route::get('/{genre}', [GenresController::class, 'show'])->name('genres.show');
     });
 
     Route::group([
@@ -142,3 +143,14 @@ Route::group([
 });
 /* End of User Routes */
 /* -------------------------------------------------------------------------- */
+
+
+/* Search Routes */
+Route::group([
+    'prefix' => 'search'
+], function () {
+    Route::get('/books', [SearchController::class, 'searchBooks'])->name('search.books');
+    Route::get('/authors', [SearchController::class, 'searchAuthors'])->name('search.authors');
+    Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
+    Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
+});
