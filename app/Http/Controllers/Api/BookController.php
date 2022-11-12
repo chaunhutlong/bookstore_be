@@ -24,8 +24,13 @@ class BookController extends Controller
     {
         $perPage = $request->input('per_page', 10);
 
-        $books = Book::with('genres')->paginate($perPage);
-
+        // check if the request has a search query
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $books = Book::search($search)->paginate($perPage);
+        } else {
+            $books = Book::paginate($perPage);
+        }
         return response()->json(new BookCollection($books), 200);
     }
 

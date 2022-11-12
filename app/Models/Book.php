@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 
 class Book extends Model
 {
+    use HasFactory;
+    use Searchable;
     protected $fillable = ['name', 'available_quantity', 'isbn', 'language', 'total_pages', 'price', 'book_image', 'description', 'published_date', 'publisher_id'];
 
     /**
@@ -53,5 +57,16 @@ class Book extends Model
     public function carts()
     {
         return $this->hasMany(Cart::class, 'book_id');
+    }
+
+    public function toSearchableArray()
+    {
+        // search only name and description
+        $array = $this->only('name', 'description');
+
+        // add the genres
+        $array['genres'] = $this->genres->pluck('name')->toArray();
+
+        return $array;
     }
 }
