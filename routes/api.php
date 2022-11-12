@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\UserManagementController;
+use App\Http\Controllers\Api\OrderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -92,4 +93,14 @@ Route::group([
     });
 });
 /* End of User Routes */
+/* -------------------------------------------------------------------------- */
+
+
+/* Order Routes */
+Route::group([
+    'middleware' => ['auth:sanctum', 'active'],
+], function () {
+        Route::apiResource('/orders', OrderController::class);
+});
+/* End of Order Routes */
 /* -------------------------------------------------------------------------- */
