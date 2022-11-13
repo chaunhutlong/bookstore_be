@@ -33,7 +33,16 @@ class AuthorController extends Controller
         DB::beginTransaction();
         try {
 
-            $validator = Validator::make($request->all(), ['name' => 'string|required|max:255']);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'string|required|max:255',
+                    'bio' => 'string',
+                    'address' => 'string',
+                    'phone' => 'string',
+                    'email' => 'string|email',
+                ]
+            );
 
             $data = $validator->validated();
 
@@ -69,7 +78,13 @@ class AuthorController extends Controller
     {
         DB::beginTransaction();
         try {
-            $validator = Validator::make($request->all(), ['name' => 'string|required|max:255']);
+            $validator = Validator::make($request->all(), [
+                'name' => 'string',
+                'bio' => 'string',
+                'address' => 'string',
+                'phone' => 'string',
+                'email' => 'string|email',
+            ]);
 
             $data = $validator->validated();
 
