@@ -11,34 +11,47 @@ class Book extends Model
     /**
      * @return BelongsToMany
      */
-    public function authors () {
+    public function authors()
+    {
         return $this->belongsToMany(Author::class, 'books_authors')->using(BookAuthor::class);
     }
 
     /**
      * @return BelongsToMany
      */
-    public function genres () {
+    public function genres()
+    {
         return $this->belongsToMany(Genre::class, 'books_genres');
     }
 
     /**
      * @return BelongsToMany
      */
-    public function discounts () {
+    public function discounts()
+    {
         return $this->belongsToMany(Discount::class, 'books_discounts');
     }
     /**
      * @return BelongsTo
      */
-    public function publisher () {
+    public function publisher()
+    {
         return $this->belongsTo(Publisher::class);
     }
 
     /**
      * @return HasMany
      */
-    public function orderDetails () {
+    public function orderDetails()
+    {
         return $this->hasMany(OrderDetail::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'book_id');
     }
 }

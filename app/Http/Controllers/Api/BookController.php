@@ -19,6 +19,7 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 10);
