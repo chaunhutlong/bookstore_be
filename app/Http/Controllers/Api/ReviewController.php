@@ -18,6 +18,37 @@ class ReviewController extends Controller
      * @param Book $book
      * @return \Illuminate\Http\Response
      */
+    /**
+     * @QA/get(
+     *      path="/api/books/{book}/reviews",
+     *      summary="Get reviews of a book",
+     *      description="Return reviews of a book",
+     *      tags={"Reviews"},
+     *      @OA\Parameter(
+     *          name="book",
+     *          in="path",
+     *          description="Book id",
+     *          required=true,
+     *          @OA\Schema(
+     *          type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
+     *      ),
+     *      @QA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @QA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *       )
+     *      )
+     */
+
     public function index($book)
     {
         DB::beginTransaction();
@@ -39,10 +70,42 @@ class ReviewController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
     /**
      * Display a listing of the resource.
      * @return \Illuminate\Http\Response
      */
+    /**
+     *  @QA/get(
+     *      path="/api/books/{book}/review",
+     *      summary="Get review of a book",
+     *      description="Return review of a book",
+     *      tags={"Review"},
+     *      @OA\Parameter(
+     *          name="book",
+     *          in="path",
+     *          description="Book id",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @QA\JsonContent(ref="#/components/schemas/ReviewResource")
+     *      ),
+     *      @QA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @QA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *      )
+     *  )
+     */
+
     public function getReview($book)
     {
         DB::beginTransaction();
@@ -66,6 +129,40 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
+     */
+    /**
+     *  @QA\Post(
+     *      path="/api/books/{book}/review",
+     *      summary="Create or update review of a book",
+     *      description="Create or update review of a book",
+     *      tags={"Review"},
+     *      @OA\Parameter(
+     *          name="book",
+     *          in="path",
+     *          description="Book id",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/Review")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Review")
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *      )
+     *  )
      */
 
     public function createOrUpdateReview(Request $request, $book)
@@ -104,6 +201,49 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
+    /**
+     *  @QA\Delete(
+     *      path="/api/books/{book}/reviews/{review}",
+     *      summary="Delete review of a book",
+     *      description="Delete review of a book",
+     *      tags={"Review"},
+     *      @OA\Parameter(
+     *          name="book",
+     *          in="path",
+     *          description="Book id",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="review",
+     *          in="path",
+     *          description="Review id",
+     *          required=true,
+     *          @OA\Schema(
+     *          type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Successful operation",
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @QA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *      ),
+     *      @QA\Response(
+     *          response=404,
+     *          description="Resource Not Found",
+     *      )
+     *  )
+     */
+
     public function destroy($book, $review)
     {
         DB::beginTransaction();
