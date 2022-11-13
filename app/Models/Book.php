@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
-    protected $fillable = ['name', 'available_quantity', 'isbn', 'language', 'total_pages', 'price', 'book_image', 'description', 'published_date', 'publisher_id'];
+    protected $fillable = [
+        'name', 'available_quantity', 'isbn',
+        'language', 'total_pages', 'price', 'book_image',
+        'description', 'published_date', 'publisher_id'
+    ];
 
     /**
      * @return BelongsToMany

@@ -238,7 +238,7 @@ class PublisherController extends Controller
             ], 202);
         } catch (\Exception $e) {
             DB::rollback();
-            return response(['error' => $e->getMessage()], 500);;
+            return response(['error' => $e->getMessage()], 500);
         }
     }
 
