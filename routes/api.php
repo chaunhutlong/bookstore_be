@@ -105,7 +105,7 @@ Route::group([
         Route::get('/', [BookController::class, 'index'])->name('books.index');
         Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
         Route::post(
-            '/{books}/review',
+            '/{book}/review',
             [
                 ReviewController::class,
                 'createOrUpdateReview'

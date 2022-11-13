@@ -53,11 +53,12 @@ class ReviewController extends Controller
     {
         DB::beginTransaction();
         try {
-            $reviews = Review::where('book_id', $book)->get();
-
-            foreach ($reviews as $review) {
-                $name = User::select('name')->where('id', $review->user_id)->first();
-                $review->user_name = $name->name;
+            $reviews = Review::with('user:id')->where('book_id', $book)->get();
+            if ($reviews) {
+                foreach ($reviews as $rev) {
+                    $user = User::findOrFail($rev->user_id);
+                    $rev->user_name = $user->name;
+                }
             }
 
             DB::commit();
@@ -112,10 +113,15 @@ class ReviewController extends Controller
         try {
             $user = auth()->user();
 
-            $review = Review::where('user_id', $user->id)->where('book_id', $book)->first();
+            $review = Review::where('user_id', $user->id)->where('book_id', $book)->get();
 
+            foreach ($review as $rev) {
+                $rev->user_name = $user->name;
+            }
+
+            DB::commit();
             return response([
-                'reviews' => ReviewResource::collection($review),
+                'review' => ReviewResource::collection($review),
                 'message' => 'Retrieved successfully'
             ], 200);
         } catch (\Exception $e) {
