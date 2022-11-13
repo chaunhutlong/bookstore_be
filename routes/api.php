@@ -97,15 +97,6 @@ Route::group([
         Route::get('/profile', [UserController::class, 'getProfile'])->name('users.getProfile');
         Route::post('/profile', [UserController::class, 'createOrUpdateProfile'])->name('users.createOrUpdateProfile');
         Route::put('/password', [UserController::class, 'updatePassword'])->name('user.password.update');
-        Route::post(
-            '/{books}/reviews',
-            [
-                ReviewController::class,
-                'createOrUpdateReview'
-            ]
-        )->name('users.review.createOrUpdateReview');
-        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('users.review.getReview');
-        Route::get('/{book}/reviews', [ReviewController::class, 'index'])->name('users.review.index');
     });
 
     Route::group([
@@ -113,6 +104,19 @@ Route::group([
     ], function () {
         Route::get('/', [BookController::class, 'index'])->name('books.index');
         Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
+        Route::post(
+            '/{books}/review',
+            [
+                ReviewController::class,
+                'createOrUpdateReview'
+            ]
+        )->name('users.review.createOrUpdateReview');
+        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('users.review.getReview');
+        Route::get('/{book}/reviews', [ReviewController::class, 'index'])->name('users.review.index');
+        Route::delete(
+            '/{book}/reviews/{review}',
+            [ReviewController::class, 'destroy']
+        )->name('users.review.deleteReview');
     });
 
     Route::group([
@@ -169,11 +173,11 @@ Route::group([
 
 
 /* Search Routes */
-Route::group([
-    'prefix' => 'search'
-], function () {
-    Route::get('/books', [SearchController::class, 'searchBooks'])->name('search.books');
-    Route::get('/authors', [SearchController::class, 'searchAuthors'])->name('search.authors');
-    Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
-    Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
-});
+// Route::group([
+//     'prefix' => 'search'
+// ], function () {
+//     Route::get('/books', [SearchController::class, 'searchBooks'])->name('search.books');
+//     Route::get('/authors', [SearchController::class, 'searchAuthors'])->name('search.authors');
+//     Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
+//     Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
+// });

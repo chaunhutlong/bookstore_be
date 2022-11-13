@@ -14,7 +14,7 @@ class Review extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'id');
     }
 
     /**
@@ -22,6 +22,6 @@ class Review extends Model
      */
     public function book()
     {
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class, 'id');
     }
 }

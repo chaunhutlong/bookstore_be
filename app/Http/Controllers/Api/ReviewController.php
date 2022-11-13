@@ -6,6 +6,7 @@ use App\Http\Resources\ReviewResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Models\Review;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
@@ -22,15 +23,15 @@ class ReviewController extends Controller
         DB::beginTransaction();
         try {
             $reviews = Review::where('book_id', $book)->get();
-            // $name = DB::table('users')->select('name')->where('id', $reviews->user_id)->get();
-            // $reviews->load(['user' => function ($query) {
-            //     $query->select('name')->where('id', 'user_id');
-            // }]);
+
+            foreach ($reviews as $review) {
+                $name = User::select('name')->where('id', $review->user_id)->first();
+                $review->user_name = $name->name;
+            }
 
             DB::commit();
             return response([
                 'reviews' => ReviewResource::collection($reviews),
-                // 'name' => $name,
                 'message' => 'Retrieved successfully'
             ], 200);
         } catch (\Exception $e) {
@@ -51,7 +52,7 @@ class ReviewController extends Controller
             $review = Review::where('user_id', $user->id)->where('book_id', $book)->first();
 
             return response([
-                'reviews' => new ReviewResource($review),
+                'reviews' => ReviewResource::collection($review),
                 'message' => 'Retrieved successfully'
             ], 200);
         } catch (\Exception $e) {
@@ -79,19 +80,40 @@ class ReviewController extends Controller
             ]);
 
             $data = $validator->validated();
-
             $review = Review::updateOrCreate(
                 [
                     'user_id' => auth()->user()->id,
-                    'book_id' => $book->id
+                    'book_id' => $book->id,
                 ],
                 $data
             );
 
             DB::commit();
             return response([
-                'user_info' => new ReviewResource($review),
+                'review' => new ReviewResource($review),
                 'message' => 'Review created successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param  \App\Models\Review  $review
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($book, $review)
+    {
+        DB::beginTransaction();
+        try {
+            $review = Review::where('book_id', $book)->where('id', $review)->first();
+            $review->delete();
+
+            DB::commit();
+            return response([
+                'message' => 'Review deleted successfully'
             ]);
         } catch (\Exception $e) {
             DB::rollback();

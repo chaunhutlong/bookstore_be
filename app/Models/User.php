@@ -152,7 +152,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function activeRoles()
     {
-        return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id')->withTimeStamps()->wherePivot('active', true);
+        return $this->belongsToMany(
+            Role::class,
+            'roles_users',
+            'user_id',
+            'role_id'
+        )->withTimeStamps()->wherePivot('active', true);
     }
 
     public function sendPasswordResetNotification($token)
