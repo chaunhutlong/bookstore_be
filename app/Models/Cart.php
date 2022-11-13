@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
 {
-    protected $fillable = ['user_id', 'book_id', 'quantity', 'price'];
+    protected $fillable = ['user_id', 'book_id', 'quantity', 'price', 'is_checked'];
 
     /**
      * @return BelongsTo
