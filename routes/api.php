@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\SearchController;
 /*
 |--------------------------------------------------------------------------
@@ -137,7 +138,7 @@ Route::group([
     Route::group([
         'prefix' => 'checkout'
     ], function () {
-        Route::post('/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
+        Route::get('/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 });

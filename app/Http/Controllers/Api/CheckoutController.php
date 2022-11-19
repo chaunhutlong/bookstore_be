@@ -21,4 +21,15 @@ class CheckoutController extends Controller
             'total' => $total
         ]);
     }
+
+    public function confirmPayment() {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $data = [
+          'name' => 'payment',
+          'type' => 1,
+          'status' => 2,
+          'paid_on' => time(),
+
+        ];
+    }
 }
