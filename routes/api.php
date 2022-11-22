@@ -137,7 +137,6 @@ Route::group([
     Route::group([
         'prefix' => 'checkout'
     ], function () {
-        Route::post('/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 });
