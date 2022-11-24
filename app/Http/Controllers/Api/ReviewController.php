@@ -19,7 +19,7 @@ class ReviewController extends Controller
      * @return \Illuminate\Http\Response
      */
     /**
-     * @QA/get(
+     * @OA/get(
      *      path="/api/books/{book}/reviews",
      *      summary="Get reviews of a book",
      *      description="Return reviews of a book",
