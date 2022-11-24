@@ -12,8 +12,9 @@ use App\Enums\CheckoutType;
 
 class CheckoutController extends Controller
 {
-    private function total($user_id) {
-        $cart = Cart::where('user_id', $user_id)->where('is_checked',1)->get();
+    private function total($user_id)
+    {
+        $cart = Cart::where('user_id', $user_id)->where('is_checked', 1)->get();
         $total = 0;
         foreach ($cart as $item) {
             $total += $item->price * $item->quantity;
@@ -21,19 +22,21 @@ class CheckoutController extends Controller
         return $total;
     }
 
-    private function randomString($length) {
+    private function randomString($length)
+    {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $characterLen = strlen($characters);
         $randomString = "";
         while ($randomString == "" || Payment::where('name', $randomString)->exists()) {
             for ($i = 0; $i < $length; $i++) {
-                $randomString .= $characters[rand(0, $characterLen-1)];
+                $randomString .= $characters[rand(0, $characterLen - 1)];
             }
         }
         return $randomString;
     }
 
-    public function confirmPayment(Request $request) {
+    public function confirmPayment(Request $request)
+    {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         try {
             DB::beginTransaction();

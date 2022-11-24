@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('shippings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('id_shipping');
             $table->unsignedBigInteger('order_id');
             $table->string('name');
             $table->string('address');
