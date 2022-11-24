@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\GoogleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -36,7 +37,11 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
     Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
+    Route::get('/google/url', [GoogleController::class, 'loginUrl'])->name('auth.google.url');
+    Route::get('/google/callback', [GoogleController::class, 'loginCallback'])->name('auth.google.callback');
 });
+
+
 /* End of Auth Routes */
 /* -------------------------------------------------------------------------- */
 
@@ -153,3 +158,4 @@ Route::group([
     Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
     Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
 });
+
