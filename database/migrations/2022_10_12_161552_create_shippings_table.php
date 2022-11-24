@@ -15,12 +15,14 @@ return new class extends Migration
     {
         Schema::create('shippings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('order_id');
             $table->string('name');
             $table->string('address');
             $table->string('phone');
             $table->date('shipping_on');
             $table->string('description');
             $table->timestamps();
+            $table->foreign('order_id')->references('id')->on('orders');
         });
     }
 
