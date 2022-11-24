@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BookCollection;
 use App\Models\Book;
 use App\Models\Genre;
+use App\Models\Author;
 use Illuminate\Http\Request;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Validator;
@@ -50,17 +51,27 @@ class BookController extends Controller
                 'published_date' => 'required|date',
                 'publisher_id' => 'required|integer',
                 'genres' => 'required|integer',
+                'authors' => 'required|integer',
             ]);
 
             $data = $validator->validated();
 
             $genres = $data['genres'];
+            $authors = $data['authors'];
 
             // check genre in table genres
             foreach ($genres as $genre_id) {
                 $genre = Genre::where('id', $genre_id)->first();
                 if (!$genre) {
                     return response(['error' => 'Genre not found'], 404);
+                }
+            }
+
+            // check author in table authors
+            foreach ($authors as $author_id) {
+                $author = Author::where('id', $author_id)->first();
+                if (!$author) {
+                    return response(['error' => 'Author not found'], 404);
                 }
             }
 
