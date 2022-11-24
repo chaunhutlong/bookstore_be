@@ -166,6 +166,7 @@ Route::group([
             CheckoutController::class,
             'confirmPayment'
         ])->name('checkout.payment.confirm');
+        Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 });
 /* End of User Routes */
