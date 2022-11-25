@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Enums\CheckoutType;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\ShoppingCartController;
 use App\Models\Discount;
 
 
@@ -29,6 +30,13 @@ class CheckoutController extends Controller
         $cart = Cart::where('user_id', $user_id)->where('is_checked',1)->get();
         foreach ($cart as $item) {
             BookController::reduce($item->book_id, $item->quantity);
+        }
+    }
+
+    private function removeFromCart($user_id) {
+        $cart = Cart::where('user_id', $user_id)->where('is_checked',1)->get();
+        foreach ($cart as $item) {
+            ShoppingCartController::deleteAfterCheckout($item->book_id);
         }
     }
 
@@ -58,6 +66,7 @@ class CheckoutController extends Controller
             ];
             $payment = Payment::create($data);
             self::reduceBookQuantity($user_id);
+            self::removeFromCart($user_id);
             DB::commit();
             return response()->json([
                 'payment' => $payment
