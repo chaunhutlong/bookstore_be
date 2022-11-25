@@ -20,7 +20,7 @@ class ReviewController extends Controller
      */
     /**
      * @OA/get(
-     *      path="/api/books/{book}/reviews",
+     *      path="/api/reviews/{book}/",
      *      summary="Get reviews of a book",
      *      description="Return reviews of a book",
      *      tags={"Reviews"},
@@ -78,7 +78,7 @@ class ReviewController extends Controller
      */
     /**
      *  @QA/get(
-     *      path="/api/books/{book}/review",
+     *      path="/api/reviews/{book}/review",
      *      summary="Get review of a book",
      *      description="Return review of a book",
      *      tags={"Review"},
@@ -138,7 +138,7 @@ class ReviewController extends Controller
      */
     /**
      *  @QA\Post(
-     *      path="/api/books/{book}/review",
+     *      path="/api/reviews/{book}/review",
      *      summary="Create or update review of a book",
      *      description="Create or update review of a book",
      *      tags={"Review"},
@@ -209,7 +209,7 @@ class ReviewController extends Controller
      */
     /**
      *  @QA\Delete(
-     *      path="/api/books/{book}/reviews/{review}",
+     *      path="/api/reviews/{book}/{review}",
      *      summary="Delete review of a book",
      *      description="Delete review of a book",
      *      tags={"Review"},
