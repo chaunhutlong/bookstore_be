@@ -274,4 +274,10 @@ class ShoppingCartController extends Controller
         $cartItem = Cart::where('book_id', $book_id);
         $cartItem->delete();
     }
+
+    public static function isEmpty($user_id) {
+        $cartQuantity = Cart::where('user_id', $user_id)->count();
+        if ($cartQuantity == 0) return true;
+        return false;
+    }
 }

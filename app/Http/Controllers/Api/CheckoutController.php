@@ -45,12 +45,15 @@ class CheckoutController extends Controller
         try {
             DB::beginTransaction();
             $user_id = auth()->user()->id;
+            if (ShoppingCartController::isEmpty($user_id)) {
+                return response()->json(['message' => 'Your cart is empty!']);
+            }
             $totalPrice = self::total($user_id);
             $discountValue = 0;
             $discount_id = null;
             if ($request->discount_id != null) {
                 $discount_id = $request->discount_id;
-                if (DiscountController::isAvailable($discount_id)) {
+                if (DiscountController::isAvailable($discount_id) && !DiscountController::isExpired($discount_id)) {
                     $discountValue = Discount::where('id',$discount_id)->value('value');
                     DiscountController::reduce($discount_id);
                 }

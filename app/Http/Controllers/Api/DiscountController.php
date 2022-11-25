@@ -297,6 +297,14 @@ class DiscountController extends Controller
         return false;
     }
 
+    public static function isExpired($discount_id) {
+        $startDate = Discount::where('id',$discount_id)->value('start_date');
+        $endDate = Discount::where('id',$discount_id)->value('end_date');
+        $currentDate = date('Y-m-d', time());
+        if ($currentDate <= $endDate && $currentDate >= $startDate) return false;
+        return true;
+    }
+
     public static function reduce($discount_id) {
         $quantity = Discount::where('id',$discount_id)->value('quantity');
         Discount::where('id',$discount_id)->update(['quantity' => $quantity - 1]);
