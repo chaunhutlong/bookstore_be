@@ -9,20 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['user_id', 'payment_id', 'shipping_id', 'status', 'order_on'];
+    protected $fillable = ['user_id', 'payment_id', 'status', 'order_on'];
 
     /**
      * @return belongsTo
      */
     public function payment() {
         return $this->belongsTo(Payment::class);
-    }
-
-    /**
-     * @return belongsTo
-     */
-    public function shipping() {
-        return $this->belongsTo(Shipping::class);
     }
 
     /**

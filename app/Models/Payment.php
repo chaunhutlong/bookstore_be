@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     use HasFactory;
-    protected $fillable = ['type', 'status', 'before_discount' ,'discount_id', 'after_discount', 'paid_on', 'description'];
+    protected $fillable = ['type', 'status', 'total_book_price' ,'discount_id', 'shipping_id', 'total', 'paid_on', 'description'];
     public $timestamps = false;
     /**
      * @return hasOne
@@ -22,5 +22,12 @@ class Payment extends Model
      */
     public function discount() {
         return $this->hasOne(Discount::class);
+    }
+
+    /**
+     * @return hasOne
+     */
+    public function shipping() {
+        return $this->hasOne(Shipping::class);
     }
 }
