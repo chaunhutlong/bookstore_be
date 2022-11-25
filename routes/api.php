@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\GoogleController;
+use App\Http\Controllers\Api\ReviewController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -144,10 +145,24 @@ Route::group([
     ], function () {
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
+
+    Route::group([
+        'prefix' => 'reviews'
+    ], function () {
+        Route::post('/{book}/review', [ReviewController::class, 'createOrUpdateReview'])->name('review.createOrUpdateReview');
+        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('review.getReview');
+        Route::delete('/{book}/{review}', [ReviewController::class, 'destroy'])->name('review.deleteReview');
+    });
 });
 /* End of User Routes */
 /* -------------------------------------------------------------------------- */
 
+/* Review Routes */
+Route::group([
+    'prefix' => 'reviews'
+], function () {
+    Route::get('/{book}/', [ReviewController::class, 'index'])->name('review.index');
+});
 
 /* Search Routes */
 Route::group([
@@ -158,4 +173,3 @@ Route::group([
     Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
     Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
 });
-
