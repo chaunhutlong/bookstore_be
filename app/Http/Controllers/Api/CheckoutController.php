@@ -10,6 +10,7 @@ use App\Models\Cart;
 use Illuminate\Support\Facades\DB;
 use App\Enums\CheckoutType;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\BookController;
 use App\Models\Discount;
 
 
@@ -24,11 +25,19 @@ class CheckoutController extends Controller
         return $total;
     }
 
+    private function reduceBookQuantity($user_id) {
+        $cart = Cart::where('user_id', $user_id)->where('is_checked',1)->get();
+        foreach ($cart as $item) {
+            BookController::reduce($item->book_id, $item->quantity);
+        }
+    }
+
     public function confirmPayment(Request $request) {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         try {
             DB::beginTransaction();
-            $totalPrice = self::total(auth()->user()->id);
+            $user_id = auth()->user()->id;
+            $totalPrice = self::total($user_id);
             $discountValue = 0;
             $discount_id = null;
             if ($request->discount_id != null) {
@@ -48,6 +57,7 @@ class CheckoutController extends Controller
                 'description' => $request->description
             ];
             $payment = Payment::create($data);
+            self::reduceBookQuantity($user_id);
             DB::commit();
             return response()->json([
                 'payment' => $payment
