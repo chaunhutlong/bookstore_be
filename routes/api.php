@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ShippingController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -138,6 +140,14 @@ Route::group([
         'prefix' => 'checkout'
     ], function () {
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
+    });
+
+    Route::group([
+        'prefix' => 'shipping'
+    ], function () {
+        Route::get('/get', [ShippingController::class, 'getShipping'])->name('shipping.get');
+        Route::post('/add', [ShippingController::class, 'createShipping'])->name('shipping.add');
+        Route::put('/remove', [ShippingController::class, 'destroyShipping'])->name('shipping.remove');
     });
 });
 /* End of User Routes */
