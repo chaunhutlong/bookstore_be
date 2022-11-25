@@ -292,13 +292,13 @@ class DiscountController extends Controller
     }
 
     public static function isAvailable($discount_id) {
-        $discountQuantity = Discount::find($discount_id)->value('quantity');
+        $discountQuantity = Discount::where('id',$discount_id)->value('quantity');
         if ($discountQuantity > 0) return true;
         return false;
     }
 
     public static function reduce($discount_id) {
-        $quantity = Discount::find($discount_id)->value('quantity');
-        Discount::find($discount_id)->update(['quantity' => $quantity - 1]);
+        $quantity = Discount::where('id',$discount_id)->value('quantity');
+        Discount::where('id',$discount_id)->update(['quantity' => $quantity - 1]);
     }
 }

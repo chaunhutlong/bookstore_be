@@ -34,7 +34,7 @@ class CheckoutController extends Controller
             if ($request->discount_id != null) {
                 $discount_id = $request->discount_id;
                 if (DiscountController::isAvailable($discount_id)) {
-                    $discountValue = Discount::find($discount_id)->value('value');
+                    $discountValue = Discount::where('id',$discount_id)->value('value');
                     DiscountController::reduce($discount_id);
                 }
             }
