@@ -30,10 +30,13 @@ class CheckoutController extends Controller
             DB::beginTransaction();
             $totalPrice = self::total(auth()->user()->id);
             $discountValue = 0;
-            $discount_id = $request->discount_id;
-            if (DiscountController::isAvailable($discount_id)) {
-                $discountValue = Discount::find($discount_id)->value('value');
-                DiscountController::reduce($discount_id);
+            $discount_id = null;
+            if ($request->discount_id != null) {
+                $discount_id = $request->discount_id;
+                if (DiscountController::isAvailable($discount_id)) {
+                    $discountValue = Discount::find($discount_id)->value('value');
+                    DiscountController::reduce($discount_id);
+                }
             }
             $data = [
                 'type' => $request->type,
