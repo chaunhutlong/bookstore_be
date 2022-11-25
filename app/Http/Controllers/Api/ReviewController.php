@@ -53,7 +53,8 @@ class ReviewController extends Controller
     {
         DB::beginTransaction();
         try {
-            $reviews = Review::with('user:id')->where('book_id', $book)->get();
+            $reviews = Review::with('user:id,name')->where('book_id', $book)->get();
+
             if ($reviews) {
                 foreach ($reviews as $rev) {
                     $user = User::findOrFail($rev->user_id);
