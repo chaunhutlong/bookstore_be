@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\GoogleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,11 +38,12 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
-    Route::post(
-        '/reset-password',
-        [NewPasswordController::class, 'resetPassword']
-    )->name('password.update')->middleware('auth:sanctum');
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
+    Route::get('/google/url', [GoogleController::class, 'loginUrl'])->name('auth.google.url');
+    Route::get('/google/callback', [GoogleController::class, 'loginCallback'])->name('auth.google.callback');
 });
+
+
 /* End of Auth Routes */
 /* -------------------------------------------------------------------------- */
 
@@ -104,21 +106,17 @@ Route::group([
     ], function () {
         Route::get('/', [BookController::class, 'index'])->name('books.index');
         Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
-        Route::post(
-            '/{book}/review',
-            [
-                ReviewController::class,
-                'createOrUpdateReview'
-            ]
-        )->name('users.review.createOrUpdateReview');
-        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('users.review.getReview');
-        Route::get('/{book}/reviews', [ReviewController::class, 'index'])->name('users.review.index');
-        Route::delete(
-            '/{book}/reviews/{review}',
-            [ReviewController::class, 'destroy']
-        )->name('users.review.deleteReview');
     });
 
+    Route::group([
+      'prefix' => 'reviews'
+    ], function(){
+        Route::post('/{book}/review', [ReviewController::class, 'createOrUpdateReview'])->name('users.review.createOrUpdateReview');
+        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('users.review.getReview');
+        Route::get('/{book}/', [ReviewController::class, 'index'])->name('users.review.index');
+        Route::delete('/{book}/{review}',[ReviewController::class, 'destroy'])->name('users.review.deleteReview');
+    });
+     
     Route::group([
         'prefix' => 'authors'
     ], function () {
@@ -172,13 +170,21 @@ Route::group([
 /* End of User Routes */
 /* -------------------------------------------------------------------------- */
 
+/* Reviews Routes */
+Route::group([
+    'prefix' => 'reviews'
+], function(){
+    Route::get('/{book}/', [ReviewController::class, 'index'])->name('users.review.index');
+});
+
 
 /* Search Routes */
-// Route::group([
-//     'prefix' => 'search'
-// ], function () {
-//     Route::get('/books', [SearchController::class, 'searchBooks'])->name('search.books');
-//     Route::get('/authors', [SearchController::class, 'searchAuthors'])->name('search.authors');
-//     Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
-//     Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
-// });
+Route::group([
+    'prefix' => 'search'
+], function () {
+    Route::get('/books', [SearchController::class, 'searchBooks'])->name('search.books');
+    Route::get('/authors', [SearchController::class, 'searchAuthors'])->name('search.authors');
+    Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
+    Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
+});
+

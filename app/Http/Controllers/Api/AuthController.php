@@ -77,7 +77,7 @@ class AuthController extends Controller
             // get active user
             $is_active = false;
             foreach ($user->roles as $role) {
-                if ($role->is_active) {
+                if ($role->pivot->active) {
                     $is_active = true;
                     break;
                 }
