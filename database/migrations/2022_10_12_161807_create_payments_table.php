@@ -15,12 +15,14 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
             $table->tinyInteger('type');
             $table->tinyInteger('status');
-            $table->float('value')->nullable();
+            $table->float('before_discount');
+            $table->unsignedBigInteger('discount_id')->nullable();
+            $table->float('after_discount');
             $table->date('paid_on')->nullable();
             $table->string('description')->nullable();
+            $table->foreign('discount_id')->references('id')->on('discounts');
         });
     }
 

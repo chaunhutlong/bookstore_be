@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookCollection;
 use App\Models\Book;
 use App\Models\Genre;
+use App\Models\Author;
 use Illuminate\Http\Request;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -17,10 +20,14 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+
+    public function index(Request $request)
     {
-        $books = Book::all();
-        return response(['books' => BookResource::collection($books), 'message' => 'Retrieved successfully'], 200);
+        $perPage = $request->input('per_page', 10);
+
+        $books = Book::with('genres')->paginate($perPage);
+
+        return response()->json(new BookCollection($books), 200);
     }
 
     /**
@@ -40,20 +47,40 @@ class BookController extends Controller
                 'language' => 'required|string|max:25',
                 'total_pages' => 'required|integer',
                 'price' => 'required|numeric',
-                'book_image' => 'required|string',
+                'book_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'published_date' => 'required|date',
                 'publisher_id' => 'required|integer',
+                'genres' => 'required|integer',
+                'authors' => 'required|integer',
             ]);
 
             $data = $validator->validated();
 
             $genres = $data['genres'];
+            $authors = $data['authors'];
+
             // check genre in table genres
             foreach ($genres as $genre_id) {
                 $genre = Genre::where('id', $genre_id)->first();
                 if (!$genre) {
                     return response(['error' => 'Genre not found'], 404);
                 }
+            }
+
+            // check author in table authors
+            foreach ($authors as $author_id) {
+                $author = Author::where('id', $author_id)->first();
+                if (!$author) {
+                    return response(['error' => 'Author not found'], 404);
+                }
+            }
+
+            // add book_image to storage
+            if ($request->hasFile('book_image') && $request->file('book_image')->isValid()) {
+                $bookImage = $request->file('book_image');
+                $bookImageName = time() . '.' . $bookImage->getClientOriginalExtension();
+                $bookImagePath = $bookImage->storeAs('book_images', $bookImageName, 'public');
+                $data['book_image'] = $bookImagePath;
             }
 
             $book = Book::create($data);
@@ -90,9 +117,49 @@ class BookController extends Controller
     {
         DB::beginTransaction();
         try {
-            $validator = Validator::make($request->all(), ['name' => 'string|required|255']);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'string|max:255',
+                    'available_quantity' => 'integer',
+                    'isbn' => 'string|max:20',
+                    'language' => 'string|max:25',
+                    'total_pages' => 'integer',
+                    'price' => 'numeric',
+                    'book_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                    'published_date' => 'date',
+                    'publisher_id' => 'integer',
+                    'genres' => 'integer',
+                ]
+            );
 
             $data = $validator->validated();
+
+            $genres = $data['genres'];
+
+            // check genre in table genres
+            foreach ($genres as $genre_id) {
+                $genre = Genre::where('id', $genre_id)->first();
+                if (!$genre) {
+                    return response(['error' => 'Genre not found'], 404);
+                }
+            }
+
+            // add genres to table book_genre
+            $book->genres()->sync($genres);
+
+
+            // add book_image to storage and delete old book_image
+            if ($request->hasFile('book_image') && $request->file('book_image')->isValid()) {
+                $bookImage = $request->file('book_image');
+                $bookImageName = time() . '.' . $bookImage->getClientOriginalExtension();
+                $bookImagePath = $bookImage->storeAs('book_images', $bookImageName, 'public');
+                $data['book_image'] = $bookImagePath;
+                $oldBookImage = $book->book_image;
+                if ($oldBookImage && Storage::disk('public')->exists($oldBookImage)) {
+                    Storage::disk('public')->delete($oldBookImage);
+                }
+            }
 
             $book->update($data);
 

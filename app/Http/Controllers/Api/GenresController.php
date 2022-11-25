@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 
-class Genrecontroller extends Controller
+class GenresController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -91,11 +91,13 @@ class Genrecontroller extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
+                'description' => 'string',
             ]);
 
             $data = $validator->validated();
 
             $genre = Genre::create($data);
+            DB::commit();
 
             return response(['genre' => new GenreResource($genre), 'message' => 'Genre created successfully']);
         } catch (\Exception $e) {
@@ -207,11 +209,11 @@ class Genrecontroller extends Controller
         DB::beginTransaction();
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|max:50',
-                'description' => 'required|max:255'
+                'name' => 'string|max:255',
+                'description' => 'string'
             ]);
 
-            $data = $validator->validatedd();
+            $data = $validator->validated();
 
             $genre->update($data);
             DB::commit();

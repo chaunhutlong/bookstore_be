@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['user_id', 'discount_id', 'payment_id', 'shipping_id', 'status', 'order_on'];
+    protected $fillable = ['user_id', 'payment_id', 'shipping_id', 'status', 'order_on'];
 
     /**
      * @return belongsTo
@@ -30,13 +30,6 @@ class Order extends Model
      */
     public function user() {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * @return belongsTo
-     */
-    public function discount() {
-        return $this->belongsTo(Discount::class);
     }
 
     /**

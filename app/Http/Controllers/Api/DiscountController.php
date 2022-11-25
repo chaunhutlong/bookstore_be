@@ -20,7 +20,7 @@ class DiscountController extends Controller
      */
 
     /**
-     * @QA\Get(
+     * @OA\Get(
      *      path="/discounts",
      *      operationId="getDiscountsList",
      *      tags={"discounts"},
@@ -38,8 +38,8 @@ class DiscountController extends Controller
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden"
-     *      )
-     * ),
+     *      ),
+     *    )
      */
     public function index()
     {
@@ -59,31 +59,36 @@ class DiscountController extends Controller
      */
 
     /**
-     * @QA\Post(
+     * @OA\Post(
      *      path="/discounts",
      *      operationId="storeDiscount",
      *      tags={"discounts"},
      *      summary="Store new discount",
-     *     description="Returns discount data",
+     *      description="Returns discount data",
      *      @OA\RequestBody(
-     *         required=true,
-     *        @OA\JsonContent(ref="#/components/schemas/Discount")
-     *     ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Discount")
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreDiscountRequest")
      *      ),
-     *     @OA\Response(
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/DiscountResource")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request",
+     *      ),
+     *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *     @OA\Response(
-     *      response=403,
-     *      description="Forbidden"
-     * ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *      ),
      * )
      */
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -122,7 +127,7 @@ class DiscountController extends Controller
      */
 
     /**
-     * @QA\Get(
+     * @OA\Get(
      *      path="/discounts/{id}",
      *      operationId="getDiscountById",
      *      tags={"discounts"},
@@ -135,12 +140,16 @@ class DiscountController extends Controller
      *          in="path",
      *          @OA\Schema(
      *              type="integer"
-     *          )
+     *          ),
      *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
      *          @OA\JsonContent(ref="#/components/schemas/DiscountResource")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -149,7 +158,7 @@ class DiscountController extends Controller
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden"
-     *      ),
+     *      )
      * )
      */
     public function show(Discount $discount)
@@ -169,12 +178,12 @@ class DiscountController extends Controller
      */
 
     /**
-     * @QA\Put(
+     * @OA\Put(
      *      path="/discounts/{id}",
+     *      operationId="updateDiscount",
      *      tags={"discounts"},
      *      summary="Update existing discount",
      *      description="Returns updated discount data",
-     *      operationId="updateDiscount",
      *      @OA\Parameter(
      *          name="id",
      *          description="Discount id",
@@ -186,12 +195,16 @@ class DiscountController extends Controller
      *      ),
      *      @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/Discount")
+     *          @OA\JsonContent(ref="#/components/schemas/UpdateDiscountRequest")
      *      ),
      *      @OA\Response(
-     *          response=200,
+     *          response=202,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Discount")
+     *          @OA\JsonContent(ref="#/components/schemas/DiscountResource")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -201,6 +214,10 @@ class DiscountController extends Controller
      *          response=403,
      *          description="Forbidden"
      *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Resource Not Found"
+     *      )
      * )
      */
     public function update(Request $request, Discount $discount)
@@ -234,12 +251,12 @@ class DiscountController extends Controller
      */
 
     /**
-     * @QA\Delete(
+     * @OA\Delete(
      *      path="/discounts/{id}",
+     *      operationId="delete",
      *      tags={"discounts"},
      *      summary="Delete existing discount",
      *      description="Deletes a record and returns no content",
-     *      operationId="deleteDiscount",
      *      @OA\Parameter(
      *          name="id",
      *          description="Discount id",
@@ -251,8 +268,9 @@ class DiscountController extends Controller
      *      ),
      *      @OA\Response(
      *          response=204,
-     *          description="No content"
-     *      ),
+     *          description="Successful operation",
+     *          @OA\JsonContent()
+     *       ),
      *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
@@ -261,11 +279,26 @@ class DiscountController extends Controller
      *          response=403,
      *          description="Forbidden"
      *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Resource Not Found"
+     *      )
      * )
      */
     public function destroy(Discount $discount)
     {
         $discount->delete();
         return response(['message' => 'Discount deleted successfully']);
+    }
+
+    public static function isAvailable($discount_id) {
+        $discountQuantity = Discount::find($discount_id)->value('quantity');
+        if ($discountQuantity > 0) return true;
+        else return false;
+    }
+
+    public static function reduce($discount_id) {
+        $quantityReduce = Discount::find($discount_id)->value('quantity') - 1;
+        Discount::find($discount_id)->update(['quantity' => $quantityReduce]);
     }
 }

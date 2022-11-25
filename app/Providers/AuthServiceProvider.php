@@ -32,6 +32,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
+            // url front end should be changed to spaUrl
+            $url = str_replace(url('/api'), env('SPA_URL'), $url);
 
             return (new MailMessage)
                 ->subject('Verify Email Address')
