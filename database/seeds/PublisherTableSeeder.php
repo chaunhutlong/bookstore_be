@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Book;
+use App\Models\Publisher;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
-class BookTableSeeder extends Seeder
+class PublisherTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,6 +15,6 @@ class BookTableSeeder extends Seeder
      */
     public function run()
     {
-         Book::factory(10)->create();
+        Publisher::factory(5)->create();
     }
 }

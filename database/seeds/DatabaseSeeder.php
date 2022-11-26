@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Publisher;
 use App\Models\User;
 use App\Models\Role;
 use App\Enums\UserRole;
@@ -36,9 +37,9 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // add books to the database
+        // seed books, publishers to the database
         $this->call([
-           BookTableSeeder::class
+           BookTableSeeder::class, PublisherTableSeeder::class
         ]);
     }
 }
