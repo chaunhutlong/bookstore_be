@@ -164,6 +164,8 @@ Route::group([
     Route::get('/{book}/', [ReviewController::class, 'index'])->name('review.index');
 });
 
+
+
 /* Search Routes */
 Route::group([
     'prefix' => 'search'
