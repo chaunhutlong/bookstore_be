@@ -17,7 +17,8 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('address');
-            $table->string('phone');
+            $table->string('phone_number');
+            $table->float('value');
             $table->date('shipping_on');
             $table->string('description');
             $table->timestamps();

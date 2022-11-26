@@ -25,7 +25,7 @@ class BookFactory extends Factory
             'book_image' => fake()->numerify('img_####'),
             'description' => fake()->sentence(10, true),
             'published_date' => fake()->dateTimeThisCentury('now', 'Asia/Ho_Chi_Minh'),
-            'publisher_id' => 1,
+            'publisher_id' => fake()->numberBetween(1,5),
             'created_at' => fake()->dateTimeThisYear('now', 'Asia/Ho_Chi_Minh')
         ];
     }
