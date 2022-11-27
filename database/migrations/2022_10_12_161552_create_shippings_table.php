@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('shippings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tracking_num');
+            $table->string('tracking_num')->unique();
             $table->unsignedBigInteger('order_id');
             $table->string('name');
             $table->string('address');
