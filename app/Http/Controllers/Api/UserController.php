@@ -8,18 +8,35 @@ use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Kreait\Firebase\Contract\Storage;
 use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
 {
+    protected $storageUrl;
+    protected $avatarStorage;
+
+    public function __construct(Storage $storage)
+    {
+        $this->storage = $storage;
+        $this->avatarStorage = app('firebase.storage')->getBucket();
+        $this->storageUrl = 'avatars/';
+    }
+
     public function getProfile()
     {
         $user = auth()->user();
         $userInfo = UserInfo::where('user_id', $user->id)->first();
         // return image url from storage
-        $userInfo->avatar = $userInfo->avatar ? asset('storage/' . $userInfo->avatar) : null;
+        $avatar = $this->storageUrl . $userInfo->avatar;
+        $userInfo->avatar = $this->avatarStorage->object($avatar);
+        if ($userInfo->avatar->exists()) {
+            $userInfo->avatar = $userInfo->avatar->signedUrl(new \DateTime('+1 hour'));
+        } else {
+            $userInfo->avatar = null;
+        }
+
         $user->userInfo = $userInfo;
         return response([
             'success' => true,
@@ -46,17 +63,24 @@ class UserController extends Controller
             $userInfo = UserInfo::where('user_id', $user->id)->first();
 
             // add new avatar to storage and delete old avatar
-            if (
-                $request->hasFile('avatar') && request()->file('avatar')->isValid()
-            ) {
+            if ($request->hasFile('avatar') && request()->file('avatar')->isValid()) {
+                // delete old avatar
+                if ($userInfo->avatar) {
+                    $oldAvatar = $this->storageUrl . $userInfo->avatar;
+                    $oldAvatarStorage = $this->storage->getBucket()->object($oldAvatar);
+                    if ($oldAvatarStorage->exists()) {
+                        $oldAvatarStorage->delete();
+                    }
+                }
                 $avatar = $request->file('avatar');
                 $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-                $avatarPath = $avatar->storeAs('avatars', $avatarName);
-                $data['avatar'] = $avatarPath;
-                $oldAvatar = $userInfo->avatar;
-                if ($userInfo->avatar && Storage::disk('public')->exists($oldAvatar)) {
-                    Storage::disk('public')->delete($oldAvatar);
-                }
+                $this->avatarStorage->upload(
+                    file_get_contents($avatar),
+                    [
+                        'name' => $this->storageUrl . $avatarName,
+                    ]
+                );
+                $data['avatar'] = $avatarName;
             }
 
             if ($userInfo) {
