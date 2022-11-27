@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Cart;
+use App\Models\Address;
 
-class CartTableSeeder extends Seeder
+class AddressTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class CartTableSeeder extends Seeder
      */
     public function run()
     {
-        Cart::factory(20)->create();
+        Address::factory(10)->create();
     }
 }

@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Cart;
+use App\Models\Shipping;
 
-class CartTableSeeder extends Seeder
+class ShippingTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class CartTableSeeder extends Seeder
      */
     public function run()
     {
-        Cart::factory(20)->create();
+        Shipping::factory(5)->create();
     }
 }

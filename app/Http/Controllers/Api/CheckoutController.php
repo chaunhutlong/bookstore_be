@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Shipping;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,8 @@ class CheckoutController extends Controller
             $totalPrice = self::total($user_id);
             $discountValue = 0;
             $discount_id = null;
+            $shipping_id = $request->shipping_id;
+            $shippingValue = Shipping::where('id', $shipping_id)->value('value');
             if ($request->discount_id != null) {
                 $discount_id = $request->discount_id;
                 if (DiscountController::isAvailable($discount_id) && !DiscountController::isExpired($discount_id)) {
@@ -61,9 +64,10 @@ class CheckoutController extends Controller
             $data = [
                 'type' => $request->type,
                 'status' => PaymentStatus::NotPaid,
-                'before_discount' => $totalPrice,
+                'total_book_price' => $totalPrice,
                 'discount_id' => $discount_id,
-                'after_discount' => $totalPrice - $discountValue < 0 ? 0 : $totalPrice - $discountValue,
+                'shipping_id' => $shipping_id,
+                'total' => $totalPrice - $discountValue + $shippingValue < 0 ? 0 : $totalPrice - $discountValue + $shippingValue,
                 'paid_on' => date('Y-m-d H:i:s', time()),
                 'description' => $request->description
             ];
