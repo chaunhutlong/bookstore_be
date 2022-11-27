@@ -13,17 +13,17 @@ use Illuminate\Support\Carbon;
 class ShippingController extends Controller
 {
 
-    private function randomString($length)
+    private function randString($length)
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $characterLen = strlen($characters);
-        $randomString = "";
-        while ($randomString == "" || Shipping::where('id_shipping', $randomString)->exists()) {
+        $randString = "BAOTHU";
+        while ($randString == "BAOTHU" || Shipping::where('tracking_num', $randString)->exists()) {
             for ($i = 0; $i < $length; $i++) {
-                $randomString .= $characters[rand(0, $characterLen - 1)];
+                $randString .= $characters[rand(0, $characterLen - 1)];
             }
         }
-        return $randomString;
+        return $randString;
     }
 
     public function getShipping($order)
@@ -60,7 +60,7 @@ class ShippingController extends Controller
             $shipping = Shipping::create(
                 [
                     'order_id' => $order->id,
-                    'id_shipping' => self::randomString(10),
+                    'tracking_num' => self::randString(10),
                     'shipping_on' => Carbon::now()->addDays(5),
                 ],
                 $data
@@ -82,7 +82,6 @@ class ShippingController extends Controller
         $shipping = Shipping::findOrFail($order);
         $shipping->delete();
         return response()->json([
-            'status' => 'success',
             'message' => 'Shipping deleted successfully',
         ], 200);
     }
