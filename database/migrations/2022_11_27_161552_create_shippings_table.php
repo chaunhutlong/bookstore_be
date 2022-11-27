@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('shippings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('address');
+            $table->unsignedBigInteger('address_id');
+            $table->foreign('address_id')->references('id')->on('addresses');
             $table->string('phone_number');
             $table->float('value');
             $table->date('shipping_on');

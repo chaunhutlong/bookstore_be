@@ -40,8 +40,8 @@ class DatabaseSeeder extends Seeder
 
         // seed books, publishers to the database
         $this->call([
-           PublisherTableSeeder::class, GenreTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class,
-            BookTableSeeder::class
+           PublisherTableSeeder::class, GenreTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
+           BookTableSeeder::class, CartTableSeeder::class
         ]);
     }
 }

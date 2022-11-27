@@ -63,7 +63,7 @@ class CheckoutController extends Controller
                 'status' => PaymentStatus::NotPaid,
                 'before_discount' => $totalPrice,
                 'discount_id' => $discount_id,
-                'after_discount' => $totalPrice - $discountValue,
+                'after_discount' => $totalPrice - $discountValue < 0 ? 0 : $totalPrice - $discountValue,
                 'paid_on' => date('Y-m-d H:i:s', time()),
                 'description' => $request->description
             ];
