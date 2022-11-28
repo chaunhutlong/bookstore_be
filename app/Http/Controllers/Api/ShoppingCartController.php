@@ -40,7 +40,7 @@ class ShoppingCartController extends Controller
             }
 
             if ($book->available_quantity >= $request->quantity) {
-                // check if exist book is 
+                // check if exist book is
                 $cart = Cart::where('user_id', $user->id)->where('book_id', $book->id)->first();
                 if ($cart) {
                     // update quantity and price
@@ -268,5 +268,16 @@ class ShoppingCartController extends Controller
             DB::rollback();
             return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+
+    public static function deleteAfterCheckout($book_id) {
+        $cartItem = Cart::where('book_id', $book_id);
+        $cartItem->delete();
+    }
+
+    public static function isEmpty($user_id) {
+        $cartQuantity = Cart::where('user_id', $user_id)->count();
+        if ($cartQuantity == 0) return true;
+        return false;
     }
 }

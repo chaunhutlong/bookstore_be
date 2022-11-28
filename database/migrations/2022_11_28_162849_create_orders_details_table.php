@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('orders_details', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('amount');
+            $table->integer('quantity');
             $table->float('price');
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('book_id');
