@@ -23,7 +23,7 @@ class ReviewController extends Controller
      *  @OA\Get(
      *      path="reviews/{book}/",
      *      operationId="getReviewsListByIdBook",
-     *      tags={"reviews"},
+     *      tags={"Reviews"},
      *      summary="Get list reviews of a book",
      *      description="Return list reviews of a book",
      *      @OA\Parameter(
@@ -84,7 +84,7 @@ class ReviewController extends Controller
      * @OA\Get(
      *      path="reviews/{book}/review",
      *      operationId="getReviewByIdBook",
-     *      tags={"reviews"},
+     *      tags={"Reviews"},
      *      summary="Get review of a book",
      *      description="Return review of a book",
      *      @OA\Parameter(
@@ -148,7 +148,7 @@ class ReviewController extends Controller
             operationId="createOrUpdateReview",
      *      summary="Create or update review of a book",
      *      description="Returns Created or updated review of a book",
-     *      tags={"Review"},
+     *      tags={"Reviews"},
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
@@ -219,7 +219,7 @@ class ReviewController extends Controller
      * @OA\Delete(
      *      path="reviews/{book}/{review}",
      *      operationId="deleteReviewById",
-     *      tags={"reviews"},
+     *      tags={"Reviews"},
      *      summary="Delete review",
      *      description="Delete review",
      *      @OA\Parameter(

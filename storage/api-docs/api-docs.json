@@ -704,7 +704,7 @@
         "reviews/{book}/": {
             "get": {
                 "tags": [
-                    "reviews"
+                    "Reviews"
                 ],
                 "summary": "Get list reviews of a book",
                 "description": "Return list reviews of a book",
@@ -743,7 +743,7 @@
         "reviews/{book}/review": {
             "get": {
                 "tags": [
-                    "reviews"
+                    "Reviews"
                 ],
                 "summary": "Get review of a book",
                 "description": "Return review of a book",
@@ -780,7 +780,7 @@
             },
             "post": {
                 "tags": [
-                    "Review"
+                    "Reviews"
                 ],
                 "summary": "Create or update review of a book",
                 "description": "Returns Created or updated review of a book",
@@ -829,7 +829,7 @@
         "reviews/{book}/{review}": {
             "delete": {
                 "tags": [
-                    "reviews"
+                    "Reviews"
                 ],
                 "summary": "Delete review",
                 "description": "Delete review",
