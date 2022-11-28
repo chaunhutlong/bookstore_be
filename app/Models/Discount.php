@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Discount extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'value', 'start_date', 'end_date', 'quantity', 'description'];
+    protected $fillable = ['name', 'value', 'start_date', 'end_date', 'quantity', 'description', 'is_public'];
 
-    /** 
+    /**
      * @return BelongsToMany
      */
     public function books()
@@ -18,7 +18,7 @@ class Discount extends Model
         return $this->belongsToMany(Book::class, 'books_discounts', 'discount_id', 'book_id');
     }
 
-    /** 
+    /**
      * @return BelongsToMany
      */
     public function users()

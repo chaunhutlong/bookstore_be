@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Shipping extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'address', 'phone', 'shipping_on'];
+    protected $fillable = ['name', 'address_id', 'phone', 'value', 'shipping_on'];
 
     /**
      * @return hasOne
      */
-    public function orders () {
-        return $this->hasOne(Order::class);
+    public function payments () {
+        return $this->hasOne(Payment::class);
     }
 
+    public function addresses () {
+        return $this->belongsTo(Address::class);
+    }
 }

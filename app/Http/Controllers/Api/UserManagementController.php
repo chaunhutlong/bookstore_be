@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\DB;
 class UserManagementController extends Controller
 {
     //
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getUsers()
     {
         try {
@@ -33,16 +38,27 @@ class UserManagementController extends Controller
             ], 500);
         }
     }
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
     public function getUser(User $user)
     {
         return response(['user' => new UserResource($user), 'message' => 'Retrieved successfully'], 200);
     }
 
+    /**
+     * Active the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+
     public function activeUser(Request $request)
     {
         try {
-
             $user = User::find($request->user_id);
             if ($user) {
                 $user->roles()->updateExistingPivot($request->role_id, ['active' => true]);
@@ -57,7 +73,12 @@ class UserManagementController extends Controller
             return response(['error' => $e->getMessage()], 500);
         }
     }
-
+    /**
+     * Unactive the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function unactiveUser(Request $request)
     {
         try {
@@ -76,6 +97,12 @@ class UserManagementController extends Controller
         }
     }
 
+    /**
+     * Unactive the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function assignRole(Request $request)
     {
         DB::beginTransaction();

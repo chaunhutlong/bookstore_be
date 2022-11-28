@@ -17,15 +17,11 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->tinyInteger('status');
             $table->date('order_on');
-            $table->unsignedBigInteger('shipping_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('payment_id');
-            $table->unsignedBigInteger('discount_id');
-            $table->foreign('shipping_id')->references('id')->on('shippings');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('payment_id')->references('id')->on('payments');
-            $table->foreign('discount_id')->references('id')->on('discounts');
-            $table->unique(['user_id', 'discount_id', 'payment_id', 'shipping_id']);
+            $table->unique(['user_id', 'payment_id']);
             $table->softDeletes();
             $table->timestamps();
         });
