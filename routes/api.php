@@ -15,6 +15,10 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\GoogleController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\OrderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,7 +39,11 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('password.email');
     Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
+    Route::get('/google/url', [GoogleController::class, 'loginUrl'])->name('auth.google.url');
+    Route::get('/google/callback', [GoogleController::class, 'loginCallback'])->name('auth.google.callback');
 });
+
+
 /* End of Auth Routes */
 /* -------------------------------------------------------------------------- */
 
@@ -117,8 +125,8 @@ Route::group([
     Route::group([
         'prefix' => 'genres'
     ], function () {
-        Route::get('/', [GenreController::class, 'index'])->name('genres.index');
-        Route::get('/{genre}', [GenreController::class, 'show'])->name('genres.show');
+        Route::get('/', [GenresController::class, 'index'])->name('genres.index');
+        Route::get('/{genre}', [GenresController::class, 'show'])->name('genres.show');
     });
 
     Route::group([
@@ -136,9 +144,32 @@ Route::group([
     Route::group([
         'prefix' => 'checkout'
     ], function () {
-        Route::post('/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
+    });
+
+    Route::group([
+        'prefix' => 'reviews'
+    ], function () {
+        Route::post('/{book}/review', [ReviewController::class, 'createOrUpdateReview'])->name('review.createOrUpdateReview');
+        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('review.getReview');
+        Route::delete('/{book}/{review}', [ReviewController::class, 'destroy'])->name('review.deleteReview');
     });
 });
 /* End of User Routes */
+/* -------------------------------------------------------------------------- */
+
+/* Review Routes */
+Route::group([
+    'prefix' => 'reviews'
+], function () {
+    Route::get('/{book}/', [ReviewController::class, 'index'])->name('review.index');
+});
+
+/* Order Routes */
+Route::group([
+    'middleware' => ['auth:sanctum', 'active'],
+], function () {
+        Route::apiResource('/orders', OrderController::class);
+});
+/* End of Order Routes */
 /* -------------------------------------------------------------------------- */

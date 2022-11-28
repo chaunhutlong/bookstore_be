@@ -213,7 +213,7 @@ class GenresController extends Controller
                 'description' => 'string'
             ]);
 
-            $data = $validator->validatedd();
+            $data = $validator->validated();
 
             $genre->update($data);
             DB::commit();

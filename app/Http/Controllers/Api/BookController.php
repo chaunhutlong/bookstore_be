@@ -6,14 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BookCollection;
 use App\Models\Book;
 use App\Models\Genre;
+use App\Models\Author;
 use Illuminate\Http\Request;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Kreait\Firebase\Contract\Storage;
 
 class BookController extends Controller
 {
+    protected $storageUrl;
+    protected $bookStorage;
+
+    public function __construct(Storage $storage)
+    {
+        $this->storage = $storage;
+        $this->bookStorage = app('firebase.storage')->getBucket();
+        $this->storageUrl = 'books/';
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,6 +33,19 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 10);
+
+        $books = Book::paginate($perPage);
+
+        // return image url
+        foreach ($books as $book) {
+            $bookImage =  $this->storageUrl . $book->book_image;
+            $book->book_image = $this->bookStorage->object($bookImage);
+            if ($book->book_image->exists()) {
+                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+            } else {
+                $book->book_image = null;
+            }
+        }
 
         // check if the request has a search query
         if ($request->has('search')) {
@@ -55,11 +78,13 @@ class BookController extends Controller
                 'published_date' => 'required|date',
                 'publisher_id' => 'required|integer',
                 'genres' => 'required|integer',
+                'authors' => 'required|integer',
             ]);
 
             $data = $validator->validated();
 
             $genres = $data['genres'];
+            $authors = $data['authors'];
 
             // check genre in table genres
             foreach ($genres as $genre_id) {
@@ -69,20 +94,36 @@ class BookController extends Controller
                 }
             }
 
-            // add book_image to storage
+            // check author in table authors
+            foreach ($authors as $author_id) {
+                $author = Author::where('id', $author_id)->first();
+                if (!$author) {
+                    return response(['error' => 'Author not found'], 404);
+                }
+            }
+
+            // add book_image to storage firebase
             if ($request->hasFile('book_image') && $request->file('book_image')->isValid()) {
                 $bookImage = $request->file('book_image');
-                $bookImageName = time() . '.' . $bookImage->getClientOriginalExtension();
-                $bookImagePath = $bookImage->storeAs('book_images', $bookImageName, 'public');
-                $data['book_image'] = $bookImagePath;
+                $bookImageName = time() . '.' . $bookImage->getClientOriginalName();
+                $this->bookStorage->upload(
+                    file_get_contents($bookImage),
+                    [
+                        'name' => $this->storageUrl . $bookImageName
+                    ]
+                );
+
+                $data['book_image'] = $bookImageName;
             }
 
             $book = Book::create($data);
             // add genres to book
             $book->genres()->attach($genres);
+            // add authors to book
+            $book->authors()->attach($authors);
 
             DB::commit();
-            return response(['book' => new BookResource($book), 'message' => 'Book created successfully']);
+            return response(['data' => new BookResource($book), 'message' => 'Book created successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -97,7 +138,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return response(['book' => new BookResource($book), 'message' => 'Retrieved successfully'], 200);
+        return response(['data' => new BookResource($book), 'message' => 'Retrieved successfully'], 200);
     }
 
     /**
@@ -124,41 +165,65 @@ class BookController extends Controller
                     'published_date' => 'date',
                     'publisher_id' => 'integer',
                     'genres' => 'integer',
+                    'authors' => 'integer',
                 ]
             );
 
             $data = $validator->validated();
 
-            $genres = $data['genres'];
-
-            // check genre in table genres
-            foreach ($genres as $genre_id) {
-                $genre = Genre::where('id', $genre_id)->first();
-                if (!$genre) {
-                    return response(['error' => 'Genre not found'], 404);
+            // check genre in request
+            if (isset($data['genres'])) {
+                $genres = $data['genres'];
+                // check genre in table genres
+                foreach ($genres as $genre_id) {
+                    $genre = Genre::where('id', $genre_id)->first();
+                    if (!$genre) {
+                        return response(['error' => 'Genre not found'], 404);
+                    }
                 }
+                $book->genres()->sync($genres);
             }
 
-            // add genres to table book_genre
-            $book->genres()->sync($genres);
-
-
-            // add book_image to storage and delete old book_image
-            if ($request->hasFile('book_image') && $request->file('book_image')->isValid()) {
-                $bookImage = $request->file('book_image');
-                $bookImageName = time() . '.' . $bookImage->getClientOriginalExtension();
-                $bookImagePath = $bookImage->storeAs('book_images', $bookImageName, 'public');
-                $data['book_image'] = $bookImagePath;
-                $oldBookImage = $book->book_image;
-                if ($oldBookImage && Storage::disk('public')->exists($oldBookImage)) {
-                    Storage::disk('public')->delete($oldBookImage);
+            // check author in request
+            if (isset($data['authors'])) {
+                $authors = $data['authors'];
+                // check author in table authors
+                foreach ($authors as $author_id) {
+                    $author = Author::where('id', $author_id)->first();
+                    if (!$author) {
+                        return response(['error' => 'Author not found'], 404);
+                    }
                 }
+                $book->authors()->sync($authors);
+            }
+
+            // add book_image to storage firebase
+            if ($request->hasFile('book_image') && $request->file('book_image')->isValid()) {
+                // delete old book_image
+                if ($book->book_image) {
+                    $oldBookImage = $this->storageUrl . $book->book_image;
+                    $bookImageStorage = $this->bookStorage->object($oldBookImage);
+                    if ($bookImageStorage->exists()) {
+                        $bookImageStorage->delete();
+                    }
+                }
+
+                $bookImage = $request->file('book_image');
+                $bookImageName = time() . '.' . $bookImage->getClientOriginalName();
+                $this->bookStorage->upload(
+                    file_get_contents($bookImage),
+                    [
+                        'name' => $this->storageUrl . $bookImageName
+                    ]
+                );
+
+                $data['book_image'] = $bookImageName;
             }
 
             $book->update($data);
 
             DB::commit();
-            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
+            return response(['data' => new BookResource($book), 'message' => 'Book updated successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -173,8 +238,30 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
+        // delete in book_authors
+        $book->authors()->detach();
+
+        // delete in book_genres
+        $book->genres()->detach();
+
+        // delete in book_image
+        if ($book->book_image) {
+            $bookImage = $this->storageUrl . $book->book_image;
+            // check exist book_image in storage firebase
+            $bookImageStorage = $this->bookStorage->object($bookImage);
+            if ($bookImageStorage->exists()) {
+                $bookImageStorage->delete();
+            }
+        }
+
         $book->delete();
 
         return response(['message' => 'Book deleted successfully']);
+    }
+
+    public static function reduce($book_id, $quantity) {
+        $book = Book::where('id',$book_id);
+        $availableQuantity = $book->value('available_quantity');
+        $book->update(['available_quantity' => $availableQuantity - $quantity]);
     }
 }
