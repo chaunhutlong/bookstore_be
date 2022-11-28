@@ -18,6 +18,7 @@ class ReviewController extends Controller
      * @param Book $book
      * @return \Illuminate\Http\Response
      */
+
     /**
      *  @OA\Get(
      *      path="reviews/{book}/",
@@ -78,17 +79,18 @@ class ReviewController extends Controller
      * Display a listing of the resource.
      * @return \Illuminate\Http\Response
      */
+
     /**
-     *  @OA\Get(
+     * @OA\Get(
      *      path="reviews/{book}/review",
-     *      operationId="getReview",
-     *      summary="User get review of a book",
+     *      operationId="getReviewByIdBook",
+     *      tags={"reviews"},
+     *      summary="Get review of a book",
      *      description="Return review of a book",
-     *      tags={"Review"},
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
-     *          description="Book id",
+     *           description="Book id",
      *          required=true,
      *          @OA\Schema(
      *              type="integer"
@@ -97,7 +99,7 @@ class ReviewController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @QA\JsonContent(ref="#/components/schemas/ReviewResource")
+     *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -139,6 +141,7 @@ class ReviewController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
+
     /**
      *  @OA\Post(
      *      path="reviews/{book}/review",
@@ -157,12 +160,12 @@ class ReviewController extends Controller
      *      ),
      *      @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/Review")
+     *          @OA\JsonContent(ref="#/components/schemas/CreateOrUpdateReviewRequest")
      *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Review")
+     *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -211,13 +214,14 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
+
     /**
-     *  @OA\Delete(
+     * @OA\Delete(
      *      path="reviews/{book}/{review}",
-     *      operationId="deleteReview",
-     *      summary="Delete existing review of a book",
-     *      description="Delete a record and returns no content",
-     *      tags={"Review"},
+     *      operationId="deleteReviewById",
+     *      tags={"reviews"},
+     *      summary="Delete review",
+     *      description="Delete review",
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
@@ -233,7 +237,7 @@ class ReviewController extends Controller
      *          description="Review id",
      *          required=true,
      *          @OA\Schema(
-     *          type="integer"
+     *              type="integer"
      *          )
      *      ),
      *      @OA\Response(
@@ -247,15 +251,14 @@ class ReviewController extends Controller
      *      ),
      *      @OA\Response(
      *          response=403,
-     *          description="Forbidden",
+     *          description="Forbidden"
      *      ),
      *      @OA\Response(
      *          response=404,
-     *          description="Resource Not Found",
-     *      ),
-     *  )
+     *          description="Resource Not Found"
+     *      )
+     * )
      */
-
     public function destroy($book, $review)
     {
         DB::beginTransaction();

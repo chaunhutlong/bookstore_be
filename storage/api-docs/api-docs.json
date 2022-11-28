@@ -1,10 +1,10 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Laravel OpenApi Demo Documentation",
-        "description": "L5 Swagger OpenApi description",
+        "title": "Docs BookStore API",
+        "description": "BookStore API Server",
         "contact": {
-            "email": "admin@admin.com"
+            "email": "longuit2002@gmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -15,7 +15,7 @@
     "servers": [
         {
             "url": "http://localhost:8000/api/",
-            "description": "Demo API Server"
+            "description": "BookStore API"
         }
     ],
     "paths": {
@@ -302,6 +302,32 @@
             }
         },
         "/genres": {
+            "get": {
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Get list of genres",
+                "description": "Returns list of genres",
+                "operationId": "getGenresList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenreResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "genres"
@@ -674,10 +700,204 @@
                     }
                 }
             }
+        },
+        "reviews/{book}/": {
+            "get": {
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Get list reviews of a book",
+                "description": "Return list reviews of a book",
+                "operationId": "getReviewsListByIdBook",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReviewResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "reviews/{book}/review": {
+            "get": {
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Get review of a book",
+                "description": "Return review of a book",
+                "operationId": "getReviewByIdBook",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReviewResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Create or update review of a book",
+                "description": "Returns Created or updated review of a book",
+                "operationId": "createOrUpdateReview",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateOrUpdateReviewRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ReviewResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "reviews/{book}/{review}": {
+            "delete": {
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Delete review",
+                "description": "Delete review",
+                "operationId": "deleteReviewById",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "description": "Book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "review",
+                        "in": "path",
+                        "description": "Review id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "CreateOrUpdateReviewRequest": {
+                "title": "Create or Update Review request",
+                "description": "Create or Update Review request body data",
+                "required": [
+                    "rating"
+                ],
+                "properties": {
+                    "rating": {
+                        "description": "Rating of the book",
+                        "type": "float",
+                        "example": "4.5"
+                    },
+                    "comment": {
+                        "description": "Comment of the book",
+                        "type": "string",
+                        "example": "This is a comment"
+                    }
+                },
+                "type": "object"
+            },
             "LoginUserRequest": {
                 "title": "Login User request",
                 "description": "Login User request body data",
@@ -917,6 +1137,24 @@
                     "name": "PublisherResource"
                 }
             },
+            "ReviewResource": {
+                "title": "ReviewResource",
+                "description": "Review resource",
+                "properties": {
+                    "Review": {
+                        "title": "Data",
+                        "description": "Data wrapper",
+                        "type": "array",
+                        "items": {
+                            "ref": null
+                        }
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "ReviewResource"
+                }
+            },
             "StoreDiscountRequest": {
                 "title": "Store Discount request",
                 "description": "Store Discount request body data",
@@ -1084,24 +1322,6 @@
                     }
                 },
                 "type": "object"
-            }
-        },
-        "responses": {
-            "200": {
-                "description": "Successful operation",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/GenreResource"
-                        }
-                    }
-                }
-            },
-            "401": {
-                "description": "Unauthenticated"
-            },
-            "403": {
-                "description": "Forbidden"
             }
         },
         "securitySchemes": {
