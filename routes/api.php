@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\GoogleController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShippingController;
-
+use App\Http\Controllers\Api\OrderController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -174,14 +174,11 @@ Route::group([
     Route::get('/{book}/', [ReviewController::class, 'index'])->name('review.index');
 });
 
-
-
-/* Search Routes */
+/* Order Routes */
 Route::group([
-    'prefix' => 'search'
+    'middleware' => ['auth:sanctum', 'active'],
 ], function () {
-    Route::get('/books', [SearchController::class, 'searchBooks'])->name('search.books');
-    Route::get('/authors', [SearchController::class, 'searchAuthors'])->name('search.authors');
-    Route::get('/publishers', [SearchController::class, 'searchPublishers'])->name('search.publishers');
-    Route::get('/genres', [SearchController::class, 'searchGenres'])->name('search.genres');
+    Route::apiResource('/orders', OrderController::class);
 });
+/* End of Order Routes */
+/* -------------------------------------------------------------------------- */

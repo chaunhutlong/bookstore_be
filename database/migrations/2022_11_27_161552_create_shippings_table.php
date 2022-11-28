@@ -13,16 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('discounts', function (Blueprint $table) {
+        Schema::create('shippings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('tracking_num')->unique();
+            $table->unsignedBigInteger('order_id');
             $table->string('name');
+            $table->unsignedBigInteger('address_id');
+            $table->foreign('address_id')->references('id')->on('addresses');
+            $table->string('phone_number');
             $table->float('value');
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->integer('quantity');
+            $table->date('shipping_on');
+            $table->float('shipping_fee');
             $table->string('description')->nullable();
-            $table->boolean('is_public');
             $table->timestamps();
+            // $table->foreign('order_id')->references('id')->on('orders');
         });
     }
 
@@ -33,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('discounts');
+        Schema::dropIfExists('shippings');
     }
 };

@@ -13,18 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('shippings', function (Blueprint $table) {
+        Schema::create('cities', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tracking_num')->unique();
-            $table->unsignedBigInteger('order_id');
             $table->string('name');
-            $table->string('address');
-            $table->string('phone');
-            $table->date('shipping_on');
-            $table->float('shipping_fee');
-            $table->string('description')->nullable();
+            $table->string('location');
             $table->timestamps();
-            // $table->foreign('order_id')->references('id')->on('orders');
         });
     }
 
@@ -35,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shippings');
+        Schema::dropIfExists('cities');
     }
 };

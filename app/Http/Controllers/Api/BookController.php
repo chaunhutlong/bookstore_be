@@ -251,4 +251,10 @@ class BookController extends Controller
 
         return response(['message' => 'Book deleted successfully']);
     }
+
+    public static function reduce($book_id, $quantity) {
+        $book = Book::where('id',$book_id);
+        $availableQuantity = $book->value('available_quantity');
+        $book->update(['available_quantity' => $availableQuantity - $quantity]);
+    }
 }

@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Genre;
+use App\Models\Publisher;
 use App\Models\User;
 use App\Models\Role;
 use App\Enums\UserRole;
+use App\Models\Book;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +23,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         User::factory(10)->create();
-
         // add roles to the database
         $roles = UserRole::getKeys();
         // loop through each role and add it to the database
@@ -35,5 +37,11 @@ class DatabaseSeeder extends Seeder
                 $user->roles()->updateExistingPivot($role->id, ['active' => true]);
             }
         }
+
+        // seed books, publishers to the database
+        $this->call([
+           PublisherTableSeeder::class, GenreTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
+           BookTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class
+        ]);
     }
 }
