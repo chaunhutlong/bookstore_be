@@ -24,7 +24,7 @@ return new class extends Migration
             $table->float('shipping_fee');
             $table->string('description')->nullable();
             $table->timestamps();
-            $table->foreign('order_id')->references('id')->on('orders');
+            // $table->foreign('order_id')->references('id')->on('orders');
         });
     }
 

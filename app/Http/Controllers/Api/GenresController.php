@@ -19,9 +19,9 @@ class GenresController extends Controller
      */
 
     /**
-     * @QA\Get(
+     * @OA\Get(
      *      path="/genres",
-     *      operationId="getgenresList",
+     *      operationId="getGenresList",
      *      tags={"genres"},
      *      summary="Get list of genres",
      *      description="Returns list of genres",

@@ -19,11 +19,12 @@ class ReviewController extends Controller
      * @return \Illuminate\Http\Response
      */
     /**
-     * @OA/get(
-     *      path="/api/reviews/{book}/",
-     *      summary="Get reviews of a book",
-     *      description="Return reviews of a book",
-     *      tags={"Reviews"},
+     *  @OA\Get(
+     *      path="reviews/{book}/",
+     *      operationId="getReviewsListByIdBook",
+     *      tags={"reviews"},
+     *      summary="Get list reviews of a book",
+     *      description="Return list reviews of a book",
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
@@ -38,14 +39,14 @@ class ReviewController extends Controller
      *          description="Successful operation",
      *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
-     *       )
+     *       ),
      *      )
      */
 
@@ -78,9 +79,10 @@ class ReviewController extends Controller
      * @return \Illuminate\Http\Response
      */
     /**
-     *  @QA/get(
-     *      path="/api/reviews/{book}/review",
-     *      summary="Get review of a book",
+     *  @OA\Get(
+     *      path="reviews/{book}/review",
+     *      operationId="getReview",
+     *      summary="User get review of a book",
      *      description="Return review of a book",
      *      tags={"Review"},
      *      @OA\Parameter(
@@ -97,14 +99,14 @@ class ReviewController extends Controller
      *          description="Successful operation",
      *          @QA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
-     *      )
+     *      ),
      *  )
      */
 
@@ -138,10 +140,11 @@ class ReviewController extends Controller
      * @return \Illuminate\Http\Response
      */
     /**
-     *  @QA\Post(
-     *      path="/api/reviews/{book}/review",
+     *  @OA\Post(
+     *      path="reviews/{book}/review",
+            operationId="createOrUpdateReview",
      *      summary="Create or update review of a book",
-     *      description="Create or update review of a book",
+     *      description="Returns Created or updated review of a book",
      *      tags={"Review"},
      *      @OA\Parameter(
      *          name="book",
@@ -168,7 +171,7 @@ class ReviewController extends Controller
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
-     *      )
+     *      ),
      *  )
      */
 
@@ -209,10 +212,11 @@ class ReviewController extends Controller
      * @return \Illuminate\Http\Response
      */
     /**
-     *  @QA\Delete(
-     *      path="/api/reviews/{book}/{review}",
-     *      summary="Delete review of a book",
-     *      description="Delete review of a book",
+     *  @OA\Delete(
+     *      path="reviews/{book}/{review}",
+     *      operationId="deleteReview",
+     *      summary="Delete existing review of a book",
+     *      description="Delete a record and returns no content",
      *      tags={"Review"},
      *      @OA\Parameter(
      *          name="book",
@@ -235,19 +239,20 @@ class ReviewController extends Controller
      *      @OA\Response(
      *          response=204,
      *          description="Successful operation",
+     *          @OA\JsonContent()
      *      ),
      *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=404,
      *          description="Resource Not Found",
-     *      )
+     *      ),
      *  )
      */
 
