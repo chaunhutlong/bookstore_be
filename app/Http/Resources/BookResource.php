@@ -26,8 +26,9 @@ class BookResource extends JsonResource
             'price' => $this->price,
             'published_date' => $this->published_date,
             'publisher' => new PublisherResource(Publisher::find($this->publisher_id)),
-            'author' => AuthorResource::collection($this->authors),
+            'authors' => AuthorResource::collection($this->authors),
             'genres' => GenreResource::collection($this->genres),
+            'reviews' => ReviewResource::collection($this->reviews),
             'book_image' => $this->book_image,
             'description' => $this->description,
         ];

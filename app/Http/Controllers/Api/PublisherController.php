@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 use App\Http\Resources\PublisherResource;
+use App\Http\Resources\PublisherCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -40,12 +41,11 @@ class PublisherController extends Controller
      */
     public function index()
     {
+        $per_page = request()->input('per_page', 10);
 
-        $publishers = Publisher::all();
-        return response([
-            'publishers' => PublisherResource::collection($publishers),
-            'message' => 'Retrieved successfully'
-        ], 200);
+        $publishers = Publisher::paginate($per_page);
+
+        return response()->json(new PublisherCollection($publishers), 200);
     }
 
     /**
@@ -105,10 +105,7 @@ class PublisherController extends Controller
             $publiser = Publisher::create($data);
             DB::commit();
 
-            return response([
-                'publisher' => new PublisherResource($publiser),
-                'message' => 'Publisher created successfully'
-            ]);
+            return response()->json(new PublisherResource($publiser), 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -158,8 +155,11 @@ class PublisherController extends Controller
      */
     public function show(Publisher $publisher)
     {
-
-        return response(['publisher' => new PublisherResource($publisher), 'message' => 'Retrieved successfully'], 200);
+        try {
+            return response()->json(new PublisherResource($publisher), 200);
+        } catch (\Exception $e) {
+            return response(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -232,10 +232,7 @@ class PublisherController extends Controller
             $publisher->update($data);
             DB::commit();
 
-            return response([
-                'publisher' => new PublisherResource($publisher),
-                'message' => 'Publisher updated successfully'
-            ], 202);
+            return response()->json(new PublisherResource($publisher), 202);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);;
@@ -285,8 +282,15 @@ class PublisherController extends Controller
      */
     public function destroy(Publisher $publisher)
     {
-        $publisher->delete();
+        DB::beginTransaction();
+        try {
+            $publisher->delete();
+            DB::commit();
 
-        return response(['message' => 'Publisher deleted successfully']);
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
+        }
     }
 }

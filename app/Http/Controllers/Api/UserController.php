@@ -38,11 +38,7 @@ class UserController extends Controller
         }
 
         $user->userInfo = $userInfo;
-        return response([
-            'success' => true,
-            'data' => new UserResource($user),
-            'message' => 'User profile was successfully retrieved'
-        ]);
+        return response()->json(new UserResource($user), 200);
     }
 
     public function createOrUpdateProfile(Request $request)
@@ -83,20 +79,17 @@ class UserController extends Controller
                 $data['avatar'] = $avatarName;
             }
 
-            if ($userInfo) {
-                $userInfo->update($data);
-            } else {
-                $userInfo = UserInfo::create([
-                    'user_id' => $user->id,
-                    'address' => $data['address'],
-                    'phone_number' => $data['phone_number'],
-                    'bio' => $data['bio'],
-                    'avatar' => $data['avatar'],
-                ]);
-            }
+            // updateOrCreate user info
+            $userInfo = UserInfo::updateOrCreate(
+                ['user_id' => $user->id],
+                $data
+            );
+
+            // user with user info
+            $user->userInfo = $userInfo;
 
             DB::commit();
-            return response(['user_info' => new UserResource($userInfo), 'message' => 'User info created successfully']);
+            return response()->json(new UserResource($user), 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -124,7 +117,7 @@ class UserController extends Controller
             $user->save();
 
             DB::commit();
-            return response(['message' => 'Password updated successfully']);
+            return response()->json('Password updated successfully', 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
