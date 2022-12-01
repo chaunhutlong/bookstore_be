@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('address');
-            $table->string('phone_number');
+            $table->string('phone');
             $table->string('description')->nullable();
         });
     }

@@ -49,7 +49,7 @@ class UserController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'address' => 'string|max:255',
-                'phone_number' => 'numeric|digits:10',
+                'phone' => 'numeric|digits:10',
                 'bio' => 'string|max:255',
                 'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
@@ -79,11 +79,17 @@ class UserController extends Controller
                 $data['avatar'] = $avatarName;
             }
 
-            // updateOrCreate user info
-            $userInfo = UserInfo::updateOrCreate(
-                ['user_id' => $user->id],
-                $data
-            );
+            if ($userInfo) {
+                $userInfo->update($data);
+            } else {
+                $userInfo = UserInfo::create([
+                    'user_id' => $user->id,
+                    'address' => $data['address'],
+                    'phone' => $data['phone'],
+                    'bio' => $data['bio'],
+                    'avatar' => $data['avatar'],
+                ]);
+            }
 
             // user with user info
             $user->userInfo = $userInfo;

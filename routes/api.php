@@ -163,3 +163,5 @@ Route::group([
 });
 /* End of Guest Routes */
 /* -------------------------------------------------------------------------- */
+
+Route::get('/test', [ShoppingCartController::class, 'createUnique']);

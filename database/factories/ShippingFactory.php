@@ -19,7 +19,7 @@ class ShippingFactory extends Factory
         return [
             'name' => fake()->numerify('shipping_####'),
             'address_id' => fake()->numberBetween(1,5),
-            'phone_number' => fake()->phoneNumber(),
+            'phone' => fake()->phoneNumber(),
             'value' => fake()->numberBetween(1,20)*10,
             'shipping_on' => fake()->dateTimeThisYear(),
             'description' => fake()->sentence(10, true)
