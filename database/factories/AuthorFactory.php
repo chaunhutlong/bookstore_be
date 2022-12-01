@@ -20,7 +20,7 @@ class AuthorFactory extends Factory
             'name' => fake()->name(),
             'bio' => fake()->sentence(10, true),
             'address' => fake()->address(),
-            'phone_number' => fake()->phoneNumber(),
+            'phone' => fake()->phoneNumber(),
             'email' => fake()->email()
         ];
     }
