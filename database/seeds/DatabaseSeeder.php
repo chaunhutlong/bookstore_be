@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
            PublisherTableSeeder::class, GenreTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
            BookTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class,
+           OrderTableSeeder::class,
         ]);
     }
 }
