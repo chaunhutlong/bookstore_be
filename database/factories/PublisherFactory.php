@@ -19,7 +19,7 @@ class PublisherFactory extends Factory
         return [
             'name' => fake()->name(),
             'address' => fake()->address(),
-            'phone_number' => fake()->phoneNumber(),
+            'phone' => fake()->phoneNumber(),
             'description' => fake()->sentence(10,true)
         ];
     }

@@ -53,7 +53,7 @@ class UserController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'address' => 'string|max:255',
-                'phone_number' => 'numeric|digits:10',
+                'phone' => 'numeric|digits:10',
                 'bio' => 'string|max:255',
                 'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
@@ -89,7 +89,7 @@ class UserController extends Controller
                 $userInfo = UserInfo::create([
                     'user_id' => $user->id,
                     'address' => $data['address'],
-                    'phone_number' => $data['phone_number'],
+                    'phone' => $data['phone'],
                     'bio' => $data['bio'],
                     'avatar' => $data['avatar'],
                 ]);

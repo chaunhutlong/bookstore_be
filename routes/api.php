@@ -173,3 +173,5 @@ Route::group([
 });
 /* End of Order Routes */
 /* -------------------------------------------------------------------------- */
+
+Route::get('/test', [ShoppingCartController::class, 'createUnique']);
