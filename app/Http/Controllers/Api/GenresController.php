@@ -44,7 +44,7 @@ class GenresController extends Controller
     public function index()
     {
         $genres = Genre::all();
-        return response(['genres' => GenreResource::collection($genres), 'message' => 'Retrieved successfully'], 200);
+        return response(['data' => GenreResource::collection($genres), 'message' => 'Retrieved successfully'], 200);
     }
 
     /**
@@ -99,7 +99,7 @@ class GenresController extends Controller
             $genre = Genre::create($data);
             DB::commit();
 
-            return response(['genre' => new GenreResource($genre), 'message' => 'Genre created successfully']);
+            return response(['data' => new GenreResource($genre), 'message' => 'Genre created successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -150,7 +150,7 @@ class GenresController extends Controller
 
     public function show(Genre $genre)
     {
-        return response(['genre' => new GenreResource($genre), 'message' => 'Retrieved successfully'], 200);
+        return response(['data' => new GenreResource($genre), 'message' => 'Retrieved successfully'], 200);
     }
 
     /**
@@ -218,7 +218,7 @@ class GenresController extends Controller
             $genre->update($data);
             DB::commit();
 
-            return response(['genre' => new GenreResource($genre), 'message' => 'Publisher updated successfully'], 202);
+            return response(['data' => new GenreResource($genre), 'message' => 'Publisher updated successfully'], 202);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
