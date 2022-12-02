@@ -13,20 +13,21 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('shippings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('tracking_num')->unique();
             $table->unsignedBigInteger('order_id');
-            $table->string('name');
             $table->unsignedBigInteger('address_id');
+            $table->foreign('order_id')->references('id')->on('orders');
             $table->foreign('address_id')->references('id')->on('addresses');
             $table->string('phone');
             $table->float('value');
             $table->date('shipping_on');
             $table->string('description')->nullable();
             $table->timestamps();
-            // $table->foreign('order_id')->references('id')->on('orders');
         });
+        Schema::enableForeignKeyConstraints();
     }
 
     /**

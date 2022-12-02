@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Shipping extends Model
 {
     use HasFactory;
-    protected $fillable = ['tracking_num', 'name', 'address', 'phone', 'shipping_on', 'value', 'description'];
+    protected $fillable = ['tracking_num', 'order_id', 'address_id', 'phone', 'shipping_on', 'value', 'description'];
 
     /**
      * @return hasOne
@@ -18,20 +18,19 @@ class Shipping extends Model
         return $this->hasOne(Order::class);
     }
 
+    /**
+     * @return hasOne
+     */
     public function payments()
     {
         return $this->hasOne(Payment::class);
     }
 
+    /**
+     * @return belongsTo
+     */
     public function addresses()
     {
         return $this->belongsTo(Address::class);
-    }
-    /**
-     * @return hasOne
-     */
-    public function user()
-    {
-        return $this->hasOne(User::class);
     }
 }

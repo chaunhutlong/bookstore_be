@@ -20,7 +20,8 @@ class AddressFactory extends Factory
             'name' => fake()->address(),
             'distance' => fake()->randomFloat(1, 0, 10),
             'user_id' => fake()->numberBetween(1,10),
-            'city_id' => fake()->numberBetween(1,5)
+            'city_id' => fake()->numberBetween(1,5),
+            'description' => fake()->sentence(10, true)
         ];
     }
 }

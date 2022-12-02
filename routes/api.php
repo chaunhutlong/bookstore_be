@@ -125,9 +125,9 @@ Route::group([
     Route::group([
         'prefix' => 'shipping'
     ], function () {
-        Route::get('/get', [ShippingController::class, 'getShipping'])->name('shipping.get');
-        Route::post('/add', [ShippingController::class, 'createShipping'])->name('shipping.add');
-        Route::put('/remove', [ShippingController::class, 'destroyShipping'])->name('shipping.remove');
+        Route::get('/{order}', [ShippingController::class, 'getShipping'])->name('shipping.get');
+        Route::post('/{order}', [ShippingController::class, 'createShipping'])->name('shipping.add');
+        Route::put('/{order}', [ShippingController::class, 'deleteShipping'])->name('shipping.remove');
     });
 });
 /* End of User Routes */
@@ -165,7 +165,7 @@ Route::group([
 Route::group([
     'prefix' => 'reviews'
 ], function () {
-Route::get('/', [ReviewController::class, 'getReviews']);
+    Route::get('/', [ReviewController::class, 'getReviews']);
     Route::get('/{book}', [ReviewController::class, 'getReviewsByBook']);
     Route::post('/{book}', [ReviewController::class, 'createOrUpdateReview']);
     Route::delete('/{review}', [ReviewController::class, 'deleteReview']);
