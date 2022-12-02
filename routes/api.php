@@ -124,7 +124,7 @@ Route::group([
     ], function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
-        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.remove');
+        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     });
 });
 /* End of User Routes */

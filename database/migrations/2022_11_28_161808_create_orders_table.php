@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('payment_id')->references('id')->on('payments');
             $table->unique(['user_id', 'payment_id']);
-            $table->boolean('active');
+            $table->boolean('is_deleted');
             $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });

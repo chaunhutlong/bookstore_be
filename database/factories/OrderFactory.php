@@ -30,7 +30,7 @@ class OrderFactory extends Factory
             'order_on' => $order_on,
             'user_id' => rand(1,10),
             'payment_id' => rand(1,5),
-            'active' => $active,
+            'is_deleted' => !$active,
             'deleted_at' => $deleted_at,
             'created_at' => fake()->dateTimeThisYear('now', 'Asia/Ho_Chi_Minh')
         ];
