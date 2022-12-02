@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Order;
+use App\Models\OrderDetail;
 
-class OrderTableSeeder extends Seeder
+class OrderDetailTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,11 +15,11 @@ class OrderTableSeeder extends Seeder
      */
     public function run()
     {
-        while (Order::count() < 10) {
+        while (OrderDetail::count() < 20) {
             try {
-                Order::factory(1)->create();
+                OrderDetail::factory(1)->create();
             } catch (\Exception $e) {
-                //do nothing
+                // do nothing
             }
         }
     }

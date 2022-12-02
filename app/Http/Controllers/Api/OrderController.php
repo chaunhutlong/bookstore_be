@@ -20,8 +20,9 @@ class OrderController extends Controller
         $user = auth()->user();
         $orders = Order::with([
             'orderDetails.book:id,name,isbn,price,book_image',
-            'payment:id,status,value'
+            'payment:id,type,status,total'
         ])->find($user->id);
+//            ->where('active', true);
         return response(['orders' => new OrderResource($orders), 'message' => 'Retrieved successfully'], 200);
     }
 
@@ -35,18 +36,16 @@ class OrderController extends Controller
         return response(['orders' => new OrderDetailResource($orders_details), 'message' => 'Retrieved successfully'], 200);
     }
 
-    public function store() {
+    public static function store($payment_id) {
         $user = auth()->user();
-        $cart = Cart::where('user_id', $user->id)->first();
+        $cart = Cart::where('user_id', $user->id)->get();
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $data = [
             'status' => 0,
             'order_on' => date('Y-m-d H:i:s', time()),
-            'shipping_id' => 1,
             'user_id' => $user->id,
-            'payment_id' => 4,
-            'discount_id' => 1,
-            'created_at' => date('Y-m-d H:i:s', time())
+            'payment_id' => $payment_id,
+            'active' => 1
         ];
         try {
             DB::beginTransaction();
@@ -61,9 +60,13 @@ class OrderController extends Controller
     }
 
     public function destroy(Order $order) {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
         try {
-            $order->delete();
+            $order->update([
+                'active' => false,
+                'deleted_at' => date('Y-m-d H:i:s', time())
+            ]);
             return response(['message' => 'Order deleted successfully']);
         } catch (\Exception $e) {
             DB::rollback();

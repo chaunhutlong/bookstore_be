@@ -119,7 +119,13 @@ Route::group([
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 
-    Route::apiResource('/orders', OrderController::class);
+    Route::group([
+        'prefix' => 'orders'
+    ], function () {
+        Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.remove');
+    });
 });
 /* End of User Routes */
 /* -------------------------------------------------------------------------- */
