@@ -38,11 +38,7 @@ class UserController extends Controller
         }
 
         $user->userInfo = $userInfo;
-        return response([
-            'success' => true,
-            'data' => new UserResource($user),
-            'message' => 'User profile was successfully retrieved'
-        ]);
+        return response()->json(new UserResource($user), 200);
     }
 
     public function createOrUpdateProfile(Request $request)
@@ -53,7 +49,7 @@ class UserController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'address' => 'string|max:255',
-                'phone_number' => 'numeric|digits:10',
+                'phone' => 'numeric|digits:10',
                 'bio' => 'string|max:255',
                 'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
@@ -89,14 +85,17 @@ class UserController extends Controller
                 $userInfo = UserInfo::create([
                     'user_id' => $user->id,
                     'address' => $data['address'],
-                    'phone_number' => $data['phone_number'],
+                    'phone' => $data['phone'],
                     'bio' => $data['bio'],
                     'avatar' => $data['avatar'],
                 ]);
             }
 
+            // user with user info
+            $user->userInfo = $userInfo;
+
             DB::commit();
-            return response(['user_info' => new UserResource($userInfo), 'message' => 'User info created successfully']);
+            return response()->json(new UserResource($user), 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -124,7 +123,7 @@ class UserController extends Controller
             $user->save();
 
             DB::commit();
-            return response(['message' => 'Password updated successfully']);
+            return response()->json('Password updated successfully', 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);

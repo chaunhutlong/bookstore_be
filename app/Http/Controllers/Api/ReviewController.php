@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\ReviewResource;
+use App\Http\Resources\ReviewCollection;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Models\Review;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
 class ReviewController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth:sanctum', 'active'])->except(['getReviews', 'getReviewsByBook']);
+    }
     /**
      * Display a listing of the resource.
      * @param Book $book
@@ -29,7 +33,7 @@ class ReviewController extends Controller
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
-     *          description="Book id",
+     *          description="review id",
      *          required=true,
      *          @OA\Schema(
      *          type="integer"
@@ -51,26 +55,15 @@ class ReviewController extends Controller
      *      )
      */
 
-    public function index($book)
+    public function getReviews()
     {
-        DB::beginTransaction();
         try {
-            $reviews = Review::with('user:id,name')->where('book_id', $book)->get();
+            $per_page = request()->input('per_page', 10);
 
-            if ($reviews) {
-                foreach ($reviews as $rev) {
-                    $user = User::findOrFail($rev->user_id);
-                    $rev->user_name = $user->name;
-                }
-            }
+            $reviews = Review::with('user')->paginate($per_page);
 
-            DB::commit();
-            return response([
-                'reviews' => ReviewResource::collection($reviews),
-                'message' => 'Retrieved successfully'
-            ], 200);
+            return response()->json(new ReviewCollection($reviews), 200);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -112,26 +105,13 @@ class ReviewController extends Controller
      *  )
      */
 
-    public function getReview($book)
+    public function getReviewsByBook(Book $book)
     {
-        DB::beginTransaction();
         try {
-            $user = auth()->user();
-
-            $review = Review::where('user_id', $user->id)->where('book_id', $book)->get();
-
-            foreach ($review as $rev) {
-                $rev->user_name = $user->name;
-            }
-
-            DB::commit();
-            return response([
-                'review' => ReviewResource::collection($review),
-                'message' => 'Retrieved successfully'
-            ], 200);
+            $reviews = Review::where('book_id', $book->id)->get();
+            return ReviewResource::collection($reviews);
         } catch (\Exception $e) {
-            DB::rollback();
-            return response(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -143,9 +123,8 @@ class ReviewController extends Controller
      */
 
     /**
-     *  @OA\Post(
-     *      path="reviews/{book}/review",
-            operationId="createOrUpdateReview",
+     *  @QA\Post(
+     *      path="/api/reviews/{book}",
      *      summary="Create or update review of a book",
      *      description="Returns Created or updated review of a book",
      *      tags={"Reviews"},
@@ -178,34 +157,27 @@ class ReviewController extends Controller
      *  )
      */
 
-    public function createOrUpdateReview(Request $request, $book)
+    public function createOrUpdateReview(Book $book)
     {
         DB::beginTransaction();
         try {
-            $book = Book::where('id', $book)->first();
-
-            $validator = Validator::make($request->all(), [
+            $validator = Validator::make(request()->all(), [
                 'rating' => 'required|numeric|min:1|max:5',
-                'comment' => 'string|max:255',
+                'comment' => 'required|string',
             ]);
 
             $data = $validator->validated();
+
             $review = Review::updateOrCreate(
-                [
-                    'user_id' => auth()->user()->id,
-                    'book_id' => $book->id,
-                ],
+                ['user_id' => auth()->user()->id, 'book_id' => $book->id],
                 $data
             );
 
             DB::commit();
-            return response([
-                'review' => new ReviewResource($review),
-                'message' => 'Review created successfully'
-            ]);
+            return response()->json(new ReviewResource($review), 200);
         } catch (\Exception $e) {
-            DB::rollback();
-            return response(['error' => $e->getMessage()], 500);
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -216,12 +188,11 @@ class ReviewController extends Controller
      */
 
     /**
-     * @OA\Delete(
-     *      path="reviews/{book}/{review}",
-     *      operationId="deleteReviewById",
-     *      tags={"Reviews"},
-     *      summary="Delete review",
-     *      description="Delete review",
+     *  @QA\Delete(
+     *      path="/api/reviews/{review}",
+     *      summary="Delete review of a book",
+     *      description="Delete review of a book",
+     *      tags={"Review"},
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
@@ -259,20 +230,22 @@ class ReviewController extends Controller
      *      )
      * )
      */
-    public function destroy($book, $review)
+
+    public function deleteReview(Review $review)
     {
         DB::beginTransaction();
         try {
-            $review = Review::where('book_id', $book)->where('id', $review)->first();
-            $review->delete();
+            // Check if review belongs to user
+            if ($review->user_id != auth()->user()->id) {
+                return response()->json(['message' => 'You are not authorized to delete this review'], 403);
+            }
 
+            $review->delete();
             DB::commit();
-            return response([
-                'message' => 'Review deleted successfully'
-            ]);
+            return response()->json(null, 204);
         } catch (\Exception $e) {
-            DB::rollback();
-            return response(['error' => $e->getMessage()], 500);
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

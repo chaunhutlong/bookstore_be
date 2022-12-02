@@ -56,4 +56,12 @@ class Book extends Model
     {
         return $this->hasMany(Cart::class, 'book_id');
     }
+
+    /**
+     * @return HasMany
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

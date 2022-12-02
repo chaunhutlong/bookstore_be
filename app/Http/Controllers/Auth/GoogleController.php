@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
-use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,20 +16,20 @@ class GoogleController extends Controller
     public function loginUrl()
     {
         try {
-        return Response::json([
-            'url' => Socialite::driver('google')->stateless()->redirect()->getTargetUrl(),
-        ]);
+            return Response::json([
+                'url' => Socialite::driver('google')->stateless()->redirect()->getTargetUrl(),
+            ]);
         } catch (\Exception $e) {
             return response(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function loginCallback(Request $request)
     {
 
         DB::beginTransaction();
         try {
-        $state = $request->input('state');
+            $state = $request->input('state');
 
             parse_str($state, $result);
             $googleUser = Socialite::driver('google')->stateless()->user();
@@ -79,8 +77,7 @@ class GoogleController extends Controller
                 'is_active' => $is_active,
                 'roles' => $roles
             ], 201);
-        
-            } catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
         }

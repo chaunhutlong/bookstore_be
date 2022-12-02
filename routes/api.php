@@ -1,25 +1,25 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Enums\UserRole;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PublisherController;
+
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\CheckoutController;
-use App\Http\Controllers\Api\NewPasswordController;
-use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\GenresController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
-use App\Http\Controllers\Api\SearchController;
-use App\Http\Controllers\Api\GoogleController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShippingController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PublisherController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -103,34 +103,6 @@ Route::group([
     });
 
     Route::group([
-        'prefix' => 'books'
-    ], function () {
-        Route::get('/', [BookController::class, 'index'])->name('books.index');
-        Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
-    });
-
-    Route::group([
-        'prefix' => 'authors'
-    ], function () {
-        Route::get('/', [AuthorController::class, 'index'])->name('authors.index');
-        Route::get('/{author}', [AuthorController::class, 'show'])->name('authors.show');
-    });
-
-    Route::group([
-        'prefix' => 'publishers'
-    ], function () {
-        Route::get('/', [PublisherController::class, 'index'])->name('publishers.index');
-        Route::get('/{publisher}', [PublisherController::class, 'show'])->name('publishers.show');
-    });
-
-    Route::group([
-        'prefix' => 'genres'
-    ], function () {
-        Route::get('/', [GenresController::class, 'index'])->name('genres.index');
-        Route::get('/{genre}', [GenresController::class, 'show'])->name('genres.show');
-    });
-
-    Route::group([
         'prefix' => 'cart'
     ], function () {
         Route::get('/get', [ShoppingCartController::class, 'getCart'])->name('cart.get');
@@ -148,13 +120,7 @@ Route::group([
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 
-    Route::group([
-        'prefix' => 'reviews'
-    ], function () {
-        Route::post('/{book}/review', [ReviewController::class, 'createOrUpdateReview'])->name('review.createOrUpdateReview');
-        Route::get('/{book}/review', [ReviewController::class, 'getReview'])->name('review.getReview');
-        Route::delete('/{book}/{review}', [ReviewController::class, 'destroy'])->name('review.deleteReview');
-    });
+    Route::apiResource('/orders', OrderController::class);
 
     Route::group([
         'prefix' => 'shipping'
@@ -167,18 +133,42 @@ Route::group([
 /* End of User Routes */
 /* -------------------------------------------------------------------------- */
 
-/* Review Routes */
+/* Guest Routes */
+Route::group([
+    'prefix' => 'books'
+], function () {
+    Route::get('/', [BookController::class, 'index'])->name('books.index');
+    Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
+});
+
+Route::group([
+    'prefix' => 'authors'
+], function () {
+    Route::get('/', [AuthorController::class, 'index'])->name('authors.index');
+    Route::get('/{author}', [AuthorController::class, 'show'])->name('authors.show');
+});
+
+Route::group([
+    'prefix' => 'publishers'
+], function () {
+    Route::get('/', [PublisherController::class, 'index'])->name('publishers.index');
+    Route::get('/{publisher}', [PublisherController::class, 'show'])->name('publishers.show');
+});
+
+Route::group([
+    'prefix' => 'genres'
+], function () {
+    Route::get('/', [GenresController::class, 'index'])->name('genres.index');
+    Route::get('/{genre}', [GenresController::class, 'show'])->name('genres.show');
+});
+
 Route::group([
     'prefix' => 'reviews'
 ], function () {
-    Route::get('/{book}/', [ReviewController::class, 'index'])->name('review.index');
+Route::get('/', [ReviewController::class, 'getReviews']);
+    Route::get('/{book}', [ReviewController::class, 'getReviewsByBook']);
+    Route::post('/{book}', [ReviewController::class, 'createOrUpdateReview']);
+    Route::delete('/{review}', [ReviewController::class, 'deleteReview']);
 });
-
-/* Order Routes */
-Route::group([
-    'middleware' => ['auth:sanctum', 'active'],
-], function () {
-    Route::apiResource('/orders', OrderController::class);
-});
-/* End of Order Routes */
+/* End of Guest Routes */
 /* -------------------------------------------------------------------------- */
