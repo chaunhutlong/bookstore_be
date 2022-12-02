@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('phone_number');
             $table->float('value');
             $table->date('shipping_on');
-            $table->float('shipping_fee');
             $table->string('description')->nullable();
             $table->timestamps();
             // $table->foreign('order_id')->references('id')->on('orders');
