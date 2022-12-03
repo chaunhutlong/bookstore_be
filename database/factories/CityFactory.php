@@ -18,7 +18,8 @@ class CityFactory extends Factory
     {
         return [
             'name' => fake()->city(),
-            'location' => fake()->randomFloat(null,-100, $max = 100).' '.fake()->randomFloat(null,-100, $max = 100)
+            'lat' => fake()->randomFloat(null,-100, $max = 100),
+            'lng' => fake()->randomFloat(null,-100, $max = 100)
         ];
     }
 }
