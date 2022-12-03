@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ShippingResource;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Models\Shipping;
 use App\Models\Order;
-use App\Models\Addresses;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
+
 
 class ShippingController extends Controller
 {
@@ -41,12 +41,7 @@ class ShippingController extends Controller
 
             $shipping = Shipping::where('order_id', $order)->first();
 
-            $shipping->address_detail = Address::where('id', $shipping->address_id)->value('description');
-
-            return response()->json([
-                'message' => 'Get shipping successfully',
-                'shipping' => $shipping,
-            ], 200);
+            return response()->json(new ShippingResource($shipping), 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -58,41 +53,102 @@ class ShippingController extends Controller
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
         try {
-            $order = Order::findOrFail($order);
+            if (Shipping::where('order_id', $order)->first() || Order::findOrFail($order) == null) {
+                return response()->json(['message' => 'Shipping already exists or Order not found'], 400);
+            } else {
+                $validator = Validator::make(
+                    $request->all(),
+                    [
+                        'phone' => 'required|numeric|digits:10',
+                        'address_id' => 'required|integer|exists:addresses,id',
+                        'description' => 'nullable|string',
+                    ]
+                );
 
-            $validator = Validator::make(
-                $request->all(),
-                [
-                    'name' => 'required|string',
-                    'address' => 'required|interger',
-                    'phone' => 'required|string|min:10|max:10',
-                    'description' => 'string',
-                ]
-            );
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'massage' => $validator->errors()->first()
+                    ], 400);
+                }
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => 'error',
-                    'massage' => $validator->errors()->first()
-                ], 400);
+                $distance = Address::where('id', $request->address_id)->value('distance');
+
+                if ($distance <= 10 && $distance > 0) {
+                    $value = 15000;
+                } elseif ($distance <= 30) {
+                    $value = 15000 + ($distance - 10) * 500;
+                } else {
+                    $value = 40000;
+                }
+
+                $shipping = Shipping::create(
+                    [
+                        'order_id' => $order->id,
+                        'tracking_num' => self::randString(10),
+                        'value' => $value,
+                        'shipping_on' => Carbon::now()->addDays(5),
+                        'phone' => $request->phone,
+                        'address_id' => $request->address_id,
+                        'description' => $request->description,
+                    ],
+                );
+
+                DB::commit();
+                return response()->json(new ShippingResource($shipping), 200);
             }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
-            $data = $validator->validated();
-            $shipping = Shipping::create(
-                [
-                    'order_id' => $order,
-                    'tracking_num' => self::randString(10),
-                    'value' => (Address::where('id', $request->address_id)->value('distance')) * 1000,
-                    'shipping_on' => Carbon::now()->addDays(5),
-                ],
-                $data
-            );
 
-            DB::commit();
-            return response()->json([
-                'message' => 'Shipping created successfully',
-                'shipping' => $shipping
-            ], 200);
+    public function updateShipping(Request $request, $order)
+    {
+        DB::beginTransaction();
+        try {
+            $shipping = Shipping::where('order_id', $order)->first();
+            if (Shipping::where('order_id', $order)->first()) {
+                $validator = Validator::make(
+                    $request->all(),
+                    [
+                        'phone' => 'required|numeric|digits:10|same:phone',
+                        'address_id' => 'required|integer|exists:addresses,id',
+                        'description' => 'nullable|string',
+                    ]
+                );
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'massage' => $validator->errors()->first()
+                    ], 400);
+                }
+
+                $data = $validator->validated();
+
+                $distance = Address::where('id', $request->address_id)->value('distance');
+
+                if ($distance <= 10 && $distance > 0) {
+                    $value = 15000;
+                } elseif ($distance <= 30) {
+                    $value = 15000 + ($distance - 10) * 500;
+                } else {
+                    $value = 40000;
+                }
+
+                $shipping->value = $value;
+                $shipping->phone = $data['phone'];
+                $shipping->address_id = $data['address_id'];
+                $shipping->description = $data['description'];
+                $shipping->save();
+
+                DB::commit();
+                return response()->json(new ShippingResource($shipping), 200);
+            } else {
+                return response()->json(['message' => 'Shipping not found'], 404);
+            }
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);

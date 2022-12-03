@@ -127,7 +127,8 @@ Route::group([
     ], function () {
         Route::get('/{order}', [ShippingController::class, 'getShipping'])->name('shipping.get');
         Route::post('/{order}', [ShippingController::class, 'createShipping'])->name('shipping.add');
-        Route::put('/{order}', [ShippingController::class, 'deleteShipping'])->name('shipping.remove');
+        Route::put('/{order}', [ShippingController::class, 'updateShipping'])->name('shipping.update');
+        Route::delete('/{order}', [ShippingController::class, 'deleteShipping'])->name('shipping.remove');
     });
 });
 /* End of User Routes */

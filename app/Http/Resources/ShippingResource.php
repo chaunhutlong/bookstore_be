@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\AddressResource;
+use App\Models\Address;
 
 class ShippingResource extends JsonResource
 {
@@ -16,11 +18,13 @@ class ShippingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->user->name,
-            'rating' => $this->rating,
-            'comment' => $this->comment,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'tracking_num' => $this->tracking_num,
+            'order_id' => $this->order_id,
+            'address_id' => $this->address_id,
+            'phone' => $this->phone,
+            'value' => $this->value,
+            'address_detail' => new AddressResource(Address::find($this->address_id)),
+            'note' => $this->description,
         ];
     }
 }

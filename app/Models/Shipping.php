@@ -21,16 +21,8 @@ class Shipping extends Model
     /**
      * @return hasOne
      */
-    public function payments()
-    {
-        return $this->hasOne(Payment::class);
-    }
-
-    /**
-     * @return belongsTo
-     */
     public function addresses()
     {
-        return $this->belongsTo(Address::class);
+        return $this->hasOne(Address::class, 'id', 'address_id');
     }
 }
