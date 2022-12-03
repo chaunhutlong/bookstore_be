@@ -16,12 +16,6 @@ class CartTableSeeder extends Seeder
 
     public function run()
     {
-        while(Cart::count() < 15) {
-            try {
-                Cart::factory(1)->create();
-            } catch (\Exception $e) {
-                // do nothing
-            }
-        }
+        Cart::factory(5)->create();
     }
 }
