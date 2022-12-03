@@ -11,3 +11,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www
+
+RUN chown -R www-data:www-data /var/www
+
+RUN chmod -R 755 /var/www/storage
