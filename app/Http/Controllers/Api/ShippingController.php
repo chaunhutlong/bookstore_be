@@ -29,6 +29,28 @@ class ShippingController extends Controller
         return $randString;
     }
 
+    /**
+     * Display a listing of the resource.
+     * @return \Illuminate\Http\Response
+     */
+    /**
+     * @OA\Get(
+     *      path="/api/shipping",
+     *      operationId="getShippingList",
+     *      tags={"Shipping"},
+     *      summary="Get shipping",
+     *      description="Returns shipping",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Shipping")
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Not found"
+     *      )
+     * )
+     */
     public function getShipping($order)
     {
         DB::beginTransaction();
@@ -126,8 +148,6 @@ class ShippingController extends Controller
                     ], 400);
                 }
 
-                $data = $validator->validated();
-
                 $distance = Address::where('id', $request->address_id)->value('distance');
 
                 if ($distance <= 10 && $distance > 0) {
@@ -139,9 +159,9 @@ class ShippingController extends Controller
                 }
 
                 $shipping->value = $value;
-                $shipping->phone = $data['phone'];
-                $shipping->address_id = $data['address_id'];
-                $shipping->description = $data['description'];
+                $shipping->phone = $request->phone;
+                $shipping->address_id = $request->address_id;
+                $shipping->description = $request->description;
                 $shipping->save();
 
                 DB::commit();

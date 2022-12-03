@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShippingController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PublisherController;
+use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\AddressController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -126,9 +128,18 @@ Route::group([
         'prefix' => 'shipping'
     ], function () {
         Route::get('/{order}', [ShippingController::class, 'getShipping'])->name('shipping.get');
-        Route::post('/{order}', [ShippingController::class, 'createShipping'])->name('shipping.add');
+        Route::post('/{order}', [ShippingController::class, 'createShipping'])->name('shipping.create');
         Route::put('/{order}', [ShippingController::class, 'updateShipping'])->name('shipping.update');
         Route::delete('/{order}', [ShippingController::class, 'deleteShipping'])->name('shipping.remove');
+    });
+
+    Route::group([
+        'prefix' => 'addresses'
+    ], function () {
+        Route::get('/', [AddressController::class, 'index'])->name('address.get');
+        Route::get('/{address}', [AddressController::class, 'show'])->name('address.show');
+        Route::post('/add-address', [AddressController::class, 'createOrUpdateAddress'])->name('address.createOrUpdate');
+        Route::delete('/{address}', [AddressController::class, 'destroy'])->name('address.remove');
     });
 });
 /* End of User Routes */
