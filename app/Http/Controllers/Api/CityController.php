@@ -16,6 +16,6 @@ class CityController extends Controller
     {
         $dX = self::$uitLocation['lat'] - $city->lat;
         $dY = self::$uitLocation['lng'] - $city->lng;
-        return sqrt($dX * $dX + $dY * $dY);
+        return 100 * sqrt($dX * $dX + $dY * $dY);
     }
 }

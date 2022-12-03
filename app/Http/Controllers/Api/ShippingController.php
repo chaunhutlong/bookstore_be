@@ -31,25 +31,8 @@ class ShippingController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @param \App\Models\Order  $order
      * @return \Illuminate\Http\Response
-     */
-    /**
-     * @OA\Get(
-     *      path="/api/shipping",
-     *      operationId="getShippingList",
-     *      tags={"Shipping"},
-     *      summary="Get shipping",
-     *      description="Returns shipping",
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Shipping")
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="Not found"
-     *      )
-     * )
      */
     public function getShipping($order)
     {
@@ -70,6 +53,12 @@ class ShippingController extends Controller
         }
     }
 
+    /**
+     * Store a newly created resource in storage.
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Order  $order
+     * @return \Illuminate\Http\Response
+     */
     public function createShipping(Request $request, $order)
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
@@ -125,6 +114,12 @@ class ShippingController extends Controller
         }
     }
 
+    /**
+     * Update the specified resource in storage.
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Order  $order
+     * @return \Illuminate\Http\Response
+     */
 
     public function updateShipping(Request $request, $order)
     {
@@ -173,14 +168,5 @@ class ShippingController extends Controller
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-
-    public function deleteShipping($order)
-    {
-        $shipping = Shipping::findOrFail($order);
-        $shipping->delete();
-        return response()->json([
-            'message' => 'Shipping deleted successfully',
-        ], 200);
     }
 }
