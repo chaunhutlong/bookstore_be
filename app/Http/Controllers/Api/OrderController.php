@@ -86,7 +86,14 @@ class OrderController extends Controller
         }
     }
 
-    public function update() {
-
+    public function updateStatus(Request $request, Order $order) {
+        $order = Order::find($order->id);
+        $status = $request->status;
+        try {
+            $order->update(['status' => $status]);
+            return response(['order' => Order::find($order->id)]);
+        } catch (\Exception $e) {
+            return response(['error' => $e->getMessage()], 500);
+        }
     }
 }
