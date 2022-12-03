@@ -280,22 +280,4 @@ class ShoppingCartController extends Controller
         if ($cartQuantity == 0) return true;
         return false;
     }
-
-    public function createUnique() {
-        $user_id = 0;
-        $book_id = 0;
-        $string = '';
-        $exist = true;
-        while ($user_id == 0 || $book_id == 0 || $exist) {
-            $string .= $user_id.' '.$book_id.'|';
-            $user_id = rand(1, 5);
-            $book_id = rand(1,10);
-            $exist = Cart::where('user_id', $user_id)->where('book_id', $book_id)->exists();
-        }
-        return response()->json([
-            'user_id' => $user_id,
-            'book_id' => $book_id,
-            'string' => $string
-        ]);
-    }
 }
