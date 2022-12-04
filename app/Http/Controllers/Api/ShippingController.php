@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
 class ShippingController extends Controller
 {
 
-    private function randString($length)
+    private static function randString($length)
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $characterLen = strlen($characters);
@@ -70,17 +70,19 @@ class ShippingController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public static function store($order, string $description)
+    public static function store($order)
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
         try {
+            $user = auth()->user()->id;
             if (Shipping::where('order_id', $order)->first() || Order::findOrFail($order) == null) {
                 return response()->json(['message' => 'Shipping already exists or Order not found'], 400);
             } else {
 
-                $address_id = Address::where('user_id', Auth()->user()->id)->where('is_default', true)->value('id');
-                $distance = Address::where('id', $address_id)->value('distance');
+                $address = Address::where('user_id', $user)->where('is_default', true)->value('id');
+                echo $address;
+                $distance = Address::where('id', $address)->value('distance');
 
                 $shipping = Shipping::create(
                     [
@@ -88,8 +90,8 @@ class ShippingController extends Controller
                         'tracking_num' => self::randString(10),
                         'value' => ShippingController::shippingFee($distance),
                         'shipping_on' => Carbon::now()->addDays(5),
-                        'address_id' => $address_id,
-                        'description' => $description,
+                        'address_id' => $address,
+                        'description' => '',
                     ],
                 );
 
@@ -118,7 +120,6 @@ class ShippingController extends Controller
                 $validator = Validator::make(
                     $request->all(),
                     [
-                        'phone' => 'required|numeric|digits:10|same:phone',
                         'address_id' => 'required|integer|exists:addresses,id',
                         'description' => 'nullable|string',
                     ]
@@ -133,16 +134,7 @@ class ShippingController extends Controller
 
                 $distance = Address::where('id', $request->address_id)->value('distance');
 
-                if ($distance <= 10 && $distance > 0) {
-                    $value = 15000;
-                } elseif ($distance <= 30) {
-                    $value = 15000 + ($distance - 10) * 500;
-                } else {
-                    $value = 40000;
-                }
-
-                $shipping->value = $value;
-                $shipping->phone = $request->phone;
+                $shipping->value = ShippingController::shippingFee($distance);
                 $shipping->address_id = $request->address_id;
                 $shipping->description = $request->description;
                 $shipping->save();

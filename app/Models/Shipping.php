@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Shipping extends Model
 {
     use HasFactory;
-    protected $fillable = ['tracking_num', 'order_id', 'address_id', 'phone', 'shipping_on', 'value', 'description'];
+    protected $fillable = ['tracking_num', 'order_id', 'address_id', 'shipping_on', 'value', 'description'];
 
     /**
      * @return hasOne

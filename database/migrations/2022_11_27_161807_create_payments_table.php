@@ -19,12 +19,12 @@ return new class extends Migration
             $table->tinyInteger('status');
             $table->float('total_book_price');
             $table->unsignedBigInteger('discount_id')->nullable();
-            $table->unsignedBigInteger('shipping_id')->nullable();
+            // $table->unsignedBigInteger('shipping_id')->nullable();
             $table->float('total');
             $table->date('paid_on')->nullable();
             $table->string('description')->nullable();
             $table->foreign('discount_id')->references('id')->on('discounts')->onDelete('cascade');
-            $table->foreign('shipping_id')->references('id')->on('shippings')->onDelete('cascade');
+            // $table->foreign('shipping_id')->references('id')->on('shippings')->onDelete('cascade');
         });
     }
 

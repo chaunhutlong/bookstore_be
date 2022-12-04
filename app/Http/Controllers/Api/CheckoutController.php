@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Models\Discount;
+use App\Models\Address;
 
 
 class CheckoutController extends Controller
@@ -56,8 +57,9 @@ class CheckoutController extends Controller
             $totalPrice = self::total($user_id);
             $discountValue = 0;
             $discount_id = null;
-            $shipping_id = $request->shipping_id;
-            $shippingValue = Shipping::where('id', $shipping_id)->value('value');
+
+            $shippingValue = ShippingController::shippingFee(Address::where('user_id', $user_id)->where('is_default', true)->value('distance'));
+
             if ($request->discount_id != null) {
                 $discount_id = $request->discount_id;
                 if (DiscountController::isAvailable($discount_id) && !DiscountController::isExpired($discount_id)) {
@@ -70,15 +72,14 @@ class CheckoutController extends Controller
                 'status' => PaymentStatus::NotPaid,
                 'total_book_price' => $totalPrice,
                 'discount_id' => $discount_id,
-                'shipping_id' => $shipping_id,
                 'total' => $totalPrice - $discountValue + $shippingValue < 0 ? 0 : $totalPrice - $discountValue + $shippingValue,
                 'paid_on' => date('Y-m-d H:i:s', time()),
                 'description' => $request->description
             ];
             $payment = Payment::create($data);
             $order = OrderController::store($payment->id);
-                        self::reduceBookQuantity($user_id);
-                        self::removeFromCart($user_id);
+            self::reduceBookQuantity($user_id);
+            self::removeFromCart($user_id);
             $shipping = ShippingController::store($order->id, '');
             DB::commit();
             return response()->json([
