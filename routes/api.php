@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CityController;
 use Illuminate\Support\Facades\Route;
 use App\Enums\UserRole;
 

@@ -19,9 +19,9 @@ class CartFactory extends Factory
     public function definition()
     {
         return [
-            'quantity' => fake()->numberBetween(1,20),
-            'user_id' => fake()->numberBetween(1,5),
-            'book_id' => fake()->numberBetween(1,10),
+            'quantity' => fake()->numberBetween(1, 20),
+            'user_id' => fake()->numberBetween(1, 10),
+            'book_id' => fake()->numberBetween(1, 10),
             'is_checked' => fake()->boolean(),
             'price' => fake()->numberBetween(10, 90) * 10,
         ];
