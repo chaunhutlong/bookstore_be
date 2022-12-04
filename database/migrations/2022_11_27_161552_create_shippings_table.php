@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('phone');
             $table->float('value');
             $table->date('shipping_on');
-            $table->string('description');
+            $table->longText('description');
             $table->timestamps();
         });
     }

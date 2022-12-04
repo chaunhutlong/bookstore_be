@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('address');
             $table->string('phone');
-            $table->string('description')->nullable();
+            $table->longText('description')->nullable();
         });
     }
 
