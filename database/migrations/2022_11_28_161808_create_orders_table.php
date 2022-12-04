@@ -19,10 +19,11 @@ return new class extends Migration
             $table->date('order_on');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('payment_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('payment_id')->references('id')->on('payments');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade');
             $table->unique(['user_id', 'payment_id']);
-            $table->softDeletes();
+            $table->boolean('is_deleted');
+            $table->dateTime('deleted_at')->nullable();
             $table->timestamps();
         });
     }
