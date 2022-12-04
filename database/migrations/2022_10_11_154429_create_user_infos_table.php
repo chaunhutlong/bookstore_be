@@ -20,7 +20,7 @@ class CreateUserInfosTable extends Migration
             $table->string('bio')->nullable();
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
             $table->unique('user_id');
         });

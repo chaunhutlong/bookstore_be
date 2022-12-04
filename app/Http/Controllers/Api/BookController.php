@@ -242,12 +242,6 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        // delete in book_authors
-        $book->authors()->detach();
-
-        // delete in book_genres
-        $book->genres()->detach();
-
         // delete in book_image
         if ($book->book_image) {
             $bookImage = $this->storageUrl . $book->book_image;
