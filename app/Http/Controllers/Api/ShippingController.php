@@ -29,6 +29,17 @@ class ShippingController extends Controller
         return $randString;
     }
 
+    public static function shippingFee($distance)
+    {
+        if ($distance <= 10 && $distance > 0) {
+            $value = 15000;
+        } elseif ($distance <= 30) {
+            $value = 15000 + ($distance - 10) * 500;
+        } else {
+            $value = 40000;
+        }
+        return $value;
+    }
     /**
      * Display a listing of the resource.
      * @param \App\Models\Order  $order
@@ -59,7 +70,7 @@ class ShippingController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function createShipping(Request $request, $order)
+    public static function store($order, string $description)
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
@@ -67,41 +78,18 @@ class ShippingController extends Controller
             if (Shipping::where('order_id', $order)->first() || Order::findOrFail($order) == null) {
                 return response()->json(['message' => 'Shipping already exists or Order not found'], 400);
             } else {
-                $validator = Validator::make(
-                    $request->all(),
-                    [
-                        'phone' => 'required|numeric|digits:10',
-                        'address_id' => 'required|integer|exists:addresses,id',
-                        'description' => 'nullable|string',
-                    ]
-                );
 
-                if ($validator->fails()) {
-                    return response()->json([
-                        'status' => 'error',
-                        'massage' => $validator->errors()->first()
-                    ], 400);
-                }
-
-                $distance = Address::where('id', $request->address_id)->value('distance');
-
-                if ($distance <= 10 && $distance > 0) {
-                    $value = 15000;
-                } elseif ($distance <= 30) {
-                    $value = 15000 + ($distance - 10) * 500;
-                } else {
-                    $value = 40000;
-                }
+                $address_id = Address::where('user_id', Auth()->user()->id)->where('is_default', true)->value('id');
+                $distance = Address::where('id', $address_id)->value('distance');
 
                 $shipping = Shipping::create(
                     [
-                        'order_id' => $order->id,
+                        'order_id' => $order,
                         'tracking_num' => self::randString(10),
-                        'value' => $value,
+                        'value' => ShippingController::shippingFee($distance),
                         'shipping_on' => Carbon::now()->addDays(5),
-                        'phone' => $request->phone,
-                        'address_id' => $request->address_id,
-                        'description' => $request->description,
+                        'address_id' => $address_id,
+                        'description' => $description,
                     ],
                 );
 
@@ -121,7 +109,7 @@ class ShippingController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function updateShipping(Request $request, $order)
+    public function update(Request $request, $order)
     {
         DB::beginTransaction();
         try {

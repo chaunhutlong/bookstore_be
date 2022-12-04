@@ -22,7 +22,6 @@ class ShippingFactory extends Factory
             'tracking_num' => fake()->numerify('BOXO##########'),
             'address_id' => fake()->numberBetween(1, 5),
             'order_id' => fake()->numberBetween(1, 5),
-            'phone' => fake()->phoneNumber(),
             'value' => fake()->numberBetween(1, 20) * 10,
             'shipping_on' => fake()->dateTimeThisYear(),
             'description' => fake()->sentence(10, true)

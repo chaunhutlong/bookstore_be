@@ -16,12 +16,14 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('phone');
             $table->float('distance');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('city_id');
             $table->foreign('city_id')->references('id')->on('cities');
             $table->string('description');
+            $table->boolean('is_default');
             $table->timestamps();
         });
     }

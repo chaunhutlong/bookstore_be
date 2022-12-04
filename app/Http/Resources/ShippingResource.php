@@ -21,7 +21,6 @@ class ShippingResource extends JsonResource
             'tracking_num' => $this->tracking_num,
             'order_id' => $this->order_id,
             'address_id' => $this->address_id,
-            'phone' => $this->phone,
             'value' => $this->value,
             'address_detail' => new AddressResource(Address::find($this->address_id)),
             'note' => $this->description,

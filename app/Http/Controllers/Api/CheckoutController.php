@@ -28,15 +28,17 @@ class CheckoutController extends Controller
         return $total;
     }
 
-    private function reduceBookQuantity($user_id) {
-        $cart = Cart::where('user_id', $user_id)->where('is_checked',1)->get();
+    private function reduceBookQuantity($user_id)
+    {
+        $cart = Cart::where('user_id', $user_id)->where('is_checked', 1)->get();
         foreach ($cart as $item) {
             BookController::reduce($item->book_id, $item->quantity);
         }
     }
 
-    private function removeFromCart($user_id) {
-        $cart = Cart::where('user_id', $user_id)->where('is_checked',1)->get();
+    private function removeFromCart($user_id)
+    {
+        $cart = Cart::where('user_id', $user_id)->where('is_checked', 1)->get();
         foreach ($cart as $item) {
             ShoppingCartController::deleteAfterCheckout($item->book_id);
         }
@@ -59,7 +61,7 @@ class CheckoutController extends Controller
             if ($request->discount_id != null) {
                 $discount_id = $request->discount_id;
                 if (DiscountController::isAvailable($discount_id) && !DiscountController::isExpired($discount_id)) {
-                    $discountValue = Discount::where('id',$discount_id)->value('value');
+                    $discountValue = Discount::where('id', $discount_id)->value('value');
                     DiscountController::reduce($discount_id);
                 }
             }
@@ -75,12 +77,14 @@ class CheckoutController extends Controller
             ];
             $payment = Payment::create($data);
             $order = OrderController::store($payment->id);
-//            self::reduceBookQuantity($user_id);
-//            self::removeFromCart($user_id);
+            //            self::reduceBookQuantity($user_id);
+            //            self::removeFromCart($user_id);
+            $shipping = ShippingController::store($order->id, '');
             DB::commit();
             return response()->json([
                 'payment' => $payment,
-                'order' => $order
+                'order' => $order,
+                'shipping' => $shipping
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

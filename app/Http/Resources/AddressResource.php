@@ -19,11 +19,13 @@ class AddressResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'phone' => $this->phone,
             'distance' => $this->distance,
             'user_id' => $this->user_id,
             'city_id' => $this->city_id,
             'city' => new CityResource(City::find($this->city_id)),
             'description' => $this->description,
+            'is_default' => $this->is_default,
         ];
     }
 }

@@ -15,6 +15,25 @@ use Illuminate\Support\Facades\DB;
 
 class AddressController extends Controller
 {
+    public function setDefault($address)
+    {
+        DB::beginTransaction();
+        try {
+            // Set all addresses to not default
+            Address::where('user_id', auth()->user()->id)->update(['is_default' => false]);
+
+            // Set address to default
+            $address_default = Address::where('user_id', auth()->user()->id)->where('id', $address)->first();
+            $address_default->is_default = true;
+            $address_default->save();
+
+            DB::commit();
+            return response()->json(new AddressResource($address_default), 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     /**
      * Display a listing of the resource.
      * @return \Illuminate\Http\Response
@@ -60,6 +79,7 @@ class AddressController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
+                'phone' => 'required|numeric|digits:10|same:phone',
                 'description' => 'required|string',
                 'city_id' => 'required|integer|exists:cities,id',
             ]);
@@ -70,14 +90,22 @@ class AddressController extends Controller
                 ], 400);
             }
 
+            if (Address::where('user_id', Auth()->user()->id)->get() != '[]') {
+                $default = false;
+            } else {
+                $default = true;
+            }
+
             $distance = CityController::cityDistance(City::find($request->city_id));
 
             $address = Address::create([
                 'name' => $request->name,
+                'phone' => $request->phone,
                 'description' => $request->description,
                 'city_id' => $request->city_id,
                 'user_id' => Auth::user()->id,
-                'distance' => $distance
+                'distance' => $distance,
+                'is_default' => $default,
             ]);
             DB::commit();
             return response()->json(new AddressResource($address), 200);
@@ -86,6 +114,7 @@ class AddressController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -97,6 +126,13 @@ class AddressController extends Controller
     {
         try {
             $address = Address::findOrFail($address_id);
+            if ($address->is_default) {
+                $address_setdefault = Address::where('user_id', Auth()->user()->id)->where('is_default', false)->first();
+                if ($address_setdefault) {
+                    $address_setdefault->is_default = true;
+                    $address_setdefault->save();
+                }
+            }
             $address->delete();
 
             return response()->json(['message' => 'Address deleted successfully'], 200);
