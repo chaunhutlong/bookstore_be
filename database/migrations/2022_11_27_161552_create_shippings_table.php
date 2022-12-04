@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('address_id');
             $table->foreign('order_id')->references('id')->on('orders');
-            $table->foreign('address_id')->references('id')->on('addresses');
+            $table->foreign('address_id')->references('id')->on('addresses')->onDelete('cascade');
             $table->string('phone');
             $table->float('value');
             $table->date('shipping_on');

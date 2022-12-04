@@ -9,15 +9,35 @@ use App\Models\Book;
 use App\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Kreait\Firebase\Contract\Storage;
 
 
 class ShoppingCartController extends Controller
 {
+    protected $storageUrl;
+    protected $bookStorage;
+
+    public function __construct(Storage $storage)
+    {
+        $this->storage = $storage;
+        $this->bookStorage = app('firebase.storage')->getBucket();
+        $this->storageUrl = 'books/';
+    }
 
     public function getCart()
     {
         $user = auth()->user();
-        $cart = Cart::with('book:id,name,isbn,book_image,price')->where('user_id', $user->id)->get();
+        $cart = Cart::with('book')->where('user_id', $user->id)->get();
+        // get url for book image
+        foreach ($cart as $item) {
+            $bookImage =  $this->storageUrl . $item->book->book_image;
+            $item->book->book_image = $this->bookStorage->object($bookImage);
+            if ($item->book->book_image->exists()) {
+                $item->book->book_image = $item->book->book_image->signedUrl(new \DateTime('+1 hour'));
+            } else {
+                $item->book->book_image = null;
+            }
+        }
         return response()->json(new CartResource($cart), 200);
     }
 
@@ -270,32 +290,16 @@ class ShoppingCartController extends Controller
         }
     }
 
-    public static function deleteAfterCheckout($book_id) {
+    public static function deleteAfterCheckout($book_id)
+    {
         $cartItem = Cart::where('book_id', $book_id);
         $cartItem->delete();
     }
 
-    public static function isEmpty($user_id) {
+    public static function isEmpty($user_id)
+    {
         $cartQuantity = Cart::where('user_id', $user_id)->count();
         if ($cartQuantity == 0) return true;
         return false;
-    }
-
-    public function createUnique() {
-        $user_id = 0;
-        $book_id = 0;
-        $string = '';
-        $exist = true;
-        while ($user_id == 0 || $book_id == 0 || $exist) {
-            $string .= $user_id.' '.$book_id.'|';
-            $user_id = rand(1, 5);
-            $book_id = rand(1,10);
-            $exist = Cart::where('user_id', $user_id)->where('book_id', $book_id)->exists();
-        }
-        return response()->json([
-            'user_id' => $user_id,
-            'book_id' => $book_id,
-            'string' => $string
-        ]);
     }
 }

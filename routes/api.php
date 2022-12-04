@@ -122,8 +122,6 @@ Route::group([
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 
-    Route::apiResource('/orders', OrderController::class);
-
     Route::group([
         'prefix' => 'shipping'
     ], function () {
@@ -140,6 +138,14 @@ Route::group([
         Route::get('/{address}', [AddressController::class, 'show'])->name('address.show');
         Route::post('/add-address', [AddressController::class, 'createOrUpdateAddress'])->name('address.createOrUpdate');
         Route::delete('/{address}', [AddressController::class, 'destroy'])->name('address.remove');
+    });
+    Route::group([
+        'prefix' => 'orders'
+    ], function () {
+        Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+        Route::post('/update/{order}', [OrderController::class, 'updateStatus'])->name('orders.update');
     });
 });
 /* End of User Routes */

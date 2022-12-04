@@ -23,8 +23,8 @@ return new class extends Migration
             $table->float('total');
             $table->date('paid_on')->nullable();
             $table->string('description')->nullable();
-            $table->foreign('discount_id')->references('id')->on('discounts');
-            $table->foreign('shipping_id')->references('id')->on('shippings');
+            $table->foreign('discount_id')->references('id')->on('discounts')->onDelete('cascade');
+            $table->foreign('shipping_id')->references('id')->on('shippings')->onDelete('cascade');
         });
     }
 
