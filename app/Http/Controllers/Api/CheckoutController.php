@@ -73,8 +73,8 @@ class CheckoutController extends Controller
             ];
             $payment = Payment::create($data);
             $order = OrderController::store($payment->id);
-//            self::reduceBookQuantity($user_id);
-//            self::removeFromCart($user_id);
+            self::reduceBookQuantity($user_id);
+            self::removeFromCart($user_id);
             DB::commit();
             return response()->json([
                 'payment' => $payment,
