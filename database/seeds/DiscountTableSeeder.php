@@ -15,6 +15,6 @@ class DiscountTableSeeder extends Seeder
      */
     public function run()
     {
-        Discount::factory(5)->create();
+        Discount::factory(10)->create();
     }
 }
