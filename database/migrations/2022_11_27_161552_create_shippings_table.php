@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreign('address_id')->references('id')->on('addresses')->onDelete('cascade');
             $table->float('value');
             $table->date('shipping_on');
-            $table->string('description')->nullable();
+            $table->longText('description');
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();

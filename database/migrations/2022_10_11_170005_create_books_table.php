@@ -22,7 +22,7 @@ class CreateBooksTable extends Migration
             $table->integer('total_pages');
             $table->float('price');
             $table->string('book_image');
-            $table->string('description')->nullable();
+            $table->longText('description')->nullable();
             $table->date('published_date');
             $table->unsignedBigInteger('publisher_id');
             $table->foreign('publisher_id')->references('id')->on('publishers')->onDelete('cascade');
