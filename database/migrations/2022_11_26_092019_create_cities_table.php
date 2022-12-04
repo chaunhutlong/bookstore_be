@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('cities', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('location');
+            $table->float('lat');
+            $table->float('lng');
             $table->timestamps();
         });
     }
