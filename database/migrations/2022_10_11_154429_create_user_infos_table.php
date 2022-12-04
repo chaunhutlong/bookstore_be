@@ -16,11 +16,11 @@ class CreateUserInfosTable extends Migration
         Schema::create('user_infos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('address');
-            $table->string('phone_number');
+            $table->string('phone');
             $table->string('bio')->nullable();
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
             $table->unique('user_id');
         });

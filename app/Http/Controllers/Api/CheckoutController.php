@@ -72,11 +72,13 @@ class CheckoutController extends Controller
                 'description' => $request->description
             ];
             $payment = Payment::create($data);
+            $order = OrderController::store($payment->id);
             self::reduceBookQuantity($user_id);
             self::removeFromCart($user_id);
             DB::commit();
             return response()->json([
-                'payment' => $payment
+                'payment' => $payment,
+                'order' => $order
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

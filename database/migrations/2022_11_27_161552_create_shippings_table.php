@@ -17,8 +17,8 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->unsignedBigInteger('address_id');
-            $table->foreign('address_id')->references('id')->on('addresses');
-            $table->string('phone_number');
+            $table->foreign('address_id')->references('id')->on('addresses')->onDelete('cascade');
+            $table->string('phone');
             $table->float('value');
             $table->date('shipping_on');
             $table->string('description');

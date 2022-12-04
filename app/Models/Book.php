@@ -69,4 +69,12 @@ class Book extends Model
 
         return $array;
     }
+
+    /**
+     * @return HasMany
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Publisher extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'address', 'phone_number', 'email', 'description'];
+    protected $fillable = ['name', 'address', 'phone', 'email', 'description'];
 
     /**
      * Indicates if the model should be timestamped.

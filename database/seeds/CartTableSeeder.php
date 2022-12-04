@@ -13,8 +13,9 @@ class CartTableSeeder extends Seeder
      *
      * @return void
      */
+
     public function run()
     {
-        Cart::factory(20)->create();
+        Cart::factory(5)->create();
     }
 }

@@ -34,7 +34,7 @@ class BookController extends Controller
     {
         $perPage = $request->input('per_page', 10);
 
-        $books = Book::paginate($perPage);
+        $books = Book::with('reviews')->paginate($perPage);
 
         // return image url
         foreach ($books as $book) {
@@ -74,17 +74,18 @@ class BookController extends Controller
                 'language' => 'required|string|max:25',
                 'total_pages' => 'required|integer',
                 'price' => 'required|numeric',
+                'description' => 'required|string',
                 'book_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'published_date' => 'required|date',
                 'publisher_id' => 'required|integer',
-                'genres' => 'required|integer',
-                'authors' => 'required|integer',
+                'genres' => 'required|string',
+                'authors' => 'required|string',
             ]);
 
             $data = $validator->validated();
 
-            $genres = $data['genres'];
-            $authors = $data['authors'];
+            $genres = json_decode($data['genres'], true);
+            $authors = json_decode($data['authors'], true);
 
             // check genre in table genres
             foreach ($genres as $genre_id) {
@@ -123,7 +124,7 @@ class BookController extends Controller
             $book->authors()->attach($authors);
 
             DB::commit();
-            return response(['data' => new BookResource($book), 'message' => 'Book created successfully']);
+            return response(['book' => new BookResource($book), 'message' => 'Book created successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -138,7 +139,16 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return response(['data' => new BookResource($book), 'message' => 'Retrieved successfully'], 200);
+        // return image url
+        $bookImage =  $this->storageUrl . $book->book_image;
+        $book->book_image = $this->bookStorage->object($bookImage);
+        if ($book->book_image->exists()) {
+            $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+        } else {
+            $book->book_image = null;
+        }
+
+        return response()->json(new BookResource($book), 200);
     }
 
     /**
@@ -161,11 +171,12 @@ class BookController extends Controller
                     'language' => 'string|max:25',
                     'total_pages' => 'integer',
                     'price' => 'numeric',
+                    'description' => 'string',
                     'book_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     'published_date' => 'date',
                     'publisher_id' => 'integer',
-                    'genres' => 'integer',
-                    'authors' => 'integer',
+                    'genres' => 'string',
+                    'authors' => 'string',
                 ]
             );
 
@@ -173,7 +184,7 @@ class BookController extends Controller
 
             // check genre in request
             if (isset($data['genres'])) {
-                $genres = $data['genres'];
+                $genres = json_decode($data['genres'], true);
                 // check genre in table genres
                 foreach ($genres as $genre_id) {
                     $genre = Genre::where('id', $genre_id)->first();
@@ -186,7 +197,7 @@ class BookController extends Controller
 
             // check author in request
             if (isset($data['authors'])) {
-                $authors = $data['authors'];
+                $authors = json_decode($data['authors'], true);
                 // check author in table authors
                 foreach ($authors as $author_id) {
                     $author = Author::where('id', $author_id)->first();
@@ -223,7 +234,7 @@ class BookController extends Controller
             $book->update($data);
 
             DB::commit();
-            return response(['data' => new BookResource($book), 'message' => 'Book updated successfully']);
+            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -238,12 +249,6 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        // delete in book_authors
-        $book->authors()->detach();
-
-        // delete in book_genres
-        $book->genres()->detach();
-
         // delete in book_image
         if ($book->book_image) {
             $bookImage = $this->storageUrl . $book->book_image;
@@ -259,8 +264,9 @@ class BookController extends Controller
         return response(['message' => 'Book deleted successfully']);
     }
 
-    public static function reduce($book_id, $quantity) {
-        $book = Book::where('id',$book_id);
+    public static function reduce($book_id, $quantity)
+    {
+        $book = Book::where('id', $book_id);
         $availableQuantity = $book->value('available_quantity');
         $book->update(['available_quantity' => $availableQuantity - $quantity]);
     }

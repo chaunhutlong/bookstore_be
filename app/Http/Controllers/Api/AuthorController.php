@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use App\Http\Resources\AuthorResource;
+use App\Http\Resources\AuthorCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -18,8 +19,15 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $authors = Author::all();
-        return response(['authors' => AuthorResource::collection($authors), 'message' => 'Retrieved successfully'], 200);
+        try {
+            $per_page = request()->input('per_page', 10);
+
+            $authors = Author::paginate($per_page);
+
+            return response()->json(new AuthorCollection($authors), 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -49,7 +57,7 @@ class AuthorController extends Controller
             $publiser = Author::create($data);
             DB::commit();
 
-            return response(['author' => new AuthorResource($publiser), 'message' => 'Author created successfully']);
+            return response()->json(new AuthorResource($publiser), 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -64,7 +72,7 @@ class AuthorController extends Controller
      */
     public function show(Author $author)
     {
-        return response(['author' => new AuthorResource($author), 'message' => 'Retrieved successfully'], 200);
+        return response()->json(new AuthorResource($author), 200);
     }
 
     /**
@@ -91,7 +99,7 @@ class AuthorController extends Controller
             $author->update($data);
 
             DB::commit();
-            return response(['author' => new AuthorResource($author), 'message' => 'Author updated successfully']);
+            return response()->json(new AuthorResource($author), 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
@@ -106,8 +114,15 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
-        $author->delete();
+        DB::beginTransaction();
+        try {
+            $author->delete();
+            DB::commit();
 
-        return response(['message' => 'Author deleted successfully']);
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(['error' => $e->getMessage()], 500);
+        }
     }
 }
