@@ -128,6 +128,7 @@ Route::group([
         Route::get('/{order}', [ShippingController::class, 'getShipping'])->name('shipping.get');
         Route::post('/{order}', [ShippingController::class, 'store'])->name('shipping.store');
         Route::put('/{order}', [ShippingController::class, 'update'])->name('shipping.update');
+        Route::put('/{order}', [ShippingController::class, 'updateShippingOn'])->name('shipping.update.shippingon');
     });
 
     Route::group([

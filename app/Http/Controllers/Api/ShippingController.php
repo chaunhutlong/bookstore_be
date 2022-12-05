@@ -70,34 +70,27 @@ class ShippingController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public static function store($order)
+    public static function store($order_id, $user)
     {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
         try {
-            $user = auth()->user()->id;
-            if (Shipping::where('order_id', $order)->first() || Order::findOrFail($order) == null) {
-                return response()->json(['message' => 'Shipping already exists or Order not found'], 400);
-            } else {
+            $address = Address::where('user_id', $user)->where('is_default', true)->value('id');
+            
+            $distance = Address::where('id', $address)->value('distance');
 
-                $address = Address::where('user_id', $user)->where('is_default', true)->value('id');
-                echo $address;
-                $distance = Address::where('id', $address)->value('distance');
-
-                $shipping = Shipping::create(
-                    [
-                        'order_id' => $order,
-                        'tracking_num' => self::randString(10),
-                        'value' => ShippingController::shippingFee($distance),
-                        'shipping_on' => Carbon::now()->addDays(5),
-                        'address_id' => $address,
-                        'description' => '',
-                    ],
-                );
-
-                DB::commit();
-                return response()->json(new ShippingResource($shipping), 200);
-            }
+            $shipping = Shipping::create(
+                [
+                    'order_id' => $order_id,
+                    'tracking_num' => self::randString(10),
+                    'value' => ShippingController::shippingFee($distance),
+                    'shipping_on' => Carbon::now()->addDays(5),
+                    'address_id' => $address,
+                    'description' => '',
+                ],
+            );
+            DB::commit();
+            return ShippingResource::make($shipping);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -137,6 +130,46 @@ class ShippingController extends Controller
                 $shipping->value = ShippingController::shippingFee($distance);
                 $shipping->address_id = $request->address_id;
                 $shipping->description = $request->description;
+                $shipping->save();
+
+                DB::commit();
+                return response()->json(new ShippingResource($shipping), 200);
+            } else {
+                return response()->json(['message' => 'Shipping not found'], 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Update shipping on.
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function updateShippingOn(Request $request, $order)
+    {
+        DB::beginTransaction();
+        try {
+            $shipping = Shipping::where('order_id', $order)->first();
+            if ($shipping) {
+                $validator = Validator::make(
+                    $request->all(),
+                    [
+                        'shipping_on' => 'required|date',
+                    ]
+                );
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'massage' => $validator->errors()->first()
+                    ], 400);
+                }
+
+                $shipping->shipping_on = $request->shipping_on;
                 $shipping->save();
 
                 DB::commit();
