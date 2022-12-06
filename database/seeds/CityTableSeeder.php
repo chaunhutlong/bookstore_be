@@ -15,6 +15,19 @@ class CityTableSeeder extends Seeder
      */
     public function run()
     {
-        City::factory(5)->create();
+        $csvFile = fopen(base_path("database/data/city.csv"),"r");
+        $firstLine = true;
+        while (($data = fgetcsv($csvFile, 2000, ",")) !== false) {
+            if (!$firstLine) {
+                City::create([
+                    "name" => $data['0'],
+                    "lat" => $data['1'],
+                    "lng" => $data['2'],
+                ]);
+            }
+            $firstLine = false;
+        }
+
+        fclose($csvFile);
     }
 }
