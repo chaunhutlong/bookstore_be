@@ -18,9 +18,12 @@ class AddressFactory extends Factory
     {
         return [
             'name' => fake()->address(),
+            'phone' => fake()->phoneNumber(),
             'distance' => fake()->randomFloat(1, 0, 10),
-            'user_id' => fake()->numberBetween(1,10),
-            'city_id' => fake()->numberBetween(1,5)
+            'user_id' => fake()->numberBetween(1, 10),
+            'city_id' => fake()->numberBetween(1, 5),
+            'description' => fake()->sentence(10, true),
+            'is_default' => fake()->boolean(),
         ];
     }
 }

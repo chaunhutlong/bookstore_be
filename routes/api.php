@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\CityController;
 use Illuminate\Support\Facades\Route;
 use App\Enums\UserRole;
 
@@ -18,8 +17,11 @@ use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ShoppingCartController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\ShippingController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PublisherController;
+use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\AddressController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -120,6 +122,24 @@ Route::group([
         Route::post('/payment/confirm', [CheckoutController::class, 'confirmPayment'])->name('checkout.payment.confirm');
     });
 
+    Route::group([
+        'prefix' => 'shipping'
+    ], function () {
+        Route::get('/{order}', [ShippingController::class, 'getShipping'])->name('shipping.get');
+        Route::post('/{order}', [ShippingController::class, 'store'])->name('shipping.store');
+        Route::put('/{order}', [ShippingController::class, 'update'])->name('shipping.update');
+        Route::put('/{order}', [ShippingController::class, 'updateShippingOn'])->name('shipping.update.shippingon');
+    });
+
+    Route::group([
+        'prefix' => 'addresses'
+    ], function () {
+        Route::get('/', [AddressController::class, 'index'])->name('address.get');
+        Route::get('/{address}', [AddressController::class, 'show'])->name('address.show');
+        Route::post('/add-address', [AddressController::class, 'createOrUpdateAddress'])->name('address.createOrUpdate');
+        Route::put('/{address}', [AddressController::class, 'setDefault'])->name('address.update.default');
+        Route::delete('/{address}', [AddressController::class, 'destroy'])->name('address.remove');
+    });
     Route::group([
         'prefix' => 'orders'
     ], function () {
