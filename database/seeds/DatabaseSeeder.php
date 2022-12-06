@@ -7,6 +7,7 @@ use App\Models\Publisher;
 use App\Models\User;
 use App\Models\Role;
 use App\Enums\UserRole;
+use App\Models\Orders;
 use App\Models\Book;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -40,9 +41,9 @@ class DatabaseSeeder extends Seeder
 
         // seed books, publishers to the database
         $this->call([
-           PublisherTableSeeder::class, GenreTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
-           BookTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class,
-           OrderTableSeeder::class, OrderDetailTableSeeder::class
+            PublisherTableSeeder::class, GenreTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
+            BookTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class, OrderTableSeeder::class,
+            OrderTableSeeder::class, OrderDetailTableSeeder::class
         ]);
     }
 }

@@ -17,11 +17,10 @@ class PaymentFactory extends Factory
     public function definition()
     {
         return [
-            'type' => fake()->numberBetween(1,3),
+            'type' => fake()->numberBetween(1, 3),
             'status' => fake()->boolean(),
             'total_book_price' => fake()->numberBetween(50,1000) * 10,
             'discount_id' => fake()->numberBetween(1,5),
-            'shipping_id' => fake()->unique()->numberBetween(1,5),
             'total' => fake()->numberBetween(50,1000) * 10,
             'paid_on' => fake()->dateTimeThisYear(),
             'description' => fake()->sentence(10, true)
