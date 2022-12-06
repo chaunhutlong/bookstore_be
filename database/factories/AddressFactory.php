@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,14 +17,17 @@ class AddressFactory extends Factory
      */
     public function definition()
     {
+        $is_default = false;
+        $user_id = fake()->numberBetween(1, 5);
+        if (Address::where('is_default', true)->where('user_id', $user_id)->doesntExist()) $is_default = true;
         return [
             'name' => fake()->address(),
             'phone' => fake()->phoneNumber(),
             'distance' => fake()->randomFloat(1, 0, 10),
-            'user_id' => fake()->numberBetween(1, 10),
+            'user_id' => $user_id,
             'city_id' => fake()->numberBetween(1, 5),
             'description' => fake()->sentence(10, true),
-            'is_default' => fake()->boolean(),
+            'is_default' => $is_default
         ];
     }
 }
