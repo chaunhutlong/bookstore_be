@@ -23,6 +23,7 @@ class CityTableSeeder extends Seeder
                     "name" => $data['0'],
                     "lat" => $data['1'],
                     "lng" => $data['2'],
+                    "admin_name" => $data['3']
                 ]);
             }
             $firstLine = false;
