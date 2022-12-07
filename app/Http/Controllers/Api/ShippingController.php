@@ -76,14 +76,14 @@ class ShippingController extends Controller
         DB::beginTransaction();
         try {
             $address = Address::where('user_id', $user)->where('is_default', true)->value('id');
-            
+
             $distance = Address::where('id', $address)->value('distance');
 
             $shipping = Shipping::create(
                 [
                     'order_id' => $order_id,
                     'tracking_num' => self::randString(10),
-                    'value' => ShippingController::shippingFee($distance),
+                    'value' => self::shippingFee($distance),
                     'shipping_on' => Carbon::now()->addDays(5),
                     'address_id' => $address,
                     'description' => '',
