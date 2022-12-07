@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->float('lat');
             $table->float('lng');
+            $table->string('admin_name');
             $table->timestamps();
         });
     }
