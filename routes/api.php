@@ -191,3 +191,10 @@ Route::group([
 });
 /* End of Guest Routes */
 /* -------------------------------------------------------------------------- */
+
+Route::group([
+    'prefix' => 'cities'
+], function() {
+    Route::get('/admin-cities', [CityController::class, 'getAllAdmin']);
+    Route::get('/admin-cities/cities-list', [CityController::class, 'getCityFromAdmin']);
+});

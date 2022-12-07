@@ -18,4 +18,17 @@ class CityController extends Controller
         $dY = self::$uitLocation['lng'] - $city->lng;
         return 100 * sqrt($dX * $dX + $dY * $dY);
     }
+
+    public function getCityFromAdmin(Request $request) {
+        $admin = $request->admin_name;
+        $cities = City::where('admin_name',$admin)->get();
+        return $cities;
+    }
+
+    public function getAllAdmin() {
+        $admin = City::distinct()->get('admin_name');
+        return response()->json([
+            'admin' => $admin
+        ]);
+    }
 }
