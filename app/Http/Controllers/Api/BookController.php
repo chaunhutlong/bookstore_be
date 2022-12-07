@@ -36,6 +36,8 @@ class BookController extends Controller
 
         $books = Book::with('reviews')->paginate($perPage);
 
+        $books = Book::filter()->paginate($perPage);
+
         // return image url
         foreach ($books as $book) {
             $bookImage =  $this->storageUrl . $book->book_image;
@@ -47,13 +49,6 @@ class BookController extends Controller
             }
         }
 
-        // check if the request has a search query
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $books = Book::search($search)->paginate($perPage);
-        } else {
-            $books = Book::paginate($perPage);
-        }
         return response()->json(new BookCollection($books), 200);
     }
 
