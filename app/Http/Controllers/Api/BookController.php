@@ -36,6 +36,8 @@ class BookController extends Controller
 
         $books = Book::with('reviews')->paginate($perPage);
 
+        $books = Book::filter()->paginate($perPage);
+
         // return image url
         foreach ($books as $book) {
             $bookImage =  $this->storageUrl . $book->book_image;
