@@ -22,12 +22,14 @@ class ReviewController extends Controller
      * @param Book $book
      * @return \Illuminate\Http\Response
      */
+
     /**
-     * @OA/get(
-     *      path="/api/reviews/{book}/",
-     *      summary="Get reviews of a book",
-     *      description="Return reviews of a book",
+     *  @OA\Get(
+     *      path="reviews/{book}/",
+     *      operationId="getReviewsListByIdBook",
      *      tags={"Reviews"},
+     *      summary="Get list reviews of a book",
+     *      description="Return list reviews of a book",
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
@@ -42,14 +44,14 @@ class ReviewController extends Controller
      *          description="Successful operation",
      *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
-     *       )
+     *       ),
      *      )
      */
 
@@ -70,16 +72,18 @@ class ReviewController extends Controller
      * Display a listing of the resource.
      * @return \Illuminate\Http\Response
      */
+
     /**
-     *  @QA/get(
-     *      path="/api/reviews/{book}/review",
+     * @OA\Get(
+     *      path="reviews/{book}/review",
+     *      operationId="getReviewByIdBook",
+     *      tags={"Reviews"},
      *      summary="Get review of a book",
      *      description="Return review of a book",
-     *      tags={"Review"},
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
-     *          description="Book id",
+     *           description="Book id",
      *          required=true,
      *          @OA\Schema(
      *              type="integer"
@@ -88,16 +92,16 @@ class ReviewController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @QA\JsonContent(ref="#/components/schemas/ReviewResource")
+     *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
-     *      )
+     *      ),
      *  )
      */
 
@@ -117,12 +121,13 @@ class ReviewController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
+
     /**
      *  @QA\Post(
      *      path="/api/reviews/{book}",
      *      summary="Create or update review of a book",
-     *      description="Create or update review of a book",
-     *      tags={"Review"},
+     *      description="Returns Created or updated review of a book",
+     *      tags={"Reviews"},
      *      @OA\Parameter(
      *          name="book",
      *          in="path",
@@ -134,12 +139,12 @@ class ReviewController extends Controller
      *      ),
      *      @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/Review")
+     *          @OA\JsonContent(ref="#/components/schemas/CreateOrUpdateReviewRequest")
      *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/Review")
+     *          @OA\JsonContent(ref="#/components/schemas/ReviewResource")
      *      ),
      *      @OA\Response(
      *          response=401,
@@ -148,7 +153,7 @@ class ReviewController extends Controller
      *      @OA\Response(
      *          response=403,
      *          description="Forbidden",
-     *      )
+     *      ),
      *  )
      */
 
@@ -181,6 +186,7 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
+
     /**
      *  @QA\Delete(
      *      path="/api/reviews/{review}",
@@ -202,26 +208,27 @@ class ReviewController extends Controller
      *          description="Review id",
      *          required=true,
      *          @OA\Schema(
-     *          type="integer"
+     *              type="integer"
      *          )
      *      ),
      *      @OA\Response(
      *          response=204,
      *          description="Successful operation",
+     *          @OA\JsonContent()
      *      ),
      *      @OA\Response(
      *          response=401,
      *          description="Unauthenticated",
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=403,
-     *          description="Forbidden",
+     *          description="Forbidden"
      *      ),
-     *      @QA\Response(
+     *      @OA\Response(
      *          response=404,
-     *          description="Resource Not Found",
+     *          description="Resource Not Found"
      *      )
-     *  )
+     * )
      */
 
     public function deleteReview(Review $review)

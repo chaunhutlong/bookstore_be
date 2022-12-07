@@ -26,13 +26,12 @@ class OrderFactory extends Factory
             }
         }
         return [
-            'status' => rand(0,4),
+            'status' => fake()->numberBetween(0, 4),
             'order_on' => $order_on,
-            'user_id' => rand(1,10),
-            'payment_id' => rand(1,5),
+            'user_id' => fake()->numberBetween(1, 10),
+            'payment_id' => fake()->numberBetween(1, 5),
             'is_deleted' => !$active,
-            'deleted_at' => $deleted_at,
-            'created_at' => fake()->dateTimeThisYear('now', 'Asia/Ho_Chi_Minh')
+            'deleted_at' => $deleted_at
         ];
     }
 }

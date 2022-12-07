@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->integer('quantity');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->boolean('is_public');
             $table->timestamps();
         });

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Address extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'city_id', 'distance', 'user_id'];
+    protected $fillable = ['name', 'city_id', 'distance', 'phone', 'user_id', 'description', 'is_default'];
 
     /**
      * @return HasMany
@@ -25,5 +25,13 @@ class Address extends Model
     public function cities()
     {
         return $this->belongsTo(City::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
