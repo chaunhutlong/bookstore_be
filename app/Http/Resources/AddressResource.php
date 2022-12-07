@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\CityResource;
 use App\Models\City;
+use App\Http\Controllers\Api\ShippingController;
 
 class AddressResource extends JsonResource
 {
@@ -21,6 +22,7 @@ class AddressResource extends JsonResource
             'name' => $this->name,
             'phone' => $this->phone,
             'distance' => $this->distance,
+            'value' => ShippingController::shippingFee($this->distance),
             'user_id' => $this->user_id,
             'city_id' => $this->city_id,
             'city' => new CityResource(City::find($this->city_id)),
