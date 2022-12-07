@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DiscountResource;
 use App\Models\Payment;
 use App\Models\Shipping;
 use Illuminate\Http\Request;
@@ -53,7 +54,7 @@ class CheckoutController extends Controller
             DB::beginTransaction();
             $user_id = auth()->user()->id;
             if (ShoppingCartController::isEmpty($user_id)) {
-                return response()->json(['message' => 'Your cart is empty!']);
+                return response()->json(['message' => 'You must choose at least one book to purchase!']);
             }
             $totalPrice = self::total($user_id);
             $discountValue = 0;
@@ -62,11 +63,20 @@ class CheckoutController extends Controller
             $distance = Address::where('user_id', $user_id)->where('is_default', true)->value('distance');
             $shippingValue = ShippingController::shippingFee($distance);
 
+            $isExpired = null;
+            $isAvailable = null;
+
             if ($request->discount_id != null) {
                 $discount_id = $request->discount_id;
-                if (DiscountController::isAvailable($discount_id) && !DiscountController::isExpired($discount_id)) {
+                $isAvailable = DiscountController::isAvailable($discount_id);
+                $isExpired = DiscountController::isExpired($discount_id);
+                if ($isAvailable && !$isExpired) {
                     $discountValue = Discount::where('id', $discount_id)->value('value');
                     DiscountController::reduce($discount_id);
+                } else {
+                    return response()->json([
+                       'message' => 'Discount is not available or expired'
+                    ], 500);
                 }
             }
             $data = [
@@ -78,6 +88,11 @@ class CheckoutController extends Controller
                 'paid_on' => date('Y-m-d H:i:s', time()),
                 'description' => $request->description
             ];
+            $discount = null;
+            if ($discount_id != null && $isAvailable && !$isExpired) {
+                $discount = Discount::find($discount_id);
+            }
+
             $payment = Payment::create($data);
             $order = OrderController::store($payment->id);
             $order_id = Order::where('payment_id', $payment->id)->value('id');
@@ -87,8 +102,9 @@ class CheckoutController extends Controller
             DB::commit();
             return response()->json([
                 'payment' => $payment,
+                'discount' => new DiscountResource($discount),
                 'order' => $order,
-                'shipping' => $shipping
+                'shipping' => $shipping,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
