@@ -24,7 +24,6 @@ class AddressResource extends JsonResource
             'distance' => $this->distance,
             'value' => ShippingController::shippingFee($this->distance),
             'user_id' => $this->user_id,
-            'city_id' => $this->city_id,
             'city' => new CityResource(City::find($this->city_id)),
             'description' => $this->description,
             'is_default' => $this->is_default,
