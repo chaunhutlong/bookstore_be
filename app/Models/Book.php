@@ -9,7 +9,7 @@ use Mehradsadeghi\FilterQueryString\FilterQueryString;
 class Book extends Model
 {
     use HasFactory;
-//    use FilterQueryString;
+    use FilterQueryString;
 
     protected $fillable = ['name', 'available_quantity', 'isbn', 'language', 'total_pages', 'price', 'book_image', 'description', 'published_date', 'publisher_id'];
 
