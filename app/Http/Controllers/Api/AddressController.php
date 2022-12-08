@@ -72,7 +72,7 @@ class AddressController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createOrUpdateAddress(Request $request)
+    public function create(Request $request)
     {
         DB::beginTransaction();
         try {
@@ -114,6 +114,44 @@ class AddressController extends Controller
         }
     }
 
+    public function update(Request $request, $address_id)
+    {
+        DB::beginTransaction();
+        try {
+            $address = Address::where('id', $address_id)->first();
+            if ($address) {
+                $validator = Validator::make($request->all(), [
+                    'name' => 'required|string',
+                    'phone' => 'required|numeric|digits:10|same:phone',
+                    'description' => 'required|string',
+                    'city_id' => 'required|integer|exists:cities,id',
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'error' => $validator->errors()
+                    ], 400);
+                }
+
+                $distance = CityController::cityDistance(City::find($request->city_id));
+
+                $address->name = $request->name;
+                $address->phone = $request->phone;
+                $address->description = $request->description;
+                $address->city_id = $request->city_id;
+                $address->distance = $distance;
+                $address->save();
+
+                DB::commit();
+                return response()->json(new AddressResource($address), 200);
+            } else {
+                return response()->json(['message' => 'Address not found'], 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
