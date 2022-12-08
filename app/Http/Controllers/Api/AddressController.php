@@ -61,7 +61,6 @@ class AddressController extends Controller
     {
         try {
             $address = Address::with('user')->findOrFail($address_id);
-
             return response()->json(new AddressResource($address), 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);

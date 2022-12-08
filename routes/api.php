@@ -191,3 +191,10 @@ Route::group([
 });
 /* End of Guest Routes */
 /* -------------------------------------------------------------------------- */
+
+Route::group([
+    'prefix' => 'cities'
+], function() {
+    Route::get('/province', [CityController::class, 'getAllProvince']);
+    Route::get('/province/{province}', [CityController::class, 'getCityFromProvince']);
+});
