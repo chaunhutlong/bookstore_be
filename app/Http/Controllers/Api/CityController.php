@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use App\Models\City;
 
@@ -20,10 +21,10 @@ class CityController extends Controller
         return 100 * sqrt($dX * $dX + $dY * $dY);
     }
 
-    public function getCityFromProvince(Request $request)
+    public function getCityFromProvince(Province $province)
     {
-        $province = $request->input("province");
-        $city = City::where('province', $province)->get();
+        $province_id = $province->id;
+        $city = City::where('province_id', $province_id)->get();
         return response()->json([
             'city' => $city
         ]);
@@ -31,7 +32,7 @@ class CityController extends Controller
 
     public function getAllProvince()
     {
-        $provinces = City::distinct()->get('province');
+        $provinces = Province::all();
         return response()->json([
             'provinces' => $provinces
         ]);
