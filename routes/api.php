@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PublisherController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\AddressController;
+use App\Http\Controllers\Api\StatisticsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -87,6 +88,7 @@ Route::group([
         Route::post('/assign-role', [UserManagementController::class, 'assignRole']);
         Route::delete('/remove-role', [UserManagementController::class, 'removeRole']);
     });
+    Route::get('/statistics', [StatisticsController::class,'getStatistics']);
 });
 /* End of Admin Routes */
 /* -------------------------------------------------------------------------- */

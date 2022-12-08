@@ -13,14 +13,17 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+    protected $commands = [
+        'App\Console\Commands\DailyStatistics',
+    ];
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('command:daily-reset')->everyFiveMinutes();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
         $schedule->command('sanctum:prune-expired --hours=24')->daily();
+        $schedule->command('statistics:daily')->daily();
     }
-
     /**
      * Register the commands for the application.
      *
