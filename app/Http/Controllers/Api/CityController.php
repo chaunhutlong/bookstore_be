@@ -20,18 +20,20 @@ class CityController extends Controller
         return 100 * sqrt($dX * $dX + $dY * $dY);
     }
 
-    public function getCityFromAdmin(Request $request)
+    public function getCityFromProvince(Request $request)
     {
-        $admin = $request->input("admin_name", "");
-        $cities = City::where('admin_name', $admin)->get();
-        return $cities;
+        $province = $request->input("province");
+        $city = City::where('province', $province)->get();
+        return response()->json([
+            'city' => $city
+        ]);
     }
 
-    public function getAllAdmin()
+    public function getAllProvince()
     {
-        $admin = City::distinct()->get('admin_name');
+        $provinces = City::distinct()->get('province');
         return response()->json([
-            'admin' => $admin
+            'provinces' => $provinces
         ]);
     }
 }

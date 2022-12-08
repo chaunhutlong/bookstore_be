@@ -195,6 +195,6 @@ Route::group([
 Route::group([
     'prefix' => 'cities'
 ], function() {
-    Route::get('/admin-cities', [CityController::class, 'getAllAdmin']);
-    Route::get('/admin-cities/cities-list', [CityController::class, 'getCityFromAdmin']);
+    Route::get('/province', [CityController::class, 'getAllProvince']);
+    Route::get('/province/', [CityController::class, 'getCityFromProvince']);
 });
