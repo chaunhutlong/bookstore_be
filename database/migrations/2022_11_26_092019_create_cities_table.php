@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->float('lat');
             $table->float('lng');
-            $table->unsignedInteger('province_id');
+            $table->unsignedBigInteger('province_id');
             $table->foreign('province_id')->references('id')->on('provinces');
             $table->timestamps();
         });
