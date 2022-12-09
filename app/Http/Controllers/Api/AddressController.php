@@ -118,12 +118,13 @@ class AddressController extends Controller
     {
         DB::beginTransaction();
         try {
-            $address = Address::where('id', $address_id)->first();
+            $user = Auth::user()->id;
+            $address = Address::where('user_id', $user)->where('id', $address_id)->first();
             if ($address) {
                 $validator = Validator::make($request->all(), [
                     'name' => 'required|string',
                     'phone' => 'required|numeric|digits:10|same:phone',
-                    'description' => 'required|string',
+                    'description' => 'nullable|string',
                     'city_id' => 'required|integer|exists:cities,id',
                 ]);
 
