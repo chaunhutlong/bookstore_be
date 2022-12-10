@@ -16,12 +16,23 @@ class AddressTableSeeder extends Seeder
      */
     public function run()
     {
-        while (Address::count() < 10) {
-            try {
-                Address::factory(1)->create();
-            } catch (\Exception $e) {
-                // do nothing
+        $csvFile = fopen(base_path("database/data/addresses.csv"), "r");
+        $firstLine = true;
+        while (($data = fgetcsv($csvFile, 2000, ",")) !== false) {
+            if (!$firstLine) {
+                Address::create([
+                    "name" => $data['0'],
+                    "phone" => $data['1'],
+                    "distance" => $data['2'],
+                    "user_id" => $data['3'],
+                    "city_id" => $data['4'],
+                    "description" => $data['5'],
+                    "is_default" => $data['6'],
+                ]);
             }
+            $firstLine = false;
         }
+
+        fclose($csvFile);
     }
 }

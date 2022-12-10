@@ -16,6 +16,19 @@ class PublisherTableSeeder extends Seeder
      */
     public function run()
     {
-        Publisher::factory(5)->create();
+        $csvFile = fopen(base_path("database/data/publishers.csv"), "r");
+        $firstLine = true;
+        while (($data = fgetcsv($csvFile, 2000, ",")) !== false) {
+            if (!$firstLine) {
+                Publisher::create([
+                    "name" => $data['0'],
+                    "address" => $data['1'],
+                    "phone" => $data['2'],
+                ]);
+            }
+            $firstLine = false;
+        }
+
+        fclose($csvFile);
     }
 }
