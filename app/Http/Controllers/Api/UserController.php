@@ -29,12 +29,14 @@ class UserController extends Controller
         $user = auth()->user();
         $userInfo = UserInfo::where('user_id', $user->id)->first();
         // return image url from storage
-        $avatar = $this->storageUrl . $userInfo->avatar;
-        $userInfo->avatar = $this->avatarStorage->object($avatar);
-        if ($userInfo->avatar->exists()) {
-            $userInfo->avatar = $userInfo->avatar->signedUrl(new \DateTime('+1 hour'));
-        } else {
-            $userInfo->avatar = null;
+        if ($userInfo && $userInfo->avatar) {
+            $avatar = $this->storageUrl . $userInfo->avatar;
+            $userInfo->avatar = $this->avatarStorage->object($avatar);
+            if ($userInfo->avatar->exists()) {
+                $userInfo->avatar = $userInfo->avatar->signedUrl(new \DateTime('+1 hour'));
+            } else {
+                $userInfo->avatar = null;
+            }
         }
 
         $user->userInfo = $userInfo;
@@ -91,7 +93,6 @@ class UserController extends Controller
                 ]);
             }
 
-            // user with user info
             $user->userInfo = $userInfo;
 
             DB::commit();

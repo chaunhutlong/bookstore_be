@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\City;
+use App\Models\Province;
 
-class CityTableSeeder extends Seeder
+class ProvincesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,15 +15,12 @@ class CityTableSeeder extends Seeder
      */
     public function run()
     {
-        $csvFile = fopen(base_path("database/data/city.csv"),"r");
+        $csvFile = fopen(base_path("database/data/province.csv"), "r");
         $firstLine = true;
         while (($data = fgetcsv($csvFile, 2000, ",")) !== false) {
             if (!$firstLine) {
-                City::create([
-                    "name" => $data['0'],
-                    "lat" => $data['1'],
-                    "lng" => $data['2'],
-                    "admin_name" => $data['3']
+                Province::create([
+                    "name" => $data['0']
                 ]);
             }
             $firstLine = false;

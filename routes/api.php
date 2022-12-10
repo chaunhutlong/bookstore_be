@@ -137,10 +137,11 @@ Route::group([
         'prefix' => 'addresses'
     ], function () {
         Route::get('/', [AddressController::class, 'index'])->name('address.get');
+        Route::post('/', [AddressController::class, 'store'])->name('address.store');
         Route::get('/{address}', [AddressController::class, 'show'])->name('address.show');
-        Route::post('/add-address', [AddressController::class, 'createOrUpdateAddress'])->name('address.createOrUpdate');
-        Route::put('/{address}', [AddressController::class, 'setDefault'])->name('address.update.default');
+        Route::put('/{address}', [AddressController::class, 'update'])->name('address.update');
         Route::delete('/{address}', [AddressController::class, 'destroy'])->name('address.remove');
+        Route::put('/set-default/{address}', [AddressController::class, 'setDefault'])->name('address.update.default');
     });
     Route::group([
         'prefix' => 'orders'
@@ -193,3 +194,10 @@ Route::group([
 });
 /* End of Guest Routes */
 /* -------------------------------------------------------------------------- */
+
+Route::group([
+    'prefix' => 'cities'
+], function () {
+    Route::get('/province', [CityController::class, 'getAllProvince']);
+    Route::get('/province/{province}', [CityController::class, 'getCityFromProvince']);
+});

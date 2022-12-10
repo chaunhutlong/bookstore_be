@@ -4,11 +4,49 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 class Book extends Model
 {
     use HasFactory;
+    use FilterQueryString;
+
     protected $fillable = ['name', 'available_quantity', 'isbn', 'language', 'total_pages', 'price', 'book_image', 'description', 'published_date', 'publisher_id'];
+
+    protected $filters = [
+        'genre',
+        'publisher',
+        'author',
+        'sort',
+        'like'
+    ];
+
+    public function genre($query, $value)
+    {
+        $value = explode('_', $value);
+
+        return $query->whereHas('genres', function ($query) use ($value) {
+            $query->whereIn('genres.id', $value);
+        });
+    }
+
+    public function publisher($query, $value)
+    {
+        $value = explode('_', $value);
+
+        return $query->whereHas('publisher', function ($query) use ($value) {
+            $query->whereIn('publishers.id', $value);
+        });
+    }
+
+    public function author($query, $value)
+    {
+        $value = explode('_', $value);
+
+        return $query->whereHas('authors', function ($query) use ($value) {
+            $query->whereIn('authors.id', $value);
+        });
+    }
 
     /**
      * @return BelongsToMany
@@ -36,7 +74,7 @@ class Book extends Model
     /**
      * @return BelongsTo
      */
-    public function publisher()
+    public function publishers()
     {
         return $this->belongsTo(Publisher::class);
     }

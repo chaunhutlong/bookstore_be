@@ -21,12 +21,12 @@ class AddressFactory extends Factory
         $user_id = fake()->numberBetween(1, 5);
         if (Address::where('is_default', true)->where('user_id', $user_id)->doesntExist()) $is_default = true;
         return [
-            'name' => fake()->address(),
+            'name' => fake()->name(),
             'phone' => fake()->phoneNumber(),
             'distance' => fake()->randomFloat(1, 0, 10),
             'user_id' => $user_id,
             'city_id' => fake()->numberBetween(1, 5),
-            'description' => fake()->sentence(10, true),
+            'description' => fake()->address(),
             'is_default' => $is_default
         ];
     }

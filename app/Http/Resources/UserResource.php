@@ -20,7 +20,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'roles' => $this->roles->pluck('name'),
-            'userInfo' => UserInfo::collection($this->userInfo),
+            'userInfo' => $this->userInfo ? new UserInfoResource($this->userInfo) : null,
         ];
 
         // return parent::toArray($request);
