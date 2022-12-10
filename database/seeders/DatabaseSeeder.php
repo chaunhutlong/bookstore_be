@@ -27,10 +27,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            UsersTableSeeder::class
-        ]);
-        // add roles to the database
+        // $this->call([
+        //     UsersTableSeeder::class
+        // ]);
+        // // add roles to the database
         $roles = UserRole::getKeys();
         // loop through each role and add it to the database
         foreach ($roles as $role) {
@@ -47,8 +47,9 @@ class DatabaseSeeder extends Seeder
 
         // seed books, publishers to the database
         $this->call([
-            UserInfosTableSeeder::class, PublisherTableSeeder::class, GenreTableSeeder::class, ProvincesTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
-            BookTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class, OrderTableSeeder::class, OrderDetailTableSeeder::class
+            // UserInfosTableSeeder::class, PublisherTableSeeder::class, GenreTableSeeder::class, ProvincesTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
+            // BookTableSeeder::class, BookAuthorTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class, OrderTableSeeder::class, OrderDetailTableSeeder::class
+            PublisherTableSeeder::class, BookTableSeeder::class, AuthorTableSeeder::class, BookAuthorTableSeeder::class
         ]);
     }
 }
