@@ -52,17 +52,20 @@ Route::group([
 
 
 /* Email Verification Routes */
-Route::group([], function () {
-    Route::get(
-        '/email/verify/{id}/{hash}',
-        [EmailVerificationController::class, 'verify']
-    )->name('verification.verify');
+Route::group(
+    ['middleware' => ['auth:sanctum']],
+    function () {
+        Route::get(
+            '/email/verify/{id}/{hash}',
+            [EmailVerificationController::class, 'verify']
+        )->name('verification.verify');
 
-    Route::post(
-        '/email/verification-notification',
-        [EmailVerificationController::class, 'sendVerificationEmail']
-    )->name('verification.send');
-});
+        Route::post(
+            '/email/verification-notification',
+            [EmailVerificationController::class, 'sendVerificationEmail']
+        )->name('verification.send');
+    }
+);
 /* End of Email Verification Routes */
 /* -------------------------------------------------------------------------- */
 

@@ -179,14 +179,17 @@ class BookController extends Controller
 
             // check genre in request
             if (isset($data['genres'])) {
-                $genres = json_decode($data['genres'], true);
+                $genres = json_decode($data['genres']);
                 // check genre in table genres
+                var_dump($genres);
                 foreach ($genres as $genre_id) {
                     $genre = Genre::where('id', $genre_id)->first();
-                    if (!$genre) {
+                    if ($genre) {
                         return response(['error' => 'Genre not found'], 404);
                     }
                 }
+
+                // add genres to book
                 $book->genres()->sync($genres);
             }
 
