@@ -226,7 +226,10 @@ class BookController extends Controller
                 $data['book_image'] = $bookImageName;
             }
 
+
             $book->update($data);
+
+            var_dump($book);
 
             DB::commit();
             return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
