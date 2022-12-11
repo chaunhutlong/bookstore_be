@@ -77,7 +77,13 @@ Route::group([
 ], function () {
     Route::apiResource('/publishers', PublisherController::class);
     Route::apiResource('/authors', AuthorController::class);
-    Route::apiResource('/books', BookController::class);
+    Route::group(['prefix' => 'books'], function () {
+        Route::get('/', [BookController::class, 'getBooks'])->name('books.getBooks');
+        Route::get('/{book}', [BookController::class, 'getBook'])->name('books.getBook');
+        Route::post('/', [BookController::class, 'createBook'])->name('books.createBook');
+        Route::post('/{book}', [BookController::class, 'updateBook'])->name('books.updateBook');
+        Route::delete('/{book}', [BookController::class, 'deleteBook'])->name('books.deleteBook');
+    });
     Route::apiResource('/genres', GenresController::class);
     Route::apiResource('/discounts', DiscountController::class);
     Route::group([
@@ -160,8 +166,8 @@ Route::group([
 Route::group([
     'prefix' => 'books'
 ], function () {
-    Route::get('/', [BookController::class, 'index'])->name('books.index');
-    Route::get('/{book}', [BookController::class, 'show'])->name('books.show');
+    Route::get('/', [BookController::class, 'getBooks'])->name('books.getBooks');
+    Route::get('/{book}', [BookController::class, 'getBook'])->name('books.getBook');
 });
 
 Route::group([

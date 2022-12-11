@@ -30,7 +30,7 @@ class BookController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function index(Request $request)
+    public function getBooks(Request $request)
     {
         $perPage = $request->input('per_page', 10);
 
@@ -58,7 +58,7 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function createBook(Request $request)
     {
         DB::beginTransaction();
         try {
@@ -132,7 +132,7 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function show(Book $book)
+    public function getBook(Book $book)
     {
         // return image url
         $bookImage =  $this->storageUrl . $book->book_image;
@@ -153,7 +153,7 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Book $book)
+    public function updateBook(Request $request, Book $book)
     {
         DB::beginTransaction();
         try {
@@ -175,7 +175,7 @@ class BookController extends Controller
                 ]
             );
 
-            $data = $request->all();
+            $data = $validator->validated();
 
             // check genre in request
             if (isset($data['genres'])) {
@@ -245,7 +245,7 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Book $book)
+    public function deleteBook(Book $book)
     {
         // delete in book_image
         if ($book->book_image) {
