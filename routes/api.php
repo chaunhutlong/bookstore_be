@@ -52,7 +52,7 @@ Route::group([
 
 
 /* Email Verification Routes */
-Route::group(function () {
+Route::group([], function () {
     Route::get(
         '/email/verify/{id}/{hash}',
         [EmailVerificationController::class, 'verify']
