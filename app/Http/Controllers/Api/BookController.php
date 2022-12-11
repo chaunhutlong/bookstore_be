@@ -176,7 +176,6 @@ class BookController extends Controller
             );
 
             $data = $validator->validated();
-            $genres_data = json_decode($data['genres'], true);
 
             // check genre in request
             if (isset($data['genres'])) {
