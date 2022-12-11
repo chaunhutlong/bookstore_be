@@ -176,6 +176,7 @@ class BookController extends Controller
             );
 
             $data = $validator->validated();
+            $genres_data = json_decode($data['genres'], true);
 
             // check genre in request
             if (isset($data['genres'])) {
@@ -233,7 +234,7 @@ class BookController extends Controller
             $book->update($data);
 
             DB::commit();
-            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
+            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully', 'genres' => $genres_data]);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
