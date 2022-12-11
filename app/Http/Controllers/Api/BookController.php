@@ -234,7 +234,7 @@ class BookController extends Controller
             $book->update($data);
 
             DB::commit();
-            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully', 'genres' => $genres_data]);
+            return response(['book' => new BookResource($book), 'message' => 'Book updated successfully', 'data' => $data]);
         } catch (\Exception $e) {
             DB::rollback();
             return response(['error' => $e->getMessage()], 500);
