@@ -229,8 +229,6 @@ class BookController extends Controller
 
             $book->update($data);
 
-            var_dump($book);
-
             DB::commit();
             return response(['book' => new BookResource($book), 'message' => 'Book updated successfully']);
         } catch (\Exception $e) {
