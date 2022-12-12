@@ -18,9 +18,37 @@ class Book extends Model
         'publisher',
         'author',
         'sort',
-        'like'
+        'like',
+        'order_by',
+        'price',
     ];
 
+    public function order_by($query, $value)
+    {
+        switch ($value) {
+            case 'price':
+                return $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                return $query->orderBy('price', 'desc');
+                break;
+            case 'date':
+                return $query->orderBy('published_date', 'asc');
+                break;
+            case 'date_desc':
+                return $query->orderBy('published_date', 'desc');
+                break;
+            default:
+                return $query;
+                break;
+        }
+    }
+    public function price($query, $value)
+    {
+        $value = explode(',', $value);
+        return $query->whereBetween('price', $value);
+    }
+    
     public function genre($query, $value)
     {
         $value = explode('_', $value);
@@ -34,9 +62,7 @@ class Book extends Model
     {
         $value = explode('_', $value);
 
-        return $query->whereHas('publisher', function ($query) use ($value) {
-            $query->whereIn('publishers.id', $value);
-        });
+        return $query->where('publisher_id', $value);
     }
 
     public function author($query, $value)
