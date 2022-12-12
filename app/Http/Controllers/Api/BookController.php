@@ -34,7 +34,7 @@ class BookController extends Controller
     {
         $perPage = $request->input('per_page', 10);
 
-        $books = Book::with('reviews')->paginate($perPage);
+        $books = Book::with('reviews', 'orderDetails')->paginate($perPage);
 
         $books = Book::filter()->paginate($perPage);
 
@@ -49,6 +49,15 @@ class BookController extends Controller
             }
         }
 
+        // get total quantity of books
+        foreach ($books as $book) {
+            // calculate total sold of books in order details
+            $totalSold = 0;
+            foreach ($book->orderDetails as $orderDetail) {
+                $totalSold += $orderDetail->quantity;
+            }
+            $book->total_sold = $totalSold;
+        }
         return response()->json(new BookCollection($books), 200);
     }
 

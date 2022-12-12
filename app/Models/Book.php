@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
+use Illuminate\Support\Facades\DB;
 
 class Book extends Model
 {
@@ -18,8 +19,41 @@ class Book extends Model
         'publisher',
         'author',
         'sort',
-        'like'
+        'like',
+        'order_by',
+        'price',
     ];
+
+    public function order_by($query, $value)
+    {
+        switch ($value) {
+            case 'price':
+                return $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                return $query->orderBy('price', 'desc');
+                break;
+            case 'date':
+                return $query->orderBy('published_date', 'asc');
+                break;
+            case 'date_desc':
+                return $query->orderBy('published_date', 'desc');
+                break;
+            case 'top_selling':
+                return $query->join('orders_details', 'books.id', '=', 'orders_details.book_id')
+                    ->select('books.*', DB::raw('sum(orders_details.quantity) as total_quantity'))
+                    ->groupBy('books.id')
+                    ->orderBy('total_quantity', 'desc');
+            default:
+                return $query;
+                break;
+        }
+    }
+    public function price($query, $value)
+    {
+        $value = explode(',', $value);
+        return $query->whereBetween('price', $value);
+    }
 
     public function genre($query, $value)
     {
@@ -32,11 +66,7 @@ class Book extends Model
 
     public function publisher($query, $value)
     {
-        $value = explode('_', $value);
-
-        return $query->whereHas('publisher', function ($query) use ($value) {
-            $query->whereIn('publishers.id', $value);
-        });
+        return $query->where('publisher_id', $value);
     }
 
     public function author($query, $value)
