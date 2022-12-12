@@ -63,7 +63,7 @@ class UserController extends Controller
             // add new avatar to storage and delete old avatar
             if ($request->hasFile('avatar') && request()->file('avatar')->isValid()) {
                 // delete old avatar
-                if ($userInfo->avatar) {
+                if ($userInfo && $userInfo->avatar) {
                     $oldAvatar = $this->storageUrl . $userInfo->avatar;
                     $oldAvatarStorage = $this->storage->getBucket()->object($oldAvatar);
                     if ($oldAvatarStorage->exists()) {
@@ -84,13 +84,8 @@ class UserController extends Controller
             if ($userInfo) {
                 $userInfo->update($data);
             } else {
-                $userInfo = UserInfo::create([
-                    'user_id' => $user->id,
-                    'address' => $data['address'],
-                    'phone' => $data['phone'],
-                    'bio' => $data['bio'],
-                    'avatar' => $data['avatar'],
-                ]);
+                $data['user_id'] = $user->id;
+                $userInfo = UserInfo::create($data);
             }
 
             $user->userInfo = $userInfo;
