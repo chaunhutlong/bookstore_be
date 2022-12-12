@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\BookGenre;
 use App\Models\Genre;
 use App\Models\Publisher;
 use App\Models\User;
@@ -48,7 +49,7 @@ class DatabaseSeeder extends Seeder
         // seed books, publishers to the database
         $this->call([
             UserInfosTableSeeder::class, PublisherTableSeeder::class, GenreTableSeeder::class, ProvincesTableSeeder::class, CityTableSeeder::class, AuthorTableSeeder::class, DiscountTableSeeder::class,
-            BookTableSeeder::class, BookAuthorTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class, OrderTableSeeder::class, OrderDetailTableSeeder::class
+            BookTableSeeder::class, BookAuthorTableSeeder::class, GenreBookTableSeeder::class, CartTableSeeder::class, AddressTableSeeder::class, ShippingTableSeeder::class, PaymentTableSeeder::class, OrderTableSeeder::class, OrderDetailTableSeeder::class
         ]);
     }
 }
