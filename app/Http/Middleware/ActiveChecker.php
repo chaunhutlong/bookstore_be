@@ -20,6 +20,8 @@ class ActiveChecker
         $user = $request->user();
         foreach ($user->roles as $role) {
             if ($role->pivot->active == 1) {
+                // set is_active to true
+                $user->is_active = true;
                 return $next($request);
             }
         }

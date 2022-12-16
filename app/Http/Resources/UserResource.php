@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'roles' => $this->roles->pluck('name'),
+            'is_active' => $this->is_active,
             'userInfo' => $this->userInfo ? new UserInfoResource($this->userInfo) : null,
         ];
 
