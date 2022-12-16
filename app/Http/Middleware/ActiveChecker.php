@@ -26,6 +26,9 @@ class ActiveChecker
             }
         }
 
+        // set is_active to false
+        $user->is_active = false;
+
         return response()->json(["msg" => "Your account is not active"], 401);
     }
 }
