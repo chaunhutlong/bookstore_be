@@ -31,12 +31,16 @@ class ShippingController extends Controller
 
     public static function shippingFee($distance)
     {
-        if ($distance <= 30 && $distance > 0) {
+        if ($distance <= 10 && $distance > 0) {
             $value = 15000;
-        } elseif ($distance <= 60) {
-            $value = 15000 + ($distance - 10) * 500;
+        } elseif ($distance <= 30) {
+            $value = 15000 + ($distance - 10) * 300;
+        } elseif ($distance <= 100) {
+            $value = 15000 + 20 * 300 + ($distance - 30) * 100;
+        } elseif ($distance <= 500) {
+            $value = 15000 + 20 * 300 + 70 * 100 + ($distance - 100) * 50;
         } else {
-            $value = 40000;
+            $value = 60000;
         }
         return $value;
     }
