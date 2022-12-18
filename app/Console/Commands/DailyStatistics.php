@@ -38,12 +38,12 @@ class DailyStatistics extends Command
             $sale = DB::table('orders')->join('payments', 'payments.id', '=', 'orders.payment_id')->whereBetween('orders.created_at', [$from, $to])->get();
             $data = [
                 'order_date' => date('Y-m-d'),
-                'sales'=> $sale->sum('total'),
+                'sales' => $sale->sum('total'),
                 'quantity' => $quantity->sum('quantity'),
-                'profit'=> $sale->sum('total')*0.25,
+                'profit' => $sale->sum('total') * 0.25,
                 'total_order' => $orders->count(),
             ];
-            $statistics=Statistics::create($data);
+            Statistics::create($data);
             DB::commit();
         } catch (\Exception $e) {
             return response()->json([
