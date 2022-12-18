@@ -25,8 +25,13 @@ class OrderController extends Controller
         $orders = Order::with([
             'orderDetails.book:id,name,isbn,price,book_image',
             'payment:id,type,status,total'
-        ])->where('user_id', $user->id)->where('active', true)->get();
+        ])->where('user_id', $user->id)->where('is_deleted', false)->get();
         return response(['orders' => new OrderResource($orders), 'message' => 'Retrieved successfully'], 200);
+    }
+
+    public function allOrders() {
+        $order_list = Order::all();
+        return response(['orders' => $order_list]);
     }
 
     public function show(Order $order) {

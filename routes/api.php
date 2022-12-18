@@ -85,6 +85,10 @@ Route::group([
         Route::post('/{book}', [BookController::class, 'updateBook'])->name('books.updateBook');
         Route::delete('/{book}', [BookController::class, 'deleteBook'])->name('books.deleteBook');
     });
+    Route::group(['prefix' => 'orders'], function() {
+       Route::get('/', [OrderController::class, 'allOrders'])->name('orders.all');
+       Route::post('/update/{order}', [OrderController::class, 'updateStatus'])->name('orders.update');
+    });
     Route::apiResource('/genres', GenresController::class);
     Route::apiResource('/discounts', DiscountController::class);
     Route::group([
@@ -158,7 +162,6 @@ Route::group([
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
-        Route::post('/update/{order}', [OrderController::class, 'updateStatus'])->name('orders.update');
     });
 });
 /* End of User Routes */
