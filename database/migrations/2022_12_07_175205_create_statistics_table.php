@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('statistics', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('order_date');
-            $table->float('sales')->default('0');
-            $table->float('profit')->nullable();
+            $table->double('sales')->default('0');
+            $table->double('profit')->default('0');
             $table->integer('quantity')->default('0');
             $table->integer('total_order')->default('0');
         });
