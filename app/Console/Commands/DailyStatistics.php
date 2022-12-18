@@ -46,9 +46,8 @@ class DailyStatistics extends Command
             Statistics::create($data);
             DB::commit();
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
+            DB::rollBack();
+            throw $e;
         }
     }
 }
