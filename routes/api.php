@@ -88,6 +88,7 @@ Route::group([
     Route::group(['prefix' => 'orders'], function() {
        Route::get('/', [OrderController::class, 'allOrders'])->name('orders.all');
        Route::post('/update/{order}', [OrderController::class, 'updateStatus'])->name('orders.update');
+       Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     });
     Route::apiResource('/genres', GenresController::class);
     Route::apiResource('/discounts', DiscountController::class);
@@ -161,7 +162,6 @@ Route::group([
     ], function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/{order}', [OrderController::class, 'show'])->name('orders.show');
-        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     });
 });
 /* End of User Routes */
