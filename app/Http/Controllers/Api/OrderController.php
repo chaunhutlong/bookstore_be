@@ -14,39 +14,82 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Cart;
-use Ramsey\Collection\Collection;
+use Kreait\Firebase\Contract\Storage;
 
 
 class OrderController extends Controller
 {
-    //
-    public function index() {
+    protected $storageUrl;
+    protected $bookStorage;
+
+    public function __construct(Storage $storage)
+    {
+        $this->storage = $storage;
+        $this->bookStorage = app('firebase.storage')->getBucket();
+        $this->storageUrl = 'books/';
+    }
+
+    public function index()
+    {
         $user = auth()->user();
         $orders = Order::with([
             'orderDetails.book:id,name,isbn,price,book_image',
             'payment:id,type,status,total'
         ])->where('user_id', $user->id)->where('is_deleted', false)->get();
+
+        // return image url
+        foreach ($orders as $book) {
+            $bookImage =  $this->storageUrl . $book->book_image;
+            $book->book_image = $this->bookStorage->object($bookImage);
+            if ($book->book_image->exists()) {
+                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+            } else {
+                $book->book_image = null;
+            }
+        }
+
         return response(['orders' => new OrderResource($orders), 'message' => 'Retrieved successfully'], 200);
     }
 
-    public function allOrders() {
+    public function allOrders()
+    {
         $order_list = Order::all();
+        foreach ($order_list as $book) {
+            $bookImage =  $this->storageUrl . $book->book_image;
+            $book->book_image = $this->bookStorage->object($bookImage);
+            if ($book->book_image->exists()) {
+                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+            } else {
+                $book->book_image = null;
+            }
+        }
         return response(['orders' => $order_list]);
     }
 
-    public function show(Order $order) {
+    public function show(Order $order)
+    {
         $orders_details = Order::with([
             'orderDetails.book:id,name,isbn,price,book_image',
             'payment'
         ])->find($order->id);
-        $discount = Discount::where('id',$orders_details->payment->discount_id)->first(['name','value']);
-        $shipping = Shipping::where('id',$orders_details->payment->shipping_id)->first(['name','address_id','phone','value','shipping_on']);
+        foreach ($orders_details as $book) {
+            $bookImage =  $this->storageUrl . $book->book_image;
+            $book->book_image = $this->bookStorage->object($bookImage);
+            if ($book->book_image->exists()) {
+                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+            } else {
+                $book->book_image = null;
+            }
+        }
+        $discount = Discount::where('id', $orders_details->payment->discount_id)->first(['name', 'value']);
+        $shipping = Shipping::where('id', $orders_details->payment->shipping_id)->first(['name', 'address_id', 'phone', 'value', 'shipping_on']);
         $orders_details->shipping = $shipping;
         $orders_details->discount = $discount;
         return response()->json(new OrderDetailResource($orders_details), 200);
     }
 
-    public static function store($payment_id) {
+    public static function store($payment_id)
+    {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $user = auth()->user();
         $data = [
@@ -75,7 +118,8 @@ class OrderController extends Controller
         }
     }
 
-    public function destroy(Order $order) {
+    public function destroy(Order $order)
+    {
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
         try {
@@ -91,7 +135,8 @@ class OrderController extends Controller
         }
     }
 
-    public function updateStatus(Request $request, Order $order) {
+    public function updateStatus(Request $request, Order $order)
+    {
         $order = Order::find($order->id);
         $status = $request->status;
         try {
