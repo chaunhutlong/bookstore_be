@@ -38,8 +38,8 @@ class OrderController extends Controller
         ])->where('user_id', $user->id)->where('is_deleted', false)->get();
 
         // return image url
-        foreach ($orders as $book) {
-            $bookImage =  $this->storageUrl . $book->book_image;
+        foreach ($orders->orderDetails as $book) {
+            $bookImage = $this->storageUrl . $book->book_image;
             $book->book_image = $this->bookStorage->object($bookImage);
             if ($book->book_image->exists()) {
                 $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
@@ -72,8 +72,8 @@ class OrderController extends Controller
             'orderDetails.book:id,name,isbn,price,book_image',
             'payment'
         ])->find($order->id);
-        foreach ($orders_details as $book) {
-            $bookImage =  $this->storageUrl . $book->book_image;
+        foreach ($orders_details->orderDetails as $book) {
+            $bookImage = $this->storageUrl . $book->book_image;
             $book->book_image = $this->bookStorage->object($bookImage);
             if ($book->book_image->exists()) {
                 $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
