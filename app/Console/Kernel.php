@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:daily-reset')->everyFiveMinutes();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
         $schedule->command('sanctum:prune-expired --hours=24')->daily();
-        $schedule->command('statistics:daily')->daily();
+        $schedule->command('statistics:daily')->everyMinute();
     }
     /**
      * Register the commands for the application.
