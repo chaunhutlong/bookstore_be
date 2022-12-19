@@ -80,15 +80,22 @@ class OrderController extends Controller
             'orderDetails.book:id,name,isbn,price,book_image',
             'payment'
         ])->find($order->id);
-        foreach ($orders_details->orderDetails as $book) {
-            $bookImage = $this->storageUrl . $book->book_image;
-            $book->book_image = $this->bookStorage->object($bookImage);
-            if ($book->book_image->exists()) {
-                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
-            } else {
-                $book->book_image = null;
+
+        // check empty order_details
+        foreach ($orders_details as $order_detail) {
+            if (!$order_detail->orderDetails->isEmpty()) {
+                foreach ($orders_details->orderDetails as $book) {
+                    $bookImage = $this->storageUrl . $book->book_image;
+                    $book->book_image = $this->bookStorage->object($bookImage);
+                    if ($book->book_image->exists()) {
+                        $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+                    } else {
+                        $book->book_image = null;
+                    }
+                }
             }
         }
+
         $discount = Discount::where('id', $orders_details->payment->discount_id)->first(['name', 'value']);
         $shipping = Shipping::where('id', $orders_details->payment->shipping_id)->first(['name', 'address_id', 'phone', 'value', 'shipping_on']);
         $orders_details->shipping = $shipping;
