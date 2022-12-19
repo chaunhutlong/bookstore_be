@@ -105,7 +105,6 @@ class OrderController extends Controller
 
     public static function store($payment_id)
     {
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $user = auth()->user();
         $data = [
             'status' => 0,
@@ -135,7 +134,6 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
         DB::beginTransaction();
         try {
             $order->update([
