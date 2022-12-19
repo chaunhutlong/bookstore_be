@@ -37,14 +37,22 @@ class OrderController extends Controller
             'payment:id,type,status,total'
         ])->where('user_id', $user->id)->where('is_deleted', false)->get();
 
+        if ($orders->isEmpty()) {
+            return response(['message' => 'No orders found'], 404);
+        }
+
         // return image url
-        foreach ($orders->orderDetails as $book) {
-            $bookImage = $this->storageUrl . $book->book_image;
-            $book->book_image = $this->bookStorage->object($bookImage);
-            if ($book->book_image->exists()) {
-                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
-            } else {
-                $book->book_image = null;
+        foreach ($orders as $order) {
+            if (!$order->orderDetails->isEmpty()) {
+                foreach ($orders->orderDetails as $book) {
+                    $bookImage = $this->storageUrl . $book->book_image;
+                    $book->book_image = $this->bookStorage->object($bookImage);
+                    if ($book->book_image->exists()) {
+                        $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+                    } else {
+                        $book->book_image = null;
+                    }
+                }
             }
         }
 
