@@ -2,9 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Payment;
-use App\Models\Discount;
-use App\Models\Shipping;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderResource extends JsonResource
@@ -17,6 +14,12 @@ class OrderResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'order_on' => $this->order_on,
+            'order_details' => OrderDetailResource::collection($this->orderDetails),
+            'payment' => new PaymentResource($this->payment)
+        ];
     }
 }

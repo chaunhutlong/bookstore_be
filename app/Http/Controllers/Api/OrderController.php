@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -29,13 +30,15 @@ class OrderController extends Controller
         $this->storageUrl = 'books/';
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
+        $perPage = $request->input('per_page', 10);
+
         $orders = Order::with([
             'orderDetails.book:id,name,isbn,price,book_image',
             'payment:id,type,status,total'
-        ])->where('user_id', $user->id)->where('is_deleted', false)->get();
+        ])->where('user_id', $user->id)->where('is_deleted', false)->paginate($perPage);
 
         if ($orders->isEmpty()) {
             return response(['message' => 'No orders found'], 404);
@@ -44,34 +47,53 @@ class OrderController extends Controller
         // return image url
         foreach ($orders as $order) {
             if (!$order->orderDetails->isEmpty()) {
-                foreach ($orders->orderDetails as $book) {
-                    $bookImage = $this->storageUrl . $book->book_image;
-                    $book->book_image = $this->bookStorage->object($bookImage);
-                    if ($book->book_image->exists()) {
-                        $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
+                // loop through order details array
+                foreach ($order->orderDetails as $order_list) {
+                    $bookImage = $this->storageUrl . $order_list->book->book_image;
+                    $order_list->book->book_image = $this->bookStorage->object($bookImage);
+                    if ($order_list->book->book_image->exists()) {
+                        $order_list->book->book_image = $order_list->book->book_image->signedUrl(new \DateTime('+1 hour'));
                     } else {
-                        $book->book_image = null;
+                        $order_list->book->book_image = null;
+                    }
+                }
+            }
+        }
+        return response()->json(new OrderCollection($orders), 200);
+    }
+
+    public function allOrders(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $orders = Order::with([
+            'orderDetails.book:id,name,isbn,price,book_image',
+            'payment:id,type,status,total'
+        ])->paginate($perPage);
+
+        $books = [];
+        foreach ($orders as $order) {
+            if (!$order->orderDetails->isEmpty()) {
+                // loop through order details array
+                // check duplicate book id in order details
+
+                foreach ($order->orderDetails as $order_list) {
+                    // check duplicate book id in order details
+                    // if duplicate book id, just return image url 
+                    if (!in_array($order_list->book->id, $books)) {
+                        $books[] = $order_list->book->id;
+                        $bookImage = $this->storageUrl . $order_list->book->book_image;
+                        $order_list->book->book_image = $this->bookStorage->object($bookImage);
+                        if ($order_list->book->book_image->exists()) {
+                            $order_list->book->book_image = $order_list->book->book_image->signedUrl(new \DateTime('+1 hour'));
+                        } else {
+                            $order_list->book->book_image = null;
+                        }
                     }
                 }
             }
         }
 
-        return response(['orders' => new OrderResource($orders), 'message' => 'Retrieved successfully'], 200);
-    }
-
-    public function allOrders()
-    {
-        $order_list = Order::all();
-        foreach ($order_list as $book) {
-            $bookImage =  $this->storageUrl . $book->book_image;
-            $book->book_image = $this->bookStorage->object($bookImage);
-            if ($book->book_image->exists()) {
-                $book->book_image = $book->book_image->signedUrl(new \DateTime('+1 hour'));
-            } else {
-                $book->book_image = null;
-            }
-        }
-        return response(['orders' => $order_list]);
+        return response()->json(new OrderCollection($orders), 200);
     }
 
     public function show(Order $order)
