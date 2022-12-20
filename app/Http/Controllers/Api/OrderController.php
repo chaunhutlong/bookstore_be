@@ -45,16 +45,25 @@ class OrderController extends Controller
         }
 
         // return image url
+        $books = [];
+
         foreach ($orders as $order) {
             if (!$order->orderDetails->isEmpty()) {
                 // loop through order details array
+                // check duplicate book id in order details
+
                 foreach ($order->orderDetails as $order_list) {
-                    $bookImage = $this->storageUrl . $order_list->book->book_image;
-                    $order_list->book->book_image = $this->bookStorage->object($bookImage);
-                    if ($order_list->book->book_image->exists()) {
-                        $order_list->book->book_image = $order_list->book->book_image->signedUrl(new \DateTime('+1 hour'));
-                    } else {
-                        $order_list->book->book_image = null;
+                    // check duplicate book id in order details
+                    // if duplicate book id, just return image url 
+                    if (!in_array($order_list->book->id, $books)) {
+                        $books[] = $order_list->book->id;
+                        $bookImage = $this->storageUrl . $order_list->book->book_image;
+                        $order_list->book->book_image = $this->bookStorage->object($bookImage);
+                        if ($order_list->book->book_image->exists()) {
+                            $order_list->book->book_image = $order_list->book->book_image->signedUrl(new \DateTime('+1 hour'));
+                        } else {
+                            $order_list->book->book_image = null;
+                        }
                     }
                 }
             }
