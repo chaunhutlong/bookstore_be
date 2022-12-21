@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
@@ -19,23 +20,30 @@ class UserManagementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getUsers()
+    public function getUsers(Request $request)
     {
         try {
-            $users = User::with('roles')->get();
-            if ($users) {
-                return response()->json([
-                    'data' => UserResource::collection($users),
-                    'message' => 'Retrieved successfully'
-                ]);
+            $request->validate([
+                'page' => 'integer',
+                'per_page' => 'integer',
+            ]);
+            $page = $request->input('page', 1);
+            $perPage = $request->input('per_page', 10);
+
+            $users = User::with('roles')->paginate($perPage, ['*'], 'page', $page);
+
+            foreach ($users as $user) {
+                foreach ($user->roles as $role) {
+                    if ($role->pivot->active == 1) {
+                        $user->is_active = true;
+                        break;
+                    }
+                }
             }
-            return response()->json([
-                'message' => 'No users found'
-            ], 404);
+
+            return response()->json(new UserCollection($users), 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
+            return response(['error' => $e->getMessage()], 500);
         }
     }
     /**
@@ -137,6 +145,12 @@ class UserManagementController extends Controller
             $user = User::find($request->user_id);
             if ($user) {
                 $role = Role::find($request->role_id);
+                // check if role is admin, if yes, don't remove
+                if ($role->id == UserRole::Admin) {
+                    return response()->json([
+                        'message' => 'Cannot remove admin role'
+                    ], 403);
+                }
                 if ($role) {
                     $user->roles()->detach($role);
                     DB::commit();

@@ -19,10 +19,12 @@ class RoleChecker
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!$request->user()->hasAnyRole($roles)) {
+        $user = $request->user();
+        if (!$user->hasAnyRole($roles)) {
             return response()->json(['message' => 'You are not authorized to access this resource'], 403);
         }
 
+        $user->is_active = true;
         return $next($request);
     }
 }
