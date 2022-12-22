@@ -30,7 +30,11 @@ class UserManagementController extends Controller
             $page = $request->input('page', 1);
             $perPage = $request->input('per_page', 10);
 
-            $users = User::with('roles')->paginate($perPage, ['*'], 'page', $page);
+            // get user is not admin
+            $users = User::with('roles')->whereHas('roles', function ($query) {
+                $query->where('id', '!=', UserRole::Admin);
+            })->paginate($perPage, ['*'], 'page', $page);
+
 
             foreach ($users as $user) {
                 foreach ($user->roles as $role) {
@@ -68,6 +72,15 @@ class UserManagementController extends Controller
     {
         try {
             $user = User::find($request->user_id);
+
+            $role_id = $request->role_id;
+            if ($role_id == UserRole::Admin) {
+                return response()->json([
+                    'message' => 'Cannot unactive admin role'
+                ], 403);
+            }
+
+
             if ($user) {
                 $user->roles()->updateExistingPivot($request->role_id, ['active' => true]);
                 return response()->json([
@@ -91,6 +104,14 @@ class UserManagementController extends Controller
     {
         try {
             $user = User::find($request->user_id);
+
+            $role_id = $request->role_id;
+            if ($role_id == UserRole::Admin) {
+                return response()->json([
+                    'message' => 'Cannot unactive admin role'
+                ], 403);
+            }
+
             if ($user) {
                 $user->roles()->updateExistingPivot($request->role_id, ['active' => false]);
                 return response()->json([

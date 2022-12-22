@@ -40,10 +40,6 @@ class OrderController extends Controller
             'payment:id,type,status,total'
         ])->where('user_id', $user->id)->where('is_deleted', false)->paginate($perPage);
 
-        if ($orders->isEmpty()) {
-            return response(['message' => 'No orders found'], 404);
-        }
-
         // return image url
         $books = [];
 
