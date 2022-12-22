@@ -85,10 +85,10 @@ Route::group([
         Route::post('/{book}', [BookController::class, 'updateBook'])->name('books.updateBook');
         Route::delete('/{book}', [BookController::class, 'deleteBook'])->name('books.deleteBook');
     });
-    Route::group(['prefix' => 'orders'], function() {
-       Route::get('/', [OrderController::class, 'allOrders'])->name('orders.all');
-       Route::post('/update/{order}', [OrderController::class, 'updateStatus'])->name('orders.update');
-       Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::group(['prefix' => 'orders'], function () {
+        Route::get('/', [OrderController::class, 'allOrders'])->name('orders.all');
+        Route::post('/update/{order}', [OrderController::class, 'updateStatus'])->name('orders.update');
+        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     });
     Route::apiResource('/genres', GenresController::class);
     Route::apiResource('/discounts', DiscountController::class);
@@ -100,9 +100,9 @@ Route::group([
         Route::put('/active', [UserManagementController::class, 'activeUser']);
         Route::put('/unactive', [UserManagementController::class, 'unactiveUser']);
         Route::post('/assign-role', [UserManagementController::class, 'assignRole']);
-        Route::delete('/remove-role', [UserManagementController::class, 'removeRole']);
+        Route::put('/remove-role', [UserManagementController::class, 'removeRole']);
     });
-    Route::get('/statistics', [StatisticsController::class,'getStatistics']);
+    Route::get('/statistics', [StatisticsController::class, 'getStatistics']);
 });
 /* End of Admin Routes */
 /* -------------------------------------------------------------------------- */
